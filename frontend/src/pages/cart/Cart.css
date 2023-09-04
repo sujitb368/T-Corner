@@ -1,0 +1,23 @@
+/* .increment-btn{
+    background-color: brown !important;
+} */
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+    -moz-appearance: textfield;
+}
+.increment-input{
+  outline: none !important;
+  border-radius: 2px !important;
+  border:1px solid var(--color3) !important;
+  margin-left: 1px !important;
+  margin-right: 1px !important;
+
+}

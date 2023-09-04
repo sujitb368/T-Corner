@@ -1,0 +1,27 @@
+.product-color{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    padding: 3px;
+    background-clip: content-box;
+    cursor: pointer;
+}
+.product-color-selected{
+    border: 1px solid var(--color2);
+}
+
+.product-size{
+    border: none;
+    border-radius: 3px;
+    font-size: 20px;
+    width: 2.5rem;
+    text-transform: capitalize;
+}
+.product-size-selected{
+    background-color: var(--color2);
+    color: #fff !important;
+}
+.product-size:hover{
+    background-color: var(--color2);
+    color: #fff !important;
+}

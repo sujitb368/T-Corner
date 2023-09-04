@@ -1,0 +1,8 @@
+nav a{
+  color: aliceblue !important;  
+}
+
+.dropdown-menu a{
+    color: var(--color1) !important;  
+
+}

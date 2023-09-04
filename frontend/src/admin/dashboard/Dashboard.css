@@ -1,0 +1,28 @@
+.side-bar{
+    box-shadow: 0px 0px 20px rgba(1, 41, 112, 0.1);
+
+    /* background-color: #fff; */
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    overflow-y: auto;
+
+}
+
+
+
+@media screen and (max-width:830px){
+    .side-bar-responsive{
+        position: absolute;
+        z-index: 10;
+        top: 55px;
+        transform: translateX(-100%);
+        transition: all .5s ease-in;
+    } 
+    .side-bar-responsive-toggle{
+        transform: translateX(0%) !important;        
+    }
+}
+
