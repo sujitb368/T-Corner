@@ -1,10 +1,14 @@
 import axios from "axios";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useReducer } from "react";
 import Product from "../../components/productCard/Product";
 import { Col, Container, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+// import { initialUserState, userReducer } from "../../context/userContext";
+
 function Home() {
   const [allproducts, setAllProducts] = useState([]);
+
+  // const [state] = useReducer(userReducer, initialUserState);
 
   const navigate = useNavigate();
 
@@ -34,7 +38,7 @@ function Home() {
                     <Product
                       onClick={() => {
                         console.log("product._id", product._id);
-                        navigate(`product-details/${product._id}`);
+                        navigate(`/product-details/${product._id}`);
                       }}
                       key={product._id}
                       product={product}

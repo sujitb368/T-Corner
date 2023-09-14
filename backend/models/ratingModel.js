@@ -1,15 +1,14 @@
 import mongoose from "mongoose";
-import { ObjectId } from "mongoose";
 const ratingSchema = new mongoose.Schema({
   productId: {
-    type: ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: "productModel", // Reference to the User model
     required: true,
   },
   rating: [
     {
       user: {
-        type: ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "userModel", // Reference to the User model
         required: true,
       },

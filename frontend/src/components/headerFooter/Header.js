@@ -11,7 +11,10 @@ import {
 } from "react-bootstrap";
 import "./Header.css";
 import { NavLink } from "react-router-dom";
+import { useCart } from "../../context/cartContext";
 function Header() {
+  //get cart state from context
+  const { cartState, cartDispatch } = useCart();
   return (
     <Navbar expand="lg" className="bg-body-tertiary bg-1">
       <Container>
@@ -38,7 +41,7 @@ function Header() {
           </Col>
           <Col>
             <Nav className="d-flex justify-content-end">
-              <Nav.Link as={NavLink} className="text" href="#home">
+              <Nav.Link as={NavLink} className="text" to="/">
                 Home
               </Nav.Link>
 
@@ -63,8 +66,11 @@ function Header() {
               <Nav.Link as={NavLink} className="text" to="/signup">
                 Sign up
               </Nav.Link>
-              <Nav.Link as={NavLink} className="text" href="#link">
+              <Nav.Link as={NavLink} className="text" to="/cart">
                 Cart
+              </Nav.Link>
+              <Nav.Link as={NavLink} className="text" to="">
+                {cartState.user.name ?? "Profile"}
               </Nav.Link>
             </Nav>
           </Col>

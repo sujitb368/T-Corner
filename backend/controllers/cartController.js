@@ -1,5 +1,3 @@
-import express from "express";
-import mongoose from "mongoose";
 import CartModel from "../models/cartModel.js"; // import cart models
 import UserModel from "../models/userModel.js"; // import userModel from '../models/user
 import ProductModel from "../models/productModel.js"; // Import the Product model
@@ -14,8 +12,6 @@ const addToCart = async (req, res) => {
 
     // Check if the user exists
     const user = await UserModel.findById(userId);
-
-    console.log(user, userId);
 
     if (!user) {
       return res
@@ -64,4 +60,33 @@ const addToCart = async (req, res) => {
   }
 };
 
-export { addToCart };
+const deleteFromCart = async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const { userId, cartItems } = req.body;
+    console.log("userId: " + userId);
+    console.log("cartItems: " + cartItems);
+    if (!productId) {
+      return res
+        .status(400)
+        .send({ message: "product id not provided", success: false });
+    }
+    const cartItem = await CartModel.findOneAndUpdate(
+      { user: userId },
+      { cartItems }
+    );
+
+    console.log("new cart", cartItem);
+    return res.status(200).send({
+      message: "Item deleted",
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .send({ message: "Unable to delete from cart", success: false, error });
+  }
+};
+
+export { addToCart, deleteFromCart };

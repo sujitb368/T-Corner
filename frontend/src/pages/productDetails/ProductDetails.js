@@ -6,19 +6,26 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import "./ProductDetails.css";
 import { BsFillCartPlusFill, BsGeoAltFill } from "react-icons/bs";
+import { useCart } from "../../context/cartContext";
 
 function ProductDetails() {
-  console.log("productDetails");
   // const [ProductDetail, setProductDetail] = useState();
   const [details, setDetails] = useState([]);
   const { productId } = useParams();
-  const [selectedSizes, setSelectedSizes] = useState("");
+  const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
   const [quantity] = useState(1);
 
   const loggedInUsers = JSON.parse(localStorage.getItem("user"));
 
-  const userId = "64ec8a33e578206641c035ec";
+  const userId = loggedInUsers?._id || "";
+
+  const { cartState, cartDispatch } = useCart();
+
+  // Functions to add items to the cart
+  const addItemToCart = (item) => {
+    cartDispatch({ type: "ADD_TO_CART", payload: item });
+  };
 
   const getProduct = async () => {
     try {
@@ -38,30 +45,68 @@ function ProductDetails() {
   const handelAddToCart = async (product) => {
     try {
       //get cart from local storage
-      const localCart = JSON.parse(localStorage.getItem("cart"));
+      const localCart = JSON.parse(localStorage.getItem("cart")) || [];
 
-      const { createdAt, updatedAt, _id, ...productDetails } = product;
-      productDetails.colors = selectedColor;
-      productDetails.sizes = selectedSizes;
+      //destructure product details
+      const {
+        sizes,
+        colors,
+        shipping,
+        createdAt,
+        updatedAt,
+        _id,
+        ...productDetails
+      } = product;
+      productDetails.color = selectedColor;
+      productDetails.size = selectedSize;
       productDetails.quantity = quantity;
       productDetails.productId = _id;
 
-      localCart.forEach((item) => {
-        if (item.productId === productDetails.productId) {
-          item.quantity += productDetails.quantity;
+      if (localCart && localCart.length > 0) {
+        //if local cart exist then loop through it and modify if needed
+        let isProductExist = false;
+        localCart.forEach((item) => {
+          if (item.productId === productDetails.productId) {
+            item.quantity += productDetails.quantity;
+            isProductExist = true;
+          }
+        });
+        if (!isProductExist) {
+          localCart.push(productDetails);
         }
-      });
+      } else {
+        //push product details to localCart array then store it to localStorage
+        //if localCart dont have any items
+        localCart.push(productDetails);
+      }
+      addItemToCart(productDetails);
+
+      localStorage.setItem("cart", JSON.stringify(localCart));
 
       const response = await axios.post(`/api/v1/cart/addToCart/${userId}`, {
         userId,
-        cartItems: productDetails,
+        cartItems: localCart,
       });
 
-      console.log(response);
-    } catch (error) {}
+      if (response) {
+        Swal.fire({
+          title: response.data.message,
+          timer: 1000,
+          timerProgressBar: true,
+          backdrop: false,
+          toast: true,
+          position: "top-end",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
+
   useEffect(() => {
     getProduct();
+    console.log("cartState in product detail", cartState);
+    // eslint-disable-next-line
   }, [productId]);
   return (
     <>
@@ -106,10 +151,10 @@ function ProductDetails() {
                   <button
                     key={index}
                     onClick={() => {
-                      setSelectedSizes(size);
+                      setSelectedSize(size);
                     }}
                     className={`d-inline-block product-size mt-1 text-2 px-2 ${
-                      selectedSizes === size ? "product-size-selected" : ""
+                      selectedSize === size ? "product-size-selected" : ""
                     }  ${index !== details.sizes.length - 1 ? "me-2" : ""}`}
                   >
                     {size}

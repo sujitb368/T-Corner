@@ -14,8 +14,34 @@ import AddCategory from "./admin/addCategory/AddCategory";
 import Home from "./pages/home/Home";
 import ProductDetails from "./pages/productDetails/ProductDetails";
 import Cart from "./pages/cart/Cart";
+import { useEffect, useReducer } from "react";
+// import { initialUserState, userReducer } from "./reducer/userReducer";
+
+import { useNavigate } from "react-router-dom";
+import { useCart } from "./context/cartContext";
+import { CheckOut } from "./pages/checkout/CheckOut";
 
 function App() {
+  // const [state, dispatch] = useReducer(userReducer, initialUserState);
+  const token = localStorage.getItem("token");
+  const user = localStorage.getItem("user");
+  const { cartState, cartDispatch } = useCart();
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    //get user cart from local storage
+    const cart = JSON.parse(localStorage.getItem("cart"));
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = localStorage.getItem("token");
+    if (cart?.length > 0) {
+      cartDispatch({ type: "LOAD_CART", payload: cart });
+    }
+    if (token && user) {
+      cartDispatch({ type: "LOGIN_SUCCESS", payload: { token, user } });
+    }
+  }, []);
+
   return (
     <>
       <Header />
@@ -34,10 +60,10 @@ function App() {
           path="/product-details/:productId"
           element={<ProductDetails />}
         ></Route>
-        <Route path="/home" element={<Home />}></Route>
         <Route path="/login" element={<Login />}></Route>
         <Route path="/signup" element={<Signup />}></Route>
         <Route path="/cart" element={<Cart />}></Route>
+        <Route path="/checkout" element={<CheckOut />}></Route>
       </Routes>
     </>
   );

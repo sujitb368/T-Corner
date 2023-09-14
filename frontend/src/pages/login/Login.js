@@ -1,19 +1,25 @@
-import React, { useState } from "react";
+import React, { useReducer, useState } from "react";
 import { Button, Card, Col, Container, Form } from "react-bootstrap";
 import { BsEye, BsEyeSlash } from "react-icons/bs";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 import "./Login.css";
+import { useCart } from "../../context/cartContext";
+import Loder from "../../components/loder/Loder";
+// import { initialUserState, userReducer } from "../../reducer/userReducer.js";
 
 function Login() {
+  //get cart state from context
+  const { cartState, cartDispatch } = useCart();
+
   const [showPassword, setShowPassword] = useState(false);
 
   /* `useState` hook from React to create three state variables: `email`,
   `password`, and `loading`. */
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loding, setLoding] = useState("");
+  const [loding, setLoding] = useState(false);
 
   const navigate = useNavigate();
 
@@ -47,18 +53,21 @@ function Login() {
           position: "top-end",
         });
         //store the token, user into local storage
-        /* The code `localStorage.setItem("token", response.data.token)` is storing the token received
-        from the backend API response in the browser's local storage. The token is typically used
-        for authentication purposes and is sent with subsequent API requests to verify the user's
-        identity. */
+        // token and user received from the backend API response
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("user", JSON.stringify(response.data.user));
-
+        // Perform login logic, and if successful, dispatch the user data
+        cartDispatch({
+          type: "LOGIN_SUCCESS",
+          payload: {
+            user: response.data.user,
+            token: response.data.token,
+          },
+        });
         //close loder
         setLoding(false);
-
-        //after login redirect to all post page
-        // navigate("/home");
+        //after login redirect to home page
+        navigate("/");
       } else {
         //if login unsuccessful
         //show alert with the error message
@@ -115,7 +124,13 @@ function Login() {
                   {showPassword ? <BsEyeSlash /> : <BsEye />}
                 </i>
               </Form.Group>
+              {loding && (
+                <div className="text-center">
+                  <Loder />
+                </div>
+              )}
               <Button
+                disabled={loding}
                 className="bg-1 w-100 text-3 "
                 onClick={(e) => handelLogin(e)}
               >
@@ -129,12 +144,20 @@ function Login() {
 
               <div className="d-flex justify-content-center">
                 <Col className="w-100 me-2">
-                  <button className="btn bg-1 text-3 me-1 w-100">Google</button>
+                  <button
+                    disabled={loding}
+                    className="btn bg-1 text-3 me-1 w-100"
+                  >
+                    Google
+                  </button>
                 </Col>
                 <Col>
-                  <button className="btn bg-1 text-3 w-100">Facebook</button>
+                  <button disabled={loding} className="btn bg-1 text-3 w-100">
+                    Facebook
+                  </button>
                 </Col>
               </div>
+
               <p className="text-center mt-2">
                 Don't have an account?{" "}
                 <span style={{ cursor: "pointer" }} className="ms-1 text-2">
