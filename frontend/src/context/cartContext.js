@@ -5,7 +5,6 @@ const initialState = {
   cartItems: [],
   user: [],
   token: null,
-  orderId: "",
 };
 
 // Create the context object
@@ -15,6 +14,7 @@ const CartContext = createContext();
 
 const cartReducer = (state, action) => {
   switch (action.type) {
+    //user authentication
     case "LOGIN_SUCCESS":
       return {
         ...state,
@@ -25,6 +25,7 @@ const cartReducer = (state, action) => {
       return { ...state, user: [], token: null };
     case "LOAD_CART":
       return { ...state, cartItems: action.payload };
+    // cart context operation
     case "ADD_TO_CART":
       // check if the item is already in the cart
       const existingItemIndex = state.cartItems.findIndex(
@@ -72,9 +73,10 @@ const cartReducer = (state, action) => {
       return { ...state, cartItems: updatedCart3 };
     case "CLEAR_CART":
       //clear the entire cart
-      return { ...state, cartItems: [] };
-    case "ORDER_ID":
       return { ...state, cartItems: action.payload };
+    //shipping address to deliver the product
+    case "SHIPPING_ADDRESS":
+      return { ...state, shippingAddress: action.payload };
     default:
       return state;
   }

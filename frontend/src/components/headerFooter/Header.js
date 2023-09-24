@@ -10,16 +10,35 @@ import {
   Row,
 } from "react-bootstrap";
 import "./Header.css";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useCart } from "../../context/cartContext";
 function Header() {
   //get cart state from context
   const { cartState, cartDispatch } = useCart();
+
+  const navigate = useNavigate();
+
+  const handelLogOut = () => {
+    try {
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+
+      cartDispatch({
+        type: "LOGIN_FAIL",
+      });
+
+      navigate("/login");
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <Navbar expand="lg" className="bg-body-tertiary bg-1">
       <Container>
-        <Navbar.Brand href="#home">React-Bootstrap</Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Brand className="text-white" to="/">
+          T-Corner
+        </Navbar.Brand>
+        <Navbar.Toggle className="bg-3" aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Col>
             <Form>
@@ -46,9 +65,7 @@ function Header() {
               </Nav.Link>
 
               <NavDropdown title="Category" id="basic-nav-dropdown">
-                <NavDropdown.Item href="#action/3.1">
-                  Category0
-                </NavDropdown.Item>
+                <NavDropdown.Item to="/myorders">Category0</NavDropdown.Item>
                 <NavDropdown.Item href="#action/3.2">
                   Category 1
                 </NavDropdown.Item>
@@ -66,12 +83,23 @@ function Header() {
               <Nav.Link as={NavLink} className="text" to="/signup">
                 Sign up
               </Nav.Link>
-              <Nav.Link as={NavLink} className="text" to="/cart">
+              <Nav.Link as={NavLink} className="text" to="/user/cart">
                 Cart
               </Nav.Link>
-              <Nav.Link as={NavLink} className="text" to="">
-                {cartState.user.name ?? "Profile"}
-              </Nav.Link>
+              <NavDropdown
+                title={cartState.user.name ?? "Profile"}
+                id="user-drop-down"
+              >
+                <NavDropdown.Item as={Link} to="/user/profile">
+                  Profile
+                </NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/user/myorders">
+                  My Orders
+                </NavDropdown.Item>
+                <NavDropdown.Item onClick={handelLogOut}>
+                  Logout
+                </NavDropdown.Item>
+              </NavDropdown>
             </Nav>
           </Col>
         </Navbar.Collapse>

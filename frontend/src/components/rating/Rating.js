@@ -21,7 +21,7 @@ function Rating(props) {
   useEffect(() => {
     setGiveStar(props.giveStar);
     // setTotalStar(props.totalStar);
-  }, []);
+  }, [props.giveStar]);
   const totalStar = props.totalStar;
   useEffect(() => {
     setFullStarLocation(Math.floor(totalStar));
@@ -47,9 +47,18 @@ function Rating(props) {
           {giveStar &&
             startArray.map((star, index) => {
               return givenStar !== null && index + 1 <= givenStar ? (
-                <BsStarFill key={index} />
+                <BsStarFill
+                  style={{ fontSize: "20px", marginRight: "2px" }}
+                  key={index}
+                  className="text-primary"
+                />
               ) : (
-                <BsStar
+                <BsStarFill
+                  style={{
+                    color: "#e0e0e0",
+                    fontSize: "20px",
+                    marginRight: "2px",
+                  }}
                   key={index}
                   onClick={(e) => ratingFunction(index + 1)}
                 />

@@ -1,7 +1,7 @@
 import React, { useReducer, useState } from "react";
 import { Button, Card, Col, Container, Form } from "react-bootstrap";
 import { BsEye, BsEyeSlash } from "react-icons/bs";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 import "./Login.css";
@@ -22,6 +22,7 @@ function Login() {
   const [loding, setLoding] = useState(false);
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handelLogin = async (e) => {
     e.preventDefault();
@@ -67,7 +68,7 @@ function Login() {
         //close loder
         setLoding(false);
         //after login redirect to home page
-        navigate("/");
+        navigate(location.state || "/");
       } else {
         //if login unsuccessful
         //show alert with the error message

@@ -6,14 +6,15 @@ import axios from "axios";
 import { useCart } from "../../context/cartContext";
 import Swal from "sweetalert2";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
-
+import "./CheckOut.css";
+import { useNavigate } from "react-router-dom";
 export const CheckOut = () => {
   //get cart state from context
   const { cartState, cartDispatch } = useCart();
   // user all saved address will be stored
   const [savedAddress, setSavedAddress] = useState([]);
   // address for this order
-  const [shippingAddress, setShippingAddress] = useState([]);
+  const [shippingAddress, setShippingAddress] = useState({});
   // this is used for default address selection to mark the radio buttons (primary address)
   const [selectedAddress, setSelectedAddress] = useState([]);
   // to toggle the address form
@@ -32,6 +33,13 @@ export const CheckOut = () => {
     city: "",
     isPrimary: false,
   });
+
+  //payment method COD
+  const [paymentMethod, setPaymentMethod] = useState("COD");
+
+  // price calculation
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [shippingCharge, setShippingCharge] = useState(100);
 
   // list of all the states of india
   const states = [
@@ -180,14 +188,20 @@ export const CheckOut = () => {
       name: "West Bengal",
     },
   ];
+  //get token from context
+  const token = cartState.token;
+  //get user from context
+  const user = cartState.user;
 
-  //paypal code
-  const [orderID, setOrderID] = useState();
+  //navigate
 
-  //function to initialize order
+  const navigate = useNavigate()
+
+
+  //function to initialize order when using paypal as payment method
   const createOrder = async () => {
+    console.log("context address in cretate order", cartState);
     try {
-      console.log("calling oncreateOrder");
       const response = await fetch("/api/v1/orders", {
         method: "POST",
         headers: {
@@ -195,22 +209,12 @@ export const CheckOut = () => {
         },
         // use the "body" param to optionally pass additional order information
         // like product ids and quantities
-        body: JSON.stringify({
-          cart: [
-            {
-              id: "test_123",
-              quantity: "5",
-            },
-          ],
-        }),
+        body: JSON.stringify(cartState.cartItems),
       });
 
       const order = await response.json();
 
       if (order.id) {
-        await setOrderID(order.id);
-        console.log(order.id);
-        cartDispatch({ type: "ORDER_ID", payload: order.id });
         return order.id;
       } else {
         const errorDetail = order?.details?.[0];
@@ -227,21 +231,29 @@ export const CheckOut = () => {
     }
   };
 
+  //paypal function to capcture the order when approve the payment
   const onApprove = async (data) => {
     try {
-      console.log("calling onApprove", data, typeof data);
-      const response = await fetch(`/api/v1/orders/${data.orderID}/capture`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        // body: JSON.stringify({
-        //   orderID: data.orderID,
-        // }),
-      });
+      console.log("shipping address in on approve", shippingAddress);
+      const response = await axios.post(
+        `/api/v1/orders/${data.orderID}/capture`,
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-      const orderData = await response.json();
-      console.log(orderData);
+      const paymentDetails = {};
+      paymentDetails.orderID = data.orderID;
+      paymentDetails.payerID = data.payerID;
+      paymentDetails.paymentID = data.paymentID;
+      paymentDetails.paymentSource = data.paymentSource;
+      paymentDetails.status = response.data.status;
+      // console.log("inside first", paymentDetails);
+      placeOrder(paymentDetails);
+      // const orderData = await response.json();
       // const name = orderData.payer.name.given_name;
       // alert(`Transaction completed by ${name}`);
     } catch (error) {
@@ -259,6 +271,7 @@ export const CheckOut = () => {
     }));
   };
 
+  //function to get all saved addresses w.r.t user
   const getAddress = async () => {
     try {
       const response = await axios.get(
@@ -278,6 +291,17 @@ export const CheckOut = () => {
           phone: primaryAddress[0].phone,
           pin: primaryAddress[0].pin,
           landMark: primaryAddress[0].landMark,
+        });
+
+        cartDispatch({
+          type: "SHIPPING_ADDRESS",
+          payload: {
+            name: primaryAddress[0].fName + " " + primaryAddress[0].lName,
+            address: primaryAddress[0].address,
+            phone: primaryAddress[0].phone,
+            pin: primaryAddress[0].pin,
+            landMark: primaryAddress[0].landMark,
+          },
         });
 
         if (response.data.address.length > 0) {
@@ -300,6 +324,7 @@ export const CheckOut = () => {
     }
   };
 
+  //function to handel the add address form submission
   const handelSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -340,6 +365,7 @@ export const CheckOut = () => {
     }
   };
 
+  //function to handel the current shipping address where product will be shiped
   const handelShippingAddress = (adss) => {
     setShippingAddress({
       name: adss.fName + " " + adss.lName,
@@ -348,10 +374,79 @@ export const CheckOut = () => {
       pin: adss.pin,
       landMark: adss.landMark,
     });
+    cartDispatch({
+      type: "SHIPPING_ADDRESS",
+      payload: {
+        name: adss.fName + " " + adss.lName,
+        address: adss.address,
+        phone: adss.phone,
+        pin: adss.pin,
+        landMark: adss.landMark,
+      },
+    });
   };
 
+  //function to toggle the add address form and button
   const handelAddAddress = () => {
     setShowAddressForm(!showAddressForm);
+  };
+
+  //function to handle placing order
+  const placeOrder = async (paymentDetails) => {
+    try {
+      //call api to place order in backend
+      const response = await axios.post(
+        `/api/v1/orders/order`,
+        {
+          cartItems: cartState.cartItems,
+          paymentMethod: paymentDetails?.paymentSource
+            ? paymentDetails.paymentSource
+            : "COD",
+          shippingAddress: cartState.shippingAddress,
+          orderStatus: paymentDetails?.status
+            ? paymentDetails.status
+            : "pending",
+          shippingCharge: 100,
+          paymentDetails: paymentDetails,
+        },
+        {
+          headers: {
+            Authorization: cartState.token,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      //after getting success response
+      if (response.data.success) {
+        //remove the cart from the local storage
+        localStorage.removeItem("cart");
+
+        //update context with action type "CLEAR_CART" and payload is empty []
+        //in context state cartItem will be a empty array []
+        cartDispatch({ type: "CLEAR_CART", payload: [] });
+
+        //call another API to empty the cart in database of this user
+        const response = await axios.post(
+          `/api/v1/cart/deleteFromCart`,
+          { userId: user._id, cartItems: [] },
+          { Authrization: token }
+        );
+
+        if(response.data.success){
+          navigate('/myorder')
+        }
+      }
+    } catch (error) {
+      Swal.fire({
+        title: error.response.data,
+        timer: 2000,
+        timerProgressBar: true,
+        backdrop: false,
+        toast: true,
+        position: "top-end",
+      });
+      console.log(error);
+    }
   };
 
   useEffect(() => {
@@ -362,7 +457,16 @@ export const CheckOut = () => {
     if (userId) {
       getAddress();
     }
+    // eslint-disable-next-line
   }, [userId]);
+
+  useEffect(() => {
+    const total = cartState.cartItems.reduce(
+      (price, item) => price + item.quantity * item.price,
+      0
+    );
+    setTotalPrice(total);
+  }, [cartState.cartItems]);
 
   return (
     <>
@@ -527,13 +631,14 @@ export const CheckOut = () => {
             <p className="m-0 p-1 d-flex justify-content-between">
               <span className="text-2">Price</span>
               <span className="text-3">
-                <span className="rupee">&#8377;</span> <span>{123}</span>
+                <span className="rupee">&#8377;</span> <span>{totalPrice}</span>
               </span>
             </p>
             <p className="m-0 p-1 d-flex justify-content-between">
               <span className="text-2">Shipping Charge:</span>
               <span className="text-3">
-                <span className="rupee">&#8377;</span> <span>{123}</span>
+                <span className="rupee">&#8377;</span>{" "}
+                <span>{shippingCharge}</span>
               </span>
             </p>
             <hr className="my-1" />
@@ -541,27 +646,82 @@ export const CheckOut = () => {
               <span className="text-2">Estimated Total:</span>
               <span className="text-3">
                 <span className="rupee">&#8377;</span>
-                <span>{123}</span>
+                <span>{totalPrice + shippingCharge}</span>
               </span>
             </p>
+            {paymentMethod === "PAYPAL" ? (
+              <>
+                <div className="d-flex justify-content-center my-2">
+                  <div style={{ marginLeft: "127px" }} className="col-4 mt-2">
+                    <PayPalScriptProvider
+                      options={{
+                        components: "buttons",
+                        clientId:
+                          "AcIXowrtK2CAdKjvoJwBNbRSI94kBt7cUi-JoNydX0lC8DK21P_540i0vDz4hBiCQztVr3RKuY-VZd0I",
+                      }}
+                    >
+                      <PayPalButtons
+                        createOrder={createOrder}
+                        onApprove={onApprove}
+                        style={{ layout: "horizontal" }}
+                      />
+                    </PayPalScriptProvider>
+                  </div>
+                </div>
+              </>
+            ) : paymentMethod === "COD" ? (
+              <>
+                <div className="d-flex justify-content-end my-2">
+                  <button
+                    onClick={() => {
+                      placeOrder({});
+                    }}
+                    className="btn bg-3 text-2"
+                  >
+                    Place Order
+                  </button>
+                </div>
+              </>
+            ) : (
+              ""
+            )}
           </Col>
         </Row>
 
-        <Col xs={12} md={6}>
-          <Row className="justify-content-center">
-            <h1 className="text-center">PayPal ---</h1>
-            <PayPalScriptProvider
-              options={{
-                clientId:
-                  "AcIXowrtK2CAdKjvoJwBNbRSI94kBt7cUi-JoNydX0lC8DK21P_540i0vDz4hBiCQztVr3RKuY-VZd0I",
-              }}
-            >
-              <PayPalButtons
-                createOrder={createOrder}
-                onApprove={onApprove}
-                style={{ layout: "horizontal" }}
-              />
-            </PayPalScriptProvider>
+        <Col xs={12} md={5} className="p-3">
+          <Row className="justify-content-center border rounded p-3">
+            <h3 className="text-center">select payment</h3>
+            <hr className="my-1" />
+            <div className="">
+              <div className="form-check">
+                <label className="form-check-label pointer">
+                  <input
+                    value="COD"
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    className="form-check-input"
+                    type="radio"
+                    id="cod"
+                    name="paymentMethod"
+                    checked={paymentMethod === "COD"}
+                  />
+                  COD
+                </label>
+              </div>
+              <div className="form-check">
+                <label className="form-check-label pointer">
+                  <input
+                    value="PAYPAL"
+                    checked={paymentMethod === "PAYPAL"}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    className="form-check-input"
+                    type="radio"
+                    id="paypal"
+                    name="paymentMethod"
+                  />
+                  Paypal
+                </label>
+              </div>
+            </div>
           </Row>
         </Col>
       </Container>

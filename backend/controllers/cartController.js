@@ -62,21 +62,13 @@ const addToCart = async (req, res) => {
 
 const deleteFromCart = async (req, res) => {
   try {
-    const { productId } = req.params;
     const { userId, cartItems } = req.body;
-    console.log("userId: " + userId);
-    console.log("cartItems: " + cartItems);
-    if (!productId) {
-      return res
-        .status(400)
-        .send({ message: "product id not provided", success: false });
-    }
+
     const cartItem = await CartModel.findOneAndUpdate(
       { user: userId },
       { cartItems }
     );
 
-    console.log("new cart", cartItem);
     return res.status(200).send({
       message: "Item deleted",
       success: true,

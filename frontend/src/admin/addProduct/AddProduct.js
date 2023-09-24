@@ -6,8 +6,11 @@ import axios from "axios";
 
 import Swal from "sweetalert2";
 import Sidebar from "../component/sidebar/Sidebar";
+import { useCart } from "../../context/cartContext";
 
 function AddProduct() {
+  const { cartState, cartDispatch } = useCart();
+
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
@@ -15,11 +18,18 @@ function AddProduct() {
   const [shipping, setShipping] = useState("");
   const [quantity, setQuantity] = useState("");
   const [loding, setLoding] = useState("");
+
+  const [image, setImage] = useState({ preview: "", data: "" });
+
   //category
   const [categories, setCategories] = useState("");
   //for form validation
   const [validated, setValidated] = useState(false);
   const [toggleSideBar, setToggleSideBar] = useState(false);
+
+  const axiosInstance = axios.create({
+    baseURL: "http://localhost:3005", // Set your base URL here
+  });
 
   const handelSideBar = () => {
     setToggleSideBar(!toggleSideBar);
@@ -32,7 +42,22 @@ function AddProduct() {
       console.log(response);
 
       setCategories(response.data.categories);
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleFileSelect = (event) => {
+    try {
+      const img = {
+        preview: URL.createObjectURL(event.target.files[0]),
+        data: event.target.files[0],
+      };
+      //set the value of state variable `image` with `img` from above object
+      setImage(img);
+    } catch (error) {
+      console.log("error: " + error);
+    }
   };
 
   const handelProduct = async (e) => {
@@ -47,24 +72,47 @@ function AddProduct() {
       }
       setLoding(true);
 
-      const response = await axios.post(
-        `/api/v1/product/addProduct`,
-        { name, description, price, category, quantity, shipping },
+      const formData = new FormData();
+      formData.append("file", image.data);
+
+      if (!image.data) {
+        Swal.fire("Image is mandatory for post");
+        return;
+      }
+      const { data } = await axiosInstance.post(
+        `api/v1/admin/files/upload`,
+        formData,
         {
           headers: {
-            "Content-Type": "application/json",
+            Authorization: cartState.token,
           },
         }
       );
-      setLoding(false);
+      const { filename } = data;
 
-      if (response.data.success) {
-        Swal.fire(response.data.message);
-      } else {
-        Swal.fire(response.data.message);
+      console.log("file name: " + filename);
+
+      if (filename) {
+        const response = await axios.post(
+          `/api/v1/admin/product/addProduct`,
+          { name, description, price, category, quantity, shipping, filename },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        setLoding(false);
+
+        if (response.data.success) {
+          Swal.fire(response.data.message);
+        } else {
+          Swal.fire(response.data.message);
+        }
       }
     } catch (error) {
       console.log("Error while signing up", error);
+      Swal.fire(error?.data?.message);
     }
   };
 
@@ -142,7 +190,11 @@ function AddProduct() {
                     </Form.Control.Feedback>
                   </Form.Group>
                   <Form.Group className="mb-3">
-                    <Form.Select aria-label="Default select example">
+                    <Form.Select
+                      onChange={(e) => setCategory(e.target.value)}
+                      value={category}
+                      aria-label="Default select example"
+                    >
                       <option>Select Category</option>
                       <>
                         {categories &&
@@ -190,10 +242,22 @@ function AddProduct() {
                       Shipping is required field
                     </Form.Control.Feedback>
                   </Form.Group>
+                  <Form.Group className="mb-3" controlId="fileUpload">
+                    <input
+                      onChange={(e) => handleFileSelect(e)}
+                      type="file"
+                      placeholder="Choose a file"
+                      className="form-control"
+                    />
+                  </Form.Group>
+                  <Form.Control.Feedback type="invalid">
+                    Image is required
+                  </Form.Control.Feedback>
                   <Button className="bg-1 w-100 text-3" type="submit">
                     Add Product
                   </Button>
                 </Form>
+                {/* <img src="uploadedFiles\\1695476783822_azan ali.png" /> */}
               </Card.Body>
             </Card>
           </Col>

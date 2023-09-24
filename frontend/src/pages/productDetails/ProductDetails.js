@@ -44,8 +44,24 @@ function ProductDetails() {
   };
   const handelAddToCart = async (product) => {
     try {
-      //get cart from local storage
-      const localCart = JSON.parse(localStorage.getItem("cart")) || [];
+      //get cart from context
+      const localCart = cartState.cartItems || [];
+
+      const isItemExist = cartState.cartItems.filter(
+        (cartItem) => cartItem.productId === product._id
+      );
+      if (isItemExist.length) {
+        Swal.fire({
+          title: "product already in cart ",
+          timer: 2000,
+          timerProgressBar: true,
+          backdrop: false,
+          toast: true,
+          position: "top-end",
+        });
+
+        return;
+      }
 
       //destructure product details
       const {

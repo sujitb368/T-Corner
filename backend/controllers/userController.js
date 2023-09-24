@@ -72,17 +72,16 @@ const loginController = async (req, res) => {
 
     //find user by email
     const user = await userModel.findOne({ email });
-    console.log(user);
+
     //check if user provided password is correct or not
     const checkPassword = await comparePassword(password, user.password);
 
-    console.log("login-user email, password ", email, password, checkPassword);
     //if user provided password is correct
     if (checkPassword) {
       //user details object without password field
       const userDetails = await removePassword(user);
       const token = jwt.sign({ _id: user._id }, JWT_SECRET);
-      console.log("token: " + token);
+
       return res.status(200).send({
         success: true,
         message: "login successful",

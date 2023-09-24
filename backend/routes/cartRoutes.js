@@ -4,6 +4,6 @@ const router = express.Router();
 import { addToCart, deleteFromCart } from "../controllers/cartController.js";
 
 router.post("/addToCart/:userId", addToCart);
-router.post("/deleteFromCart/:productId", deleteFromCart);
+router.post("/deleteFromCart", deleteFromCart);
 
 export default router;

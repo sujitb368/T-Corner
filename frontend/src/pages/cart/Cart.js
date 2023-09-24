@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
-import { BsHandbag, BsTrash, BsTrash2, BsTrash3Fill } from "react-icons/bs";
+import { BsHandbag, BsTrash3Fill } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import "./Cart.css";
 import axios from "axios";
 import { useCart } from "../../context/cartContext";
+import Swal from "sweetalert2";
 function Cart() {
   //state variables
   //cart items
@@ -13,12 +14,11 @@ function Cart() {
   const [estimatedPrice, setEstimatedPrice] = useState(0);
   const [shippingCost, setShippingCost] = useState(100);
   //setCartQuantity
-  const [cartQuantity, setCartQuantity] = useState();
   //get cart state from context
   const { cartState, cartDispatch } = useCart();
 
-  const token = localStorage.getItem("token");
-  const user = JSON.parse(localStorage.getItem("user"));
+  const token = cartState.token;
+  const user = cartState.user;
 
   useEffect(() => {
     setCart(cartState.cartItems);
@@ -29,6 +29,8 @@ function Cart() {
       )
     );
     setEstimatedPrice(price + (shippingCost ?? 100));
+    setShippingCost(cartState.cartItems?.shippingCost ?? 100);
+    //eslint-disable-next-line
   }, [price, cartState]);
 
   const deleteCartItem = async (productId) => {
@@ -36,7 +38,7 @@ function Cart() {
       const cart = JSON.parse(localStorage.getItem("cart"));
       const newCart = cart.filter((item) => item.productId !== productId);
       const response = await axios.post(
-        `/api/v1/cart/deleteFromCart/${productId}`,
+        `/api/v1/cart/deleteFromCart`,
         { userId: user._id, cartItems: newCart },
         { Authrization: token }
       );
@@ -46,6 +48,14 @@ function Cart() {
         cartDispatch({ type: "DELETE_ITEM", payload: productId });
       }
     } catch (error) {
+      Swal.fire({
+        title: error.response.data,
+        timer: 2000,
+        timerProgressBar: true,
+        backdrop: false,
+        toast: true,
+        position: "top-end",
+      });
       console.log(error);
     }
   };
@@ -121,10 +131,10 @@ function Cart() {
                           </Button>
                           <input
                             value={item.quantity}
-                            onChange={(e) => setCartQuantity(e.target.value)}
                             className="col-7 increment-input"
                             type="number"
                             min="1"
+                            max="5"
                             disabled
                           />
                           <Button
@@ -140,6 +150,14 @@ function Cart() {
                             +
                           </Button>
                         </Row>
+                        {item.quantity > 5 && (
+                          <span
+                            className="fw-bold bg-3 text-2 px-1 rounded"
+                            style={{ fontSize: "11px" }}
+                          >
+                            Only 5 quantity allowed
+                          </span>
+                        )}
                         <Row className="text-center pt-1">
                           <span className="p-0 fw-bold text-3">
                             {" "}
@@ -187,7 +205,7 @@ function Cart() {
           <div className="p-3 d-flex justify-content-center">
             <Link
               className="btn m-auto bg-3 text-decoration-none fw-bold text-2 "
-              to="/checkout"
+              to="/user/checkout"
             >
               Checkout
             </Link>

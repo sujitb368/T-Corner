@@ -4,11 +4,11 @@ import ProductModel from "../models/productModel.js";
 const createProduct = async (req, res) => {
   try {
     //get all fields of the product
-    const { name, description, price, category, quantity } = req.body;
+    const { name, description, price, category, quantity, filename } = req.body;
     let { shipping } = req.body;
+    console.log("filename", filename);
     if (shipping === "true") {
       shipping = true;
-      console.log(shipping, typeof shipping);
     } else {
       shipping = false;
     }
@@ -55,11 +55,11 @@ const createProduct = async (req, res) => {
       price,
       category,
       shipping,
+      image: filename,
     });
 
     //save product to db
     const savedProduct = await product.save();
-    console.log("sav", savedProduct);
     return res.status(201).send({
       message: "product create successfully",
       success: true,
