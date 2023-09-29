@@ -44,7 +44,7 @@ function MyOrders() {
   const getMyOrders = async () => {
     try {
       const response = await axios.post(
-        `/api/v1/myorders/orders`,
+        `/myorders/orders`,
         {},
         {
           headers: {

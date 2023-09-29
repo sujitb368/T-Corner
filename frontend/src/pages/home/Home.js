@@ -14,7 +14,7 @@ function Home() {
 
   const getAllProducts = async (page = 1) => {
     try {
-      const response = await axios.get(`/api/v1/product/allproducts/${page}`);
+      const response = await axios.get(`/product/allproducts/${page}`);
       console.log(response);
       setAllProducts(response.data.products);
     } catch (error) {

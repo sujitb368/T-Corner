@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
 import { BsHandbag, BsTrash3Fill } from "react-icons/bs";
 import { Link } from "react-router-dom";
@@ -6,6 +6,8 @@ import "./Cart.css";
 import axios from "axios";
 import { useCart } from "../../context/cartContext";
 import Swal from "sweetalert2";
+import Message from "../../components/message/Message.js";
+import Loder from "../../components/loder/Loder";
 function Cart() {
   //state variables
   //cart items
@@ -13,6 +15,7 @@ function Cart() {
   const [price, setPrice] = useState(0);
   const [estimatedPrice, setEstimatedPrice] = useState(0);
   const [shippingCost, setShippingCost] = useState(100);
+  const [loader, setLoader] = useState(false);
   //setCartQuantity
   //get cart state from context
   const { cartState, cartDispatch } = useCart();
@@ -38,7 +41,7 @@ function Cart() {
       const cart = JSON.parse(localStorage.getItem("cart"));
       const newCart = cart.filter((item) => item.productId !== productId);
       const response = await axios.post(
-        `/api/v1/cart/deleteFromCart`,
+        `/cart/deleteFromCart`,
         { userId: user._id, cartItems: newCart },
         { Authrization: token }
       );
@@ -60,13 +63,25 @@ function Cart() {
     }
   };
 
-  const updateQuantity = (type, productId, index) => {
+  const updateQuantity = async (type, productId, index, quantity) => {
     if (type === "INCREASE_QUANTITY") {
-      cartDispatch({ type: "INCREASE_QUANTITY", payload: productId });
+      //show loader
+      setLoader(true);
+      const response = await getQuantity(productId, quantity);
+      //hide loader
+      setLoader(false);
+      if (response.success === false) {
+        Message({ type: "not-available", message: response.message });
+        return;
+      }
+
       //get cart from local storage
       const cart = JSON.parse(localStorage.getItem("cart"));
       //update quantity
-      cart[index].quantity += 1;
+      if (cart[index].quantity < 5) {
+        cart[index].quantity += 1;
+        cartDispatch({ type: "INCREASE_QUANTITY", payload: productId });
+      }
       //store again to local storage
       localStorage.setItem("cart", JSON.stringify(cart));
     } else {
@@ -79,6 +94,19 @@ function Cart() {
         : (cart[index].quantity = 1);
       //store again to local storage
       localStorage.setItem("cart", JSON.stringify(cart));
+    }
+  };
+
+  const getQuantity = async (productId, quantity) => {
+    try {
+      const { data } = await axios.post(`/product/quantity`, {
+        productId,
+        quantity: quantity * 1,
+      });
+      return data;
+    } catch (error) {
+      console.log(error);
+      Message({ type: "error", message: error.response.data.message });
     }
   };
 
@@ -103,7 +131,7 @@ function Cart() {
                   <Col xs={3}>
                     <img
                       style={{ objectFit: "contain" }}
-                      src="https://images.ctfassets.net/hrltx12pl8hq/3j5RylRv1ZdswxcBaMi0y7/b84fa97296bd2350db6ea194c0dce7db/Music_Icon.jpg"
+                      src={`http://localhost:8000/api/v1/files/get-file/${item.image}`}
                       alt="cart-product"
                       className="img-fluid"
                     />
@@ -116,19 +144,44 @@ function Cart() {
                       </Col>
 
                       <Col className="pt-3" xs={4}>
-                        <Row className="px-1">
+                        <Row className="px-1" style={{ position: "relative" }}>
                           <Button
                             onClick={() =>
                               updateQuantity(
                                 "DECREASE_QUANTITY",
                                 item.productId,
-                                index
+                                index,
+                                item.quantity - 1
                               )
                             }
                             className="p-0 bg-2 text-white col-2 increment-btn"
                           >
                             -
                           </Button>
+
+                          {loader && (
+                            <div
+                              className=""
+                              style={{
+                                position: "absolute",
+                                width: "84%",
+                                height: "100%",
+                                backgroundColor: "rgba(0,0,0,.3)",
+                              }}
+                            >
+                              <div
+                                className=""
+                                style={{
+                                  position: "absolute",
+                                  top: "-3px",
+                                  left: "44%",
+                                }}
+                              >
+                                <Loder />
+                              </div>
+                            </div>
+                          )}
+
                           <input
                             value={item.quantity}
                             className="col-7 increment-input"
@@ -142,7 +195,8 @@ function Cart() {
                               updateQuantity(
                                 "INCREASE_QUANTITY",
                                 item.productId,
-                                index
+                                index,
+                                item.quantity + 1
                               )
                             }
                             className="p-0 bg-2 text-white col-2 increment-btn"
@@ -150,12 +204,12 @@ function Cart() {
                             +
                           </Button>
                         </Row>
-                        {item.quantity > 5 && (
+                        {item.quantity >= 5 && (
                           <span
                             className="fw-bold bg-3 text-2 px-1 rounded"
                             style={{ fontSize: "11px" }}
                           >
-                            Only 5 quantity allowed
+                            Max 5 quantity allowed
                           </span>
                         )}
                         <Row className="text-center pt-1">

@@ -37,7 +37,7 @@ function AddProduct() {
 
   const getCategories = async () => {
     try {
-      const response = await axios.get(`/api/v1/admin/category/categories`);
+      const response = await axios.get(`/admin/category/categories`);
 
       console.log(response);
 
@@ -94,7 +94,7 @@ function AddProduct() {
 
       if (filename) {
         const response = await axios.post(
-          `/api/v1/admin/product/addProduct`,
+          `/admin/product/addProduct`,
           { name, description, price, category, quantity, shipping, filename },
           {
             headers: {

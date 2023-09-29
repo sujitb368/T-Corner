@@ -4,7 +4,7 @@ import "./App.css";
 import Header from "./components/headerFooter/Header";
 import Login from "./pages/login/Login";
 
-import { Navigate, Outlet, Route, Routes, useNavigate } from "react-router-dom";
+import { Outlet, Route, Routes, useNavigate } from "react-router-dom";
 import Signup from "./pages/signup/Signup";
 import AddProduct from "./admin/addProduct/AddProduct";
 import Dashboard from "./admin/dashboard/Dashboard";
@@ -21,14 +21,20 @@ import { useCart } from "./context/cartContext";
 import { CheckOut } from "./pages/checkout/CheckOut";
 import MyOrders from "./pages/myOrders/MyOrders";
 import Loder from "./components/loder/Loder";
+import Profile from "./pages/profile/Profile";
+import axios from "axios";
+import ReviewOrder from "./pages/reviewOrder/ReviewOrder";
 
 function App() {
-  // const [state, dispatch] = useReducer(userReducer, initialUserState);
-  // const token = localStorage.getItem("token");
-  // const user = localStorage.getItem("user");
   const { cartState, cartDispatch } = useCart();
 
   const navigate = useNavigate();
+
+  //hosted backend
+  axios.defaults.baseURL = "https://t-corner.onrender.com/api/v1";
+
+  //local backend
+  // axios.defaults.baseURL = "http://localhost:8000/api/v1";
 
   useEffect(() => {
     //get user cart from local storage
@@ -57,6 +63,11 @@ function App() {
           <Route path="all-product" element={<AllProduct />}></Route>
           <Route path="user-list" element={<UserList />}></Route>
           <Route path="inventory" element={<Dashboard />}></Route>
+          <Route
+            path="product-details/:productId"
+            element={<ProductDetails />}
+          ></Route>
+          <Route path="profile" element={<Profile />}></Route>
         </Route>
         <Route path="/user" element={<User />}>
           <Route path="" element={<Home />}></Route>
@@ -64,8 +75,13 @@ function App() {
           <Route path="cart" element={<Cart />}></Route>
           <Route path="checkout" element={<CheckOut />}></Route>
           <Route path="myorders" element={<MyOrders />}></Route>
+          <Route path="profile" element={<Profile />}></Route>
+          <Route path="reviewOrder" element={<ReviewOrder />}></Route>
         </Route>
-        <Route path="/" element={<Home />}></Route>
+        <Route
+          path="/"
+          element={cartState.user.isAdmin ? <Dashboard /> : <Home />}
+        ></Route>
 
         <Route
           path="/product-details/:productId"
@@ -83,7 +99,7 @@ function Admin() {
   const [isAdmin, setIsAdmin] = useState();
   useEffect(() => {
     setIsAdmin(cartState.user.isAdmin);
-  }, [cartState?.token]);
+  }, [cartState.user.isAdmin]);
   return isAdmin ? <Outlet /> : <Loder />;
 }
 

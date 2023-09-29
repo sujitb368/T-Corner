@@ -60,42 +60,64 @@ function Header() {
           </Col>
           <Col>
             <Nav className="d-flex justify-content-end">
-              <Nav.Link as={NavLink} className="text" to="/">
-                Home
-              </Nav.Link>
+              {!cartState.user.isAdmin ? (
+                <Nav.Link as={NavLink} className="text" to="/">
+                  Home
+                </Nav.Link>
+              ) : (
+                <Nav.Link as={NavLink} className="text" to="/">
+                  Pending Orders
+                </Nav.Link>
+              )}
 
-              <NavDropdown title="Category" id="basic-nav-dropdown">
-                <NavDropdown.Item to="/myorders">Category0</NavDropdown.Item>
-                <NavDropdown.Item href="#action/3.2">
-                  Category 1
-                </NavDropdown.Item>
-                <NavDropdown.Item href="#action/3.3">
-                  Category 2
-                </NavDropdown.Item>
-                <NavDropdown.Divider />
-                <NavDropdown.Item href="#action/3.4">
-                  Category 3
-                </NavDropdown.Item>
-              </NavDropdown>
-              <Nav.Link as={NavLink} className="text" to="/login">
-                Login
-              </Nav.Link>
-              <Nav.Link as={NavLink} className="text" to="/signup">
-                Sign up
-              </Nav.Link>
-              <Nav.Link as={NavLink} className="text" to="/user/cart">
-                Cart
-              </Nav.Link>
+              {!cartState.user.isAdmin && (
+                <NavDropdown title="Category" id="basic-nav-dropdown">
+                  <NavDropdown.Item to="/myorders">Category0</NavDropdown.Item>
+                  <NavDropdown.Item href="#action/3.2">
+                    Category 1
+                  </NavDropdown.Item>
+                  <NavDropdown.Item href="#action/3.3">
+                    Category 2
+                  </NavDropdown.Item>
+                  <NavDropdown.Divider />
+                  <NavDropdown.Item href="#action/3.4">
+                    Category 3
+                  </NavDropdown.Item>
+                </NavDropdown>
+              )}
+              {!cartState.user.isAdmin ? (
+                <>
+                  <Nav.Link as={NavLink} className="text" to="/login">
+                    Login
+                  </Nav.Link>
+                  <Nav.Link as={NavLink} className="text" to="/signup">
+                    Sign up
+                  </Nav.Link>
+                  <Nav.Link as={NavLink} className="text" to="/user/cart">
+                    Cart
+                  </Nav.Link>
+                </>
+              ) : (
+                ""
+              )}
               <NavDropdown
                 title={cartState.user.name ?? "Profile"}
                 id="user-drop-down"
               >
-                <NavDropdown.Item as={Link} to="/user/profile">
+                <NavDropdown.Item
+                  as={Link}
+                  to={
+                    !cartState.user.isAdmin ? "/user/profile" : "/admin/profile"
+                  }
+                >
                   Profile
                 </NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/user/myorders">
-                  My Orders
-                </NavDropdown.Item>
+
+                {!cartState.user.isAdmin && (
+                  <NavDropdown.Item as={Link} to="/user/myorders">
+                    My Orders
+                  </NavDropdown.Item>
+                )}
                 <NavDropdown.Item onClick={handelLogOut}>
                   Logout
                 </NavDropdown.Item>

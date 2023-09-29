@@ -29,27 +29,32 @@ const placeOrderController = async (req, res) => {
     });
 
     await order.save();
-
+    console.log("user id", customer);
     // Update the user's myOrder record
     const myOrder = await MyOrderModel.findOne({ user: customer });
 
     if (myOrder) {
       // Add the new order to the user's myOrder record
+      console.log("inside myOrder 38");
       orderItems.map((item) => {
         myOrder.orders.push(item);
       });
+      console.log("inside myOrder after map 42");
       await myOrder.save();
     } else {
       // If the user's myOrder record doesn't exist, create a new one
       // Add the new order to the user's myOrder record
+      console.log("top of else");
       const myOrder = [];
       orderItems.map((item) => {
         myOrder.push(item);
       });
+      console.log("in else after map 52");
       const newMyOrder = new MyOrderModel({
-        user: userId,
+        user: customer,
         orders: myOrder,
       });
+      console.log("in at bottom of else 57");
       await newMyOrder.save();
     }
 
@@ -95,16 +100,12 @@ const generateAccessToken = async () => {
 };
 
 const createOrder = async (cart) => {
-  // use the cart information passed from the front-end to calculate the purchase unit details
-  console.log(
-    "shopping cart information passed from the frontend createOrder() callback:",
-    cart
-  );
-
   let total = 0;
-  cart?.map((item) => {
+  cart?.cartItems?.map((item) => {
     total += item.quantity * item.price;
   });
+
+  total += cart?.shippingCharge;
 
   const accessToken = await generateAccessToken();
   const url = `${base}/v2/checkout/orders`;
@@ -135,7 +136,7 @@ const createOrder = async (cart) => {
     body: JSON.stringify(payload),
   });
 
-  return handleResponse(response, cart);
+  return handleResponse(response, cart?.cartItems);
 };
 
 const captureOrder = async (orderID) => {
