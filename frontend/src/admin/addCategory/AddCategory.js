@@ -21,7 +21,7 @@ function AddCategory() {
         return;
       }
       const response = await axios.post(
-        `/api/v1/admin/category/create-category`,
+        `/admin/category/create-category`,
         { category },
         {
           headers: {

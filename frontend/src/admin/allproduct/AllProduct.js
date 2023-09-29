@@ -1,13 +1,53 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Col, Container, Row, Table } from "react-bootstrap";
 import Sidebar from "../component/sidebar/Sidebar";
+import Swal from "sweetalert2";
+import axios from "axios";
+import { useCart } from "../../context/cartContext";
+import { BsFillEyeFill, BsPencilSquare } from "react-icons/bs";
+import { useNavigate } from "react-router-dom";
 
 function AllProduct() {
   const [toggleSideBar, setToggleSideBar] = useState(false);
+  const [allProducts, setAllProducts] = useState([]);
+  const { cartState, cartDispatch } = useCart();
+
+  const axiosInstance = axios.create({
+    baseURL: "http://localhost:8000", // Set your base URL here
+  });
+
+  const navigate = useNavigate();
 
   const handelSideBar = () => {
     setToggleSideBar(!toggleSideBar);
   };
+
+  const getAllProducts = async (page = 1) => {
+    try {
+      const response = await axiosInstance.get(`/product/allproducts/${page}`);
+      if (response.data?.success) {
+        setAllProducts(response.data?.products);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const productDetails = (productId) => {
+    try {
+      console.log(productId);
+      navigate(`/admin/product-details/${productId}`);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (cartState.token) {
+      getAllProducts();
+    }
+  }, [cartState.token]);
+
   return (
     <Container fluid>
       <Row>
@@ -32,19 +72,34 @@ function AllProduct() {
                 <th>Price</th>
                 <th>Category</th>
                 <th>Quantity</th>
-                <th>Shipping</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td>Mark</td>
-                <td>Otto</td>
-                <td>@mdo</td>
-                <td>@mdo</td>
-                <td>@mdo</td>
-                <td>@mdo</td>
-              </tr>
+              {allProducts &&
+                allProducts.map((product, index) => {
+                  return (
+                    <tr key={product._id}>
+                      <td>{index + 1}</td>
+                      <td>{product.name}</td>
+                      <td>{product.description}</td>
+                      <td>{product.price}</td>
+                      <td>{product.category}</td>
+                      <td>{product.quantity}</td>
+                      <td>
+                        <button
+                          onClick={() => productDetails(product._id)}
+                          className="btn"
+                        >
+                          <BsFillEyeFill />{" "}
+                        </button>
+                        <button className="btn">
+                          <BsPencilSquare />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
             </tbody>
           </Table>
         </Col>

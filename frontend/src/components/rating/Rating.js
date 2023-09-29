@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Row } from "react-bootstrap";
 import { BsStar, BsStarFill, BsStarHalf } from "react-icons/bs";
 function Rating(props) {
-  console.log("rating component");
+  console.log("rating component", props.totalStar);
   //this state value is used to let user give star in their order page
   const [giveStar, setGiveStar] = useState(false);
   //this state value will store  start given by user
@@ -26,7 +26,7 @@ function Rating(props) {
   useEffect(() => {
     setFullStarLocation(Math.floor(totalStar));
     setHalfStarLocation(totalStar % 1 >= 0.5 ? fullStarLocation + 1 : null);
-  }, [totalStar]);
+  }, [totalStar, fullStarLocation, halfStarLocation]);
   return (
     <>
       {/* display full star, half star, blank star  */}

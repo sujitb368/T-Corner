@@ -18,12 +18,16 @@ function Product(props) {
           to={`product-details/${product._id}`}
           className="text-decoration-none"
         >
-          <div className="card me-3 text-center pt-1">
-            <img
-              src="https://4.imimg.com/data4/HR/RK/MY-6432415/cotton-cloth.jpg"
-              className="d-block card-img-top img-100"
-              alt="product"
-            />
+          <div className="card me-3 mt-3 text-center pt-1">
+            {product.image ? (
+              <img
+                src={`http://localhost:8000/api/v1/files/get-file/${product.image}`}
+                className="d-block card-img-top img-100"
+                alt="product"
+              />
+            ) : (
+              <img className="d-block card-img-top img-100" alt="product" />
+            )}
             <div
               className="card-body d-flex flex-column"
               style={{ height: "300px" }}
@@ -35,7 +39,7 @@ function Product(props) {
               <p className="card-text">
                 {product.description.split(" ").slice(0, 10).join(" ")}
               </p>
-              <Rating totalStar={4.2} />
+              <Rating totalStar={product.averageRating?.toFixed(1)} />
             </div>
           </div>
         </Link>

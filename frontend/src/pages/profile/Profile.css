@@ -1,0 +1,52 @@
+/* .profile-image:hover{
+    transform: scale(.96);
+    cursor: pointer;
+    background-color: rgba(216, 219, 222, .9);
+    transition: all 0.2s ease-in-out;
+} */
+
+.profile-image-container {
+    position: relative;
+    /* width: 100px; 
+    height: 100px;  */
+    overflow: hidden;
+    border-radius: 50%;
+    transition: filter 0.3s, transform 0.3s;
+  }
+
+  .profile-image-container .profile-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: blur(0);
+    transition: filter 0.3s;
+  }
+
+  .profile-image.editing img {
+    filter: blur(3%);
+    cursor: pointer;
+  }
+
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .overlay:hover {
+    opacity: 1;
+  }
+  
+  .camera-icon {
+    font-size: 24px;
+    color: white;
+    cursor: pointer;
+  }

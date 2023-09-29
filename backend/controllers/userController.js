@@ -62,6 +62,7 @@ const loginController = async (req, res) => {
   try {
     //user login credentials
     const { email, password } = req.body;
+    console.log("user login", email, password);
     //validate email and password
     if (!email || !password) {
       return res.status(400).send({
@@ -88,6 +89,10 @@ const loginController = async (req, res) => {
         token,
         user: userDetails,
       });
+    } else {
+      return res
+        .status(404)
+        .send({ message: "Email or password is incorrect", success: false });
     }
   } catch (error) {
     console.log(error);

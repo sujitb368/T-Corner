@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import Swal from "sweetalert2";
+import Message from "../../components/message/Message";
 function Signup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -20,7 +21,7 @@ function Signup() {
     try {
       setLoding(true);
       const response = await axios.post(
-        `/api/v1/user/signup`,
+        `/user/signup`,
         { name, email, password, confirmPassword, phone },
         {
           headers: {
@@ -31,13 +32,14 @@ function Signup() {
       setLoding(false);
 
       if (response.data.success) {
-        Swal.fire(response.data.message);
+        Message({ type: "success", message: response.data.message });
         navigate("/login");
       } else {
         Swal.fire(response.data.message);
       }
     } catch (error) {
       console.log("Error while signing up", error);
+      Message({ type: "success", message: error.response.data.message });
     }
   };
   return (

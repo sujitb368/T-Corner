@@ -5,6 +5,7 @@ const initialState = {
   cartItems: [],
   user: [],
   token: null,
+  shippingAddress: {},
 };
 
 // Create the context object
@@ -76,7 +77,7 @@ const cartReducer = (state, action) => {
       return { ...state, cartItems: action.payload };
     //shipping address to deliver the product
     case "SHIPPING_ADDRESS":
-      return { ...state, shippingAddress: action.payload };
+      return { ...state, shippingAddress: { ...action.payload } };
     default:
       return state;
   }

@@ -77,6 +77,7 @@ const createProduct = async (req, res) => {
 
 //get all products
 const allProducts = async (req, res) => {
+  console.log("Product called");
   try {
     //get page number
     const { page } = req.params ?? 0;
@@ -94,6 +95,7 @@ const allProducts = async (req, res) => {
       products,
     });
   } catch (error) {
+    console.log("error in getAllProducts", error);
     return res.status(500).send({
       message: "unable to get products ",
       success: false,
@@ -164,4 +166,66 @@ const deleteProduct = async (req, res) => {
   }
 };
 
-export { createProduct, allProducts, productById };
+// get stock
+const getQuantity = async (req, res) => {
+  try {
+    const { productId, quantity } = req.body;
+    //get the available quantity of the product
+    const stock = await ProductModel.find({ _id: productId });
+    if (stock[0].quantity > quantity) {
+      return res.status(200).send({
+        message: "stock available",
+        success: true,
+        quantity: stock[0].quantity,
+      });
+    }
+    return res.status(200).send({
+      message: `only ${stock.quantity} stock available`,
+      success: false,
+      quantity: stock.quantity,
+    });
+  } catch (error) {
+    console.log(`error while getting stock`, error);
+
+    return res.status(500).send({
+      message: "Internal server error ",
+      success: false,
+      error,
+    });
+  }
+};
+
+/* 
+APIs for filter and search
+ */
+
+const filterProduct = async (req, res) => {
+  try {
+    const { price, category } = req.body;
+
+    const { page } = req.params ?? 0;
+    const skip = page * 10;
+
+    let args = {};
+    if (category.length > 0) args.category = category;
+    if (price.length) args.price = { $lte: price };
+    const products = await ProductModel.find(args)
+      .sort({ price: -1 })
+      .skip(skip)
+      .limit(10);
+
+    return res.status(200).send({
+      message: "Filtered products",
+      success: true,
+      product: filterResult,
+    });
+  } catch (error) {
+    return res.status().send({
+      message: "Internal server error",
+      success: false,
+      error,
+    });
+  }
+};
+
+export { createProduct, allProducts, productById, filterProduct, getQuantity };

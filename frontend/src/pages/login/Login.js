@@ -7,6 +7,7 @@ import Swal from "sweetalert2";
 import "./Login.css";
 import { useCart } from "../../context/cartContext";
 import Loder from "../../components/loder/Loder";
+import Message from "../../components/message/Message";
 // import { initialUserState, userReducer } from "../../reducer/userReducer.js";
 
 function Login() {
@@ -33,7 +34,7 @@ function Login() {
 
       //API call to login user
       const response = await axios.post(
-        `api/v1/user/login`,
+        `/user/login`,
         { email, password },
         {
           headers: {
@@ -44,15 +45,8 @@ function Login() {
 
       //if login is successful enter inside if block
       if (response.data.success) {
-        //show alert with success message
-        Swal.fire({
-          title: response.data.message,
-          timer: 2000,
-          timerProgressBar: true,
-          backdrop: false,
-          toast: true,
-          position: "top-end",
-        });
+        Message({ type: "success", message: response.data.message });
+
         //store the token, user into local storage
         // token and user received from the backend API response
         localStorage.setItem("token", response.data.token);
@@ -80,7 +74,8 @@ function Login() {
 
       //show alert with the error message
       if (error) {
-        Swal.fire(error.response.data.message);
+        Message({ type: "error", message: error.response.data.message });
+
         //close loder
         setLoding(false);
       }
