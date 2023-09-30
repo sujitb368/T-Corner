@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Col, Container, Row, Table } from "react-bootstrap";
 import Sidebar from "../component/sidebar/Sidebar";
-import Swal from "sweetalert2";
 import axios from "axios";
 import { useCart } from "../../context/cartContext";
 import { BsFillEyeFill, BsPencilSquare } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
+import Message from "../../components/message/Message.js";
 
 function AllProduct() {
   const [toggleSideBar, setToggleSideBar] = useState(false);
   const [allProducts, setAllProducts] = useState([]);
+  //eslint-disable-next-line
   const { cartState, cartDispatch } = useCart();
 
   const axiosInstance = axios.create({
@@ -18,6 +19,7 @@ function AllProduct() {
 
   const navigate = useNavigate();
 
+  //eslint-disable-next-line
   const handelSideBar = () => {
     setToggleSideBar(!toggleSideBar);
   };
@@ -30,6 +32,7 @@ function AllProduct() {
       }
     } catch (error) {
       console.log(error);
+      Message({ type: "error", message: error.response.data.message });
     }
   };
 
@@ -46,6 +49,7 @@ function AllProduct() {
     if (cartState.token) {
       getAllProducts();
     }
+    //eslint-disable-next-line
   }, [cartState.token]);
 
   return (

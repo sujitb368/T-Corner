@@ -5,6 +5,7 @@ import Sidebar from "../component/sidebar/Sidebar";
 function UserList() {
   const [toggleSideBar, setToggleSideBar] = useState(false);
 
+  //eslint-disable-next-line
   const handelSideBar = () => {
     setToggleSideBar(!toggleSideBar);
   };

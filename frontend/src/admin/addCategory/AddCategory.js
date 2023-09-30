@@ -33,6 +33,7 @@ function AddCategory() {
       console.log("category response = ", response);
     } catch (error) {}
   };
+  //eslint-disable-next-line
   const handelSideBar = () => {
     setToggleSideBar(!toggleSideBar);
   };
