@@ -1,16 +1,15 @@
 // Profile
-
 import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Card, Image } from "react-bootstrap";
-import { FaEdit } from "react-icons/fa"; // Import the edit icon from react-icons library
 import { useCart } from "../../context/cartContext";
 import "./Profile.css";
 import { BsCamera } from "react-icons/bs";
-import Swal from "sweetalert2";
 import axios from "axios";
+import Message from "../../components/message/Message";
 
 //component function
 const Profile = () => {
+  //eslint-disable-next-line
   const { cartState, cartDispatch } = useCart();
 
   // state variable to store user all saved addresss
@@ -22,7 +21,6 @@ const Profile = () => {
       const response = await axios.get(`/shipping/shipping-address/${userId}`);
       if (response.data.success) {
         const addresses = response.data.address;
-        const primaryAddress = addresses.filter((address) => address.isPrimary);
         // selected address means this is selected by user to deliverd the product
 
         const shippingAddress = addresses.map((address) => address);
@@ -32,14 +30,7 @@ const Profile = () => {
       }
     } catch (error) {
       console.log(error);
-      Swal.fire({
-        title: error.response.data.message,
-        timer: 2000,
-        timerProgressBar: true,
-        backdrop: false,
-        toast: true,
-        position: "top-end",
-      });
+      Message({ type: "error", message: error.response.data.message });
     }
   };
 

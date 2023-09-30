@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
 import { BsHandbag, BsTrash3Fill } from "react-icons/bs";
 import { Link } from "react-router-dom";
@@ -43,7 +43,7 @@ function Cart() {
       const response = await axios.post(
         `/cart/deleteFromCart`,
         { userId: user._id, cartItems: newCart },
-        { Authrization: token }
+        { Authorization: token }
       );
 
       if (response.data.success) {
