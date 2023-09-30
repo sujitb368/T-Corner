@@ -4,7 +4,6 @@ import { Input } from "../../components/form/Input";
 import { Select } from "../../components/form/Select";
 import axios from "axios";
 import { useCart } from "../../context/cartContext";
-import Swal from "sweetalert2";
 import "./CheckOut.css";
 import { useNavigate } from "react-router-dom";
 import Message from "../../components/message/Message";
