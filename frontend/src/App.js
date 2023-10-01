@@ -4,7 +4,7 @@ import "./App.css";
 import Header from "./components/headerFooter/Header";
 import Login from "./pages/login/Login";
 
-import { Outlet, Route, Routes, useNavigate } from "react-router-dom";
+import { Outlet, Route, Routes } from "react-router-dom";
 import Signup from "./pages/signup/Signup";
 import AddProduct from "./admin/addProduct/AddProduct";
 import Dashboard from "./admin/dashboard/Dashboard";
@@ -27,8 +27,6 @@ import ReviewOrder from "./pages/reviewOrder/ReviewOrder";
 
 function App() {
   const { cartState, cartDispatch } = useCart();
-
-  const navigate = useNavigate();
 
   //hosted backend
   axios.defaults.baseURL = "https://t-corner.onrender.com/api/v1";
@@ -95,7 +93,7 @@ function App() {
 }
 
 function Admin() {
-  const { cartState, cartDispatch } = useCart();
+  const { cartState } = useCart();
   const [isAdmin, setIsAdmin] = useState();
   useEffect(() => {
     setIsAdmin(cartState.user.isAdmin);
@@ -104,7 +102,7 @@ function Admin() {
 }
 
 function User() {
-  const { cartState, cartDispatch } = useCart();
+  const { cartState } = useCart();
   const [isUser, setIsUser] = useState();
 
   useEffect(() => {

@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import "./AddProduct.css";
-import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-import Swal from "sweetalert2";
 import Sidebar from "../component/sidebar/Sidebar";
 import { useCart } from "../../context/cartContext";
 
+import Message from "../../components/message/Message.js";
 function AddProduct() {
+  //eslint-disable-next-line
   const { cartState, cartDispatch } = useCart();
 
   const [name, setName] = useState("");
@@ -17,7 +17,7 @@ function AddProduct() {
   const [category, setCategory] = useState("");
   const [shipping, setShipping] = useState("");
   const [quantity, setQuantity] = useState("");
-  const [loding, setLoding] = useState("");
+  // const [loding, setLoding] = useState("");
 
   const [image, setImage] = useState({ preview: "", data: "" });
 
@@ -31,6 +31,7 @@ function AddProduct() {
     baseURL: "http://localhost:3005", // Set your base URL here
   });
 
+  //eslint-disable-next-line
   const handelSideBar = () => {
     setToggleSideBar(!toggleSideBar);
   };
@@ -70,13 +71,14 @@ function AddProduct() {
         setValidated(true);
         return;
       }
-      setLoding(true);
+      // setLoding(true);
 
       const formData = new FormData();
       formData.append("file", image.data);
 
       if (!image.data) {
-        Swal.fire("Image is mandatory for post");
+        Message({ type: "error", message: "Image is mandatory for post" });
+
         return;
       }
       const { data } = await axiosInstance.post(
@@ -102,17 +104,17 @@ function AddProduct() {
             },
           }
         );
-        setLoding(false);
+        // setLoding(false);
 
         if (response.data.success) {
-          Swal.fire(response.data.message);
+          Message({ type: "error", message: response.data.message });
         } else {
-          Swal.fire(response.data.message);
+          Message({ type: "error", message: response.data.message });
         }
       }
     } catch (error) {
       console.log("Error while signing up", error);
-      Swal.fire(error?.data?.message);
+      Message({ type: "error", message: error.response?.data?.message });
     }
   };
 

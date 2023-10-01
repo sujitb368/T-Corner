@@ -1,11 +1,7 @@
 import React from "react";
-import { Row, Col, Stack, Button } from "react-bootstrap";
+import { Stack } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import {
-  BsFillGridFill,
-  BsFillPeopleFill,
-  BsFillBagPlusFill,
-} from "react-icons/bs";
+import { BsFillPeopleFill, BsFillBagPlusFill } from "react-icons/bs";
 import "./Sidebar.css";
 function Sidebar() {
   return (

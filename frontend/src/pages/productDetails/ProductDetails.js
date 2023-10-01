@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
+import { Button, Col, Container, Row } from "react-bootstrap";
 import Rating from "../../components/rating/Rating";
-import Swal from "sweetalert2";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import "./ProductDetails.css";
 import { BsFillCartPlusFill, BsGeoAltFill } from "react-icons/bs";
 import { useCart } from "../../context/cartContext";
 import Sidebar from "../../admin/component/sidebar/Sidebar";
+import Message from "../../components/message/Message.js";
 
 function ProductDetails() {
   // const [ProductDetail, setProductDetail] = useState();
@@ -36,9 +36,7 @@ function ProductDetails() {
 
       setDetails(response.data.product[0]);
     } catch (error) {
-      Swal.fire({
-        text: "something went wrong",
-      });
+      Message({ type: "error", message: error.response.data.message });
     }
   };
   const handelAddToCart = async (product) => {
@@ -50,15 +48,7 @@ function ProductDetails() {
         (cartItem) => cartItem.productId === product._id
       );
       if (isItemExist.length) {
-        Swal.fire({
-          title: "product already in cart ",
-          timer: 2000,
-          timerProgressBar: true,
-          backdrop: false,
-          toast: true,
-          position: "top-end",
-        });
-
+        Message({ type: "error", message: "product already in cart" });
         return;
       }
 
@@ -104,17 +94,11 @@ function ProductDetails() {
       });
 
       if (response) {
-        Swal.fire({
-          title: response.data.message,
-          timer: 1000,
-          timerProgressBar: true,
-          backdrop: false,
-          toast: true,
-          position: "top-end",
-        });
+        Message({ type: "success", message: response.data.message });
       }
     } catch (error) {
       console.log(error);
+      Message({ type: "error", message: error.response.data.message });
     }
   };
 

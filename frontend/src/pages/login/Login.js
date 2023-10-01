@@ -1,4 +1,4 @@
-import React, { useReducer, useState } from "react";
+import React, { useState } from "react";
 import { Button, Card, Col, Container, Form } from "react-bootstrap";
 import { BsEye, BsEyeSlash } from "react-icons/bs";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -12,6 +12,7 @@ import Message from "../../components/message/Message";
 
 function Login() {
   //get cart state from context
+  // eslint-disable-next-line
   const { cartState, cartDispatch } = useCart();
 
   const [showPassword, setShowPassword] = useState(false);

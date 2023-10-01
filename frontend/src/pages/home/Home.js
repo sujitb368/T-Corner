@@ -1,8 +1,9 @@
 import axios from "axios";
-import React, { useState, useEffect, useReducer } from "react";
+import React, { useState, useEffect } from "react";
 import Product from "../../components/productCard/Product";
 import { Col, Container, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import Message from "../../components/message/Message.js";
 // import { initialUserState, userReducer } from "../../context/userContext";
 
 function Home() {
@@ -19,6 +20,7 @@ function Home() {
       setAllProducts(response.data.products);
     } catch (error) {
       console.log("something went wrong", error);
+      Message({ type: "error", message: error.response.data.message });
     }
   };
 

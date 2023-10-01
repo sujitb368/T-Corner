@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
-import Swal from "sweetalert2";
+import React, { useState } from "react";
+import Message from "../message/Message.js";
 function Filters({ Categories, Prices }) {
-  const [categories, setCategories] = useState([]);
+  // const [categories, setCategories] = useState([]);
   const [checked, setChecked] = useState([]);
+  //eslint-disable-next-line
   const [radio, setRadio] = useState([]);
   //handelCheck
   const handelCheck = (value, id) => {
@@ -17,7 +18,7 @@ function Filters({ Categories, Prices }) {
       setChecked(all);
     } catch (error) {
       console.log("error in handelCheck", error);
-      Swal.error("something went wrong", error);
+      Message({ type: "error", message: "something went wrong" });
     }
   };
   return (

@@ -1,19 +1,15 @@
 import React from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useCart } from "../../context/cartContext";
-import { Card, Col, Container, Row } from "react-bootstrap";
+import { Col, Container, Row } from "react-bootstrap";
 import axios from "axios";
 
-import {
-  PayPalScriptProvider,
-  PayPalButtons,
-  usePayPalScriptReducer,
-} from "@paypal/react-paypal-js";
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import Message from "../../components/message/Message";
-import { BsTrash3Fill } from "react-icons/bs";
 
 function ReviewOrder() {
   const { cartState, cartDispatch } = useCart();
+  //eslint-disable-next-line
   const [searchParams, setSearchParams] = useSearchParams();
   const payment = searchParams.get("payment");
   //get the address from url
@@ -66,7 +62,7 @@ function ReviewOrder() {
         const response = await axios.post(
           `/cart/deleteFromCart`,
           { userId: user._id, cartItems: [] },
-          { Authrization: token }
+          { Authorization: token }
         );
 
         if (response.data.success) {
@@ -110,7 +106,8 @@ function ReviewOrder() {
     } catch (error) {
       console.error(error);
       // Handle the error or throw it further if needed
-      throw error;
+      // throw error;
+      Message({ type: "error", message: error.response.data.message });
     }
   };
 
@@ -141,7 +138,8 @@ function ReviewOrder() {
     } catch (error) {
       console.error(error);
       // Handle the error or throw it further if needed
-      throw error;
+      // throw error;
+      Message({ type: "error", message: error.response.data.message });
     }
   };
 

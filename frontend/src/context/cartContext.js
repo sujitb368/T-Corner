@@ -1,3 +1,4 @@
+//eslint-disable-next-line
 import React, { createContext, useContext } from "react";
 
 // Define initial state for the cart

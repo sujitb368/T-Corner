@@ -4,8 +4,6 @@ import { Input } from "../../components/form/Input";
 import { Select } from "../../components/form/Select";
 import axios from "axios";
 import { useCart } from "../../context/cartContext";
-import Swal from "sweetalert2";
-import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import "./CheckOut.css";
 import { useNavigate } from "react-router-dom";
 import Message from "../../components/message/Message";
@@ -15,6 +13,7 @@ export const CheckOut = () => {
   // user all saved address will be stored
   const [savedAddress, setSavedAddress] = useState([]);
   // address for this order
+  //eslint-disable-next-line
   const [shippingAddress, setShippingAddress] = useState({});
   // this is used for default address selection to mark the radio buttons (primary address)
   const [selectedAddress, setSelectedAddress] = useState([]);
@@ -40,6 +39,7 @@ export const CheckOut = () => {
 
   // price calculation
   const [totalPrice, setTotalPrice] = useState(0);
+  //eslint-disable-next-line
   const [shippingCharge, setShippingCharge] = useState(100);
 
   // list of all the states of india
@@ -189,13 +189,8 @@ export const CheckOut = () => {
       name: "West Bengal",
     },
   ];
-  //get token from context
-  const token = cartState.token;
-  //get user from context
-  const user = cartState.user;
 
   //navigate
-
   const navigate = useNavigate();
 
   //function to handel value from input component
@@ -215,7 +210,7 @@ export const CheckOut = () => {
       if (response.data.success) {
         const addresses = response.data.address;
         const primaryAddress = addresses.filter((address) => address.isPrimary);
-        // selected address means this is selected by user to deliverd the product
+        // selected address means this is selected by user to delivered the product
         // if user has primary address then onload this will be selected
         setSelectedAddress(primaryAddress[0]);
 
@@ -248,14 +243,7 @@ export const CheckOut = () => {
       }
     } catch (error) {
       console.log(error);
-      Swal.fire({
-        title: error.response.data.message,
-        timer: 2000,
-        timerProgressBar: true,
-        backdrop: false,
-        toast: true,
-        position: "top-end",
-      });
+      Message({ type: "error", message: error.response.data.message });
     }
   };
 
@@ -278,25 +266,11 @@ export const CheckOut = () => {
         //show alert with success message
         handelAddAddress();
         getAddress();
-        Swal.fire({
-          title: response.data.message,
-          timer: 2000,
-          timerProgressBar: true,
-          backdrop: false,
-          toast: true,
-          position: "top-end",
-        });
+        Message({ type: "success", message: response.data.message });
       }
     } catch (error) {
       console.log(error);
-      Swal.fire({
-        title: error.response.data,
-        timer: 2000,
-        timerProgressBar: true,
-        backdrop: false,
-        toast: true,
-        position: "top-end",
-      });
+      Message({ type: "error", message: error.response.data.message });
     }
   };
 

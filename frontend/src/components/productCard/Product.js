@@ -1,7 +1,6 @@
-import React, { useEffect } from "react";
+import React from "react";
 import "./Product.css";
 
-import { BsFillCartPlusFill } from "react-icons/bs";
 import { Col } from "react-bootstrap";
 import Rating from "../rating/Rating";
 import { Link } from "react-router-dom";

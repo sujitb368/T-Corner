@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { Button, Card, Col, Container, Form } from "react-bootstrap";
 import "./Signup.css";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-import Swal from "sweetalert2";
 import Message from "../../components/message/Message";
 function Signup() {
   const [name, setName] = useState("");
@@ -12,6 +11,7 @@ function Signup() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [phone, setPhone] = useState("");
+  //eslint-disable-next-line
   const [loding, setLoding] = useState("");
 
   const navigate = useNavigate();
@@ -35,7 +35,7 @@ function Signup() {
         Message({ type: "success", message: response.data.message });
         navigate("/login");
       } else {
-        Swal.fire(response.data.message);
+        Message({ type: "error", message: response?.data?.message });
       }
     } catch (error) {
       console.log("Error while signing up", error);

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { Container, Row, Col, Stack, Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Container, Row, Col } from "react-bootstrap";
 import "./Dashboard.css";
 import Itemcard from "../component/itemcard/Itemcard";
 import Sidebar from "../component/sidebar/Sidebar";
