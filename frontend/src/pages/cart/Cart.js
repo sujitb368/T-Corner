@@ -20,11 +20,13 @@ function Cart() {
   //get cart state from context
   const { cartState, cartDispatch } = useCart();
 
+  console.log(cartState.cartItems);
+
   const token = cartState.token;
   const user = cartState.user;
 
   useEffect(() => {
-    setCart(cartState.cartItems);
+    // setCart(cartState.cartItems);
     setPrice(
       cartState.cartItems.reduce(
         (prePrice, item) => prePrice + item.price * item.quantity,
@@ -119,8 +121,8 @@ function Cart() {
       </h1>
       <Row className="flex-column flex-md-row align-items-center px-2 px-md-0">
         <Col className="border shadow rounded me-md-2" xs={12} md={7}>
-          {cart &&
-            cart.map((item, index) => {
+          {cartState.cartItems &&
+            cartState.cartItems.map((item, index) => {
               return (
                 <Row
                   className={`my-2  ${
@@ -158,7 +160,6 @@ function Cart() {
                           >
                             -
                           </Button>
-
                           {loader && (
                             <div
                               className=""
@@ -181,7 +182,6 @@ function Cart() {
                               </div>
                             </div>
                           )}
-
                           <input
                             value={item.quantity}
                             className="col-7 increment-input"

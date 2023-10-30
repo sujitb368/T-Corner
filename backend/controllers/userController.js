@@ -81,7 +81,9 @@ const loginController = async (req, res) => {
     if (checkPassword) {
       //user details object without password field
       const userDetails = await removePassword(user);
-      const token = jwt.sign({ _id: user._id }, JWT_SECRET);
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+        expiresIn: "1d",
+      });
 
       return res.status(200).send({
         success: true,

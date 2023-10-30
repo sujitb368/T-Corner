@@ -2,11 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
 import Rating from "../../components/rating/Rating";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import "./ProductDetails.css";
 import { BsFillCartPlusFill, BsGeoAltFill } from "react-icons/bs";
 import { useCart } from "../../context/cartContext";
-import Sidebar from "../../admin/component/sidebar/Sidebar";
 import Message from "../../components/message/Message.js";
 
 function ProductDetails() {
@@ -16,12 +15,13 @@ function ProductDetails() {
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
   const [quantity] = useState(1);
+  const { cartState, cartDispatch } = useCart();
 
   const loggedInUsers = JSON.parse(localStorage.getItem("user"));
 
   const userId = loggedInUsers?._id || "";
 
-  const { cartState, cartDispatch } = useCart();
+  const navigate = useNavigate();
 
   // Functions to add items to the cart
   const addItemToCart = (item) => {
@@ -39,6 +39,7 @@ function ProductDetails() {
       Message({ type: "error", message: error.response.data.message });
     }
   };
+
   const handelAddToCart = async (product) => {
     try {
       //get cart from context
@@ -67,23 +68,9 @@ function ProductDetails() {
       productDetails.quantity = quantity;
       productDetails.productId = _id;
 
-      if (localCart && localCart.length > 0) {
-        //if local cart exist then loop through it and modify if needed
-        let isProductExist = false;
-        localCart.forEach((item) => {
-          if (item.productId === productDetails.productId) {
-            item.quantity += productDetails.quantity;
-            isProductExist = true;
-          }
-        });
-        if (!isProductExist) {
-          localCart.push(productDetails);
-        }
-      } else {
-        //push product details to localCart array then store it to localStorage
-        //if localCart dont have any items
-        localCart.push(productDetails);
-      }
+      //push product details to localCart array then store it to localStorage
+      //if localCart don't have any items
+      localCart.push(productDetails);
       addItemToCart(productDetails);
 
       localStorage.setItem("cart", JSON.stringify(localCart));
@@ -102,23 +89,68 @@ function ProductDetails() {
     }
   };
 
+  const buyNow = async (product) => {
+    try {
+      const localCart = cartState.cartItems || [];
+
+      const isItemExist = cartState.cartItems.filter(
+        (cartItem) => cartItem.productId === product._id
+      );
+      if (isItemExist.length) {
+        navigate(`${cartState.token ? "/user/cart" : "/cart"}`);
+        return;
+      }
+
+      //destructure product details
+      const {
+        sizes,
+        colors,
+        shipping,
+        createdAt,
+        updatedAt,
+        _id,
+        ...productDetails
+      } = product;
+      productDetails.color = selectedColor;
+      productDetails.size = selectedSize;
+      productDetails.quantity = quantity;
+      productDetails.productId = _id;
+
+      //push product details to localCart array then store it to localStorage
+      //if localCart don't have any items
+      localCart.push(productDetails);
+      addItemToCart(productDetails);
+
+      localStorage.setItem("cart", JSON.stringify(localCart));
+
+      const response = await axios.post(`/cart/addToCart/${userId}`, {
+        userId,
+        cartItems: localCart,
+      });
+
+      if (response) {
+        navigate(`${cartState.token ? "/user/cart" : "/cart"}`);
+      }
+    } catch (error) {
+      console.log(error);
+      Message({ type: "error", message: error.response.data.message });
+    }
+  };
+
   useEffect(() => {
     getProduct();
-    console.log("cartState in product detail", cartState);
     // eslint-disable-next-line
   }, [productId]);
   return (
     <>
       <Container fluid>
         <Row>
-          <Col xs={2} className={`side-bar pt-5 side-bar-responsive bg-2`}>
-            {cartState.user.isAdmin ? <Sidebar /> : "user sidebar"}
-          </Col>
+          <Col xs={2} className={`side-bar pt-5 side-bar-responsive`}></Col>
           <Col className="pt-3 px-3" xs={10}>
             <Row className="border flex-column flex-md-row">
               <Col className="p-3 border-end">
                 <img
-                  src="https://images.unsplash.com/photo-1515378960530-7c0da6231fb1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+                  src={`http://localhost:8000/api/v1/files/get-file/${details.image}`}
                   className="rounded d-block img-fluid"
                   style={{ objectFit: "contain" }}
                   alt="product view"
@@ -201,7 +233,10 @@ function ProductDetails() {
                   </Button>
                 </div>
                 <div>
-                  <Button className="bg-2 text-white mt-2 col-8">
+                  <Button
+                    onClick={() => buyNow(details)}
+                    className="bg-2 text-white mt-2 col-8"
+                  >
                     Buy Now
                   </Button>
                 </div>

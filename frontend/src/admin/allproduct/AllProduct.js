@@ -3,7 +3,7 @@ import { Col, Container, Row, Table } from "react-bootstrap";
 import Sidebar from "../component/sidebar/Sidebar";
 import axios from "axios";
 import { useCart } from "../../context/cartContext";
-import { BsFillEyeFill, BsPencilSquare } from "react-icons/bs";
+import { BsFillEyeFill } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 import Message from "../../components/message/Message.js";
 
@@ -12,10 +12,6 @@ function AllProduct() {
   const [allProducts, setAllProducts] = useState([]);
   //eslint-disable-next-line
   const { cartState, cartDispatch } = useCart();
-
-  const axiosInstance = axios.create({
-    baseURL: "http://localhost:8000", // Set your base URL here
-  });
 
   const navigate = useNavigate();
 
@@ -26,7 +22,7 @@ function AllProduct() {
 
   const getAllProducts = async (page = 1) => {
     try {
-      const response = await axiosInstance.get(`/product/allproducts/${page}`);
+      const response = await axios.get(`/product/allproducts/${page}`);
       if (response.data?.success) {
         setAllProducts(response.data?.products);
       }
@@ -39,7 +35,7 @@ function AllProduct() {
   const productDetails = (productId) => {
     try {
       console.log(productId);
-      navigate(`/admin/product-details/${productId}`);
+      navigate(`/admin/view-product/${productId}`);
     } catch (error) {
       console.log(error);
     }
@@ -97,9 +93,9 @@ function AllProduct() {
                         >
                           <BsFillEyeFill />{" "}
                         </button>
-                        <button className="btn">
+                        {/* <button className="btn">
                           <BsPencilSquare />
-                        </button>
+                        </button> */}
                       </td>
                     </tr>
                   );

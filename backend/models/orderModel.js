@@ -60,6 +60,15 @@ const orderSchema = new mongoose.Schema(
       paymentSource: String,
       status: String,
     },
+    orderDate: {
+      type: Date,
+    },
+    expectedDeliveryDate: {
+      type: Date,
+    },
+    deliveredDate: {
+      type: Date,
+    },
   },
   { timestamps: true }
 );

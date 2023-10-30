@@ -25,6 +25,7 @@ const isLogin = (req, res, next) => {
           .status(401)
           .send({ message: "unauthorized user", success: false });
       }
+      console.log("user verified");
       // if token is valid find user and add to request object
       const { _id } = payload;
       const user = await userModel.findById(_id);

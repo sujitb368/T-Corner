@@ -2,6 +2,7 @@ import express from "express";
 const router = express.Router();
 
 import {
+  updateProduct,
   createProduct,
   allProducts,
   productById,
@@ -11,6 +12,8 @@ import {
 
 router.post("/addProduct", createProduct);
 
+router.put("/updateProduct/:productId", updateProduct);
+
 router.get("/allproducts/:page", allProducts);
 
 router.get("/getProductId/:productId", productById);
@@ -19,6 +22,6 @@ router.get("/getProductId/:productId", productById);
 router.post("/quantity", getQuantity);
 
 // filter by category
-router.get("/filter", filterProduct);
+router.post("/filter", filterProduct);
 
 export default router;

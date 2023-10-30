@@ -36,7 +36,6 @@ const cartReducer = (state, action) => {
       if (existingItemIndex !== -1) {
         // If it exists, update the quantity
         const updatedCartItems = [...state.cartItems];
-        updatedCartItems[existingItemIndex].quantity += 1;
         return { ...state, cartItems: updatedCartItems };
       } else {
         // If it's a new item, add it to the cart

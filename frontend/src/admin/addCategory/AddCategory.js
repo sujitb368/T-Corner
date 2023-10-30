@@ -2,13 +2,14 @@ import React, { useState } from "react";
 import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import Sidebar from "../component/sidebar/Sidebar";
 import axios from "axios";
+import Message from "../../components/message/Message";
 function AddCategory() {
   //for form validation
   const [validated, setValidated] = useState(false);
   const [toggleSideBar, setToggleSideBar] = useState(false);
   const [category, setCategory] = useState("");
 
-  // const token = localStorage.getItem('token')
+  const token = localStorage.getItem("token");
 
   const handelCategory = async (e) => {
     e.preventDefault();
@@ -26,10 +27,14 @@ function AddCategory() {
         {
           headers: {
             "Content-Type": "application/json",
-            // "Authorization": token,
+            Authorization: token,
           },
         }
       );
+      if (response.data) {
+        Message({ type: "success", message: response.data.message });
+        setCategory("");
+      }
       console.log("category response = ", response);
     } catch (error) {}
   };

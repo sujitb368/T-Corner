@@ -1,12 +1,4 @@
-.box {
-    background-color: #f0f0f0;
-    border: 1px solid #ddd;
-    padding: 20px;
-    margin: 10px;
-    text-align: center;
-  }
-
-  .span{
+.details-span{
     background-color: #fff;
     border: 1px solid #fff;
     padding: 3px 5px;

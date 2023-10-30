@@ -1,3 +1,54 @@
 .pointer{
     cursor: pointer;
 }
+
+/* ThreeStepWizard.css */
+
+.progress-bar-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    margin-top: 50px;
+  }
+  
+  .progress-step {
+    flex: 1;
+    text-align: center;
+    font-size: 24px;
+    color: #ccc;
+    margin: 0 10px;
+  }
+  
+  .progress-step.active {
+    color: #007bff; /* Active step color */
+  }
+  
+  
+  
+  .progress-line {
+    position: absolute;
+    height: 10px;
+    background-color: #009688;
+    top: 7.8rem;
+    left: 8rem;
+    transition: transform 2s ease-in-out;
+  }
+  
+  .circle{
+    display: inline-block;
+    position: relative;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 5px solid #009688;
+    background-color: #fff;
+    z-index: 5;
+  } 
+  
+  @media screen and (max-width: 768px){
+    .progress-line{
+        left: 5rem;
+    }
+  }
+  
+  

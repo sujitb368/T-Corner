@@ -5,6 +5,7 @@
   --color2:#232f47;
   --color3:#c2e7ff;
   --color4:#f6f9ff;
+  --color5:#009688;
 
 }
 
@@ -16,6 +17,12 @@
 }
 .text-3{
   color: var(--color3) !important;
+}
+.text-4{
+  color: var(--color4) !important;
+}
+.text-5{
+  color: var(--color5) !important;
 }
 .bg-1{
   background-color: var(--color1) !important;
@@ -29,5 +36,10 @@
 .bg-4{
   
     background-color: var(--color4) !important;
+
+}
+.bg-5{
+  
+    background-color: var(--color5) !important;
 
 }

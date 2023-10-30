@@ -24,15 +24,17 @@ import Loder from "./components/loder/Loder";
 import Profile from "./pages/profile/Profile";
 import axios from "axios";
 import ReviewOrder from "./pages/reviewOrder/ReviewOrder";
+import OrderDetails from "./pages/orderDetails/OrderDetails";
+import EditAndViewProduct from "./admin/editAndViewProduct/EditAndViewProduct";
 
 function App() {
   const { cartState, cartDispatch } = useCart();
 
   //hosted backend
-  axios.defaults.baseURL = "https://t-corner.onrender.com/api/v1";
+  // axios.defaults.baseURL = "https://t-corner.onrender.com/api/v1";
 
   //local backend
-  // axios.defaults.baseURL = "http://localhost:8000/api/v1";
+  axios.defaults.baseURL = "http://localhost:8000/api/v1";
 
   useEffect(() => {
     //get user cart from local storage
@@ -62,6 +64,10 @@ function App() {
           <Route path="user-list" element={<UserList />}></Route>
           <Route path="inventory" element={<Dashboard />}></Route>
           <Route
+            path="view-product/:productId"
+            element={<EditAndViewProduct />}
+          ></Route>
+          <Route
             path="product-details/:productId"
             element={<ProductDetails />}
           ></Route>
@@ -73,6 +79,7 @@ function App() {
           <Route path="cart" element={<Cart />}></Route>
           <Route path="checkout" element={<CheckOut />}></Route>
           <Route path="myorders" element={<MyOrders />}></Route>
+          <Route path="myorders/:orderId" element={<OrderDetails />}></Route>
           <Route path="profile" element={<Profile />}></Route>
           <Route path="reviewOrder" element={<ReviewOrder />}></Route>
         </Route>
@@ -86,6 +93,7 @@ function App() {
           element={<ProductDetails />}
         ></Route>
         <Route path="/login" element={<Login />}></Route>
+        <Route path="/cart" element={<Cart />}></Route>
         <Route path="/signup" element={<Signup />}></Route>
       </Routes>
     </>
