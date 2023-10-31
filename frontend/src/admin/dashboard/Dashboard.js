@@ -43,9 +43,7 @@ function Dashboard() {
               <Itemcard valueOfCard="500" titleOfCard="Active user" />
               <Itemcard valueOfCard="100" titleOfCard="Shipped Order" />
 
-              <span className="bg-1" onClick={handelSideBar}>
-                icon
-              </span>
+           
             </Row>
           </Col>
         </Row>
