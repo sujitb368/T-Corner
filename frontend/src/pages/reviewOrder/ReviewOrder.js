@@ -66,7 +66,7 @@ function ReviewOrder() {
         );
 
         if (response.data.success) {
-          navigate("/user/myorder");
+          navigate("/user/myorders");
         }
       }
     } catch (error) {

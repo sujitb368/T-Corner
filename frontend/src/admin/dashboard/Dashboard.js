@@ -3,6 +3,7 @@ import { Container, Row, Col } from "react-bootstrap";
 import "./Dashboard.css";
 import Itemcard from "../component/itemcard/Itemcard";
 import Sidebar from "../component/sidebar/Sidebar";
+import { BsXSquareFill } from "react-icons/bs";
 function Dashboard() {
   const [toggleSideBar, setToggleSideBar] = useState(false);
 
@@ -14,7 +15,8 @@ function Dashboard() {
       <Container className="" fluid>
         <Row>
           <Col
-            xs={window.innerWidth <= 530 ? 6 : window.innerWidth <= 830 ? 4 : 2}
+            xs={8}
+            md={2}
             className={`side-bar pt-5 side-bar-responsive bg-2 ${
               toggleSideBar ? "side-bar-responsive-toggle" : ""
             }`}
@@ -22,6 +24,17 @@ function Dashboard() {
             <Sidebar />
           </Col>
           <Col className={`bg-4 pt-4 `} xs={window.innerWidth <= 830 ? 12 : 10}>
+            <div className="d-md-none d-flex justify-content-end">
+              {!toggleSideBar ? (
+                <button className="btn bg-3" onClick={handelSideBar}>
+                  Sidebar
+                </button>
+              ) : (
+                <button className="btn bg-3" onClick={handelSideBar}>
+                  <BsXSquareFill />
+                </button>
+              )}
+            </div>
             <h4 className="text-2">Dashboard</h4>
 
             <Row className="px-2">

@@ -1,3 +1,4 @@
+import MyOrderModel from "../models/myOrderModel.js";
 import ProductModel from "../models/productModel.js";
 import RatingModel from "../models/ratingModel.js";
 
@@ -12,11 +13,15 @@ const createRatings = async (req, res) => {
         error: "Required field missing",
       });
     }
+    await myRating(rating, user, productId, res);
     //find product by productId
     const isProductExist = await RatingModel.findOne({ productId });
 
+    console.log("product found", isProductExist);
+
     // Check if the user has already rated the product
-    const userHasRated = isProductExist.rating.some(
+
+    const userHasRated = isProductExist?.rating.some(
       (rating) => rating.user.toString() === user
     );
 
@@ -72,6 +77,7 @@ const createRatings = async (req, res) => {
 
       // Save the new document
       await newRating.save();
+
       return res.status(201).send({
         message: "rating has been saved successfully",
         success: true,
@@ -85,6 +91,76 @@ const createRatings = async (req, res) => {
       success: false,
       error: error.message,
     });
+  }
+};
+
+// const myRating = async (rating, user, productId, res) => {
+//   try {
+//     console.log(rating, user, productId);
+
+//     const myOrders = await MyOrderModel.findOne({ user });
+
+//     if (myOrders) {
+//       const myProduct = await MyOrderModel.findOne(
+//         {
+//           user,
+//           "orders.orderItems.productId": productId,
+//         },
+//         {
+//           $set: {
+//             "orders.$[].orderItems$[xxx].myRating": rating, // Update the rating
+//           },
+//         },
+//         { arrayFilters : [
+//           {"xxx._id":productId}
+//         ]},
+//         { new: true }
+//       );
+//       res.send(user);
+//       console.log("my rated product", myProduct);
+//     }
+//   } catch (error) {
+//     console.log("error in 2", error);
+//   }
+// };
+
+const myRating = async (rating, user, productId) => {
+  try {
+    console.log(rating, user, productId);
+
+    const myOrders = await MyOrderModel.findOne({ user });
+
+    if (myOrders) {
+      const filter = { user };
+      const update = {
+        $set: {
+          "orders.$[order].orderItems.$[item].myRating": rating,
+        },
+      };
+      const options = {
+        arrayFilters: [
+          { "order.orderItems.productId": productId },
+          { "item.productId": productId },
+        ],
+        new: true,
+      };
+
+      const updatedOrder = await MyOrderModel.findOneAndUpdate(
+        filter,
+        update,
+        options
+      );
+
+      if (updatedOrder) {
+        console.log("Updated order with new rating", updatedOrder);
+      } else {
+        console.log("Product not found in the order");
+      }
+    } else {
+      console.log("User not found in orders");
+    }
+  } catch (error) {
+    console.log("Error:", error);
   }
 };
 

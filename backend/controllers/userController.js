@@ -8,6 +8,7 @@ import {
 
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config.js";
+import UserModel from "../models/userModel.js";
 
 //user sign-up/create controller
 const signupController = async (req, res) => {
@@ -81,7 +82,9 @@ const loginController = async (req, res) => {
     if (checkPassword) {
       //user details object without password field
       const userDetails = await removePassword(user);
-      const token = jwt.sign({ _id: user._id }, JWT_SECRET);
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+        expiresIn: "1d",
+      });
 
       return res.status(200).send({
         success: true,
@@ -107,4 +110,49 @@ const testController = async (req, res) => {
   return res.send({ user: req.user, message: "testing" });
 };
 
-export { signupController, loginController, testController };
+const getAllUsersController = async (req, res) => {
+  try {
+    const { page } = req.params ?? 0;
+    const skip = page * 10;
+    const users = await UserModel.find({}, { password: 0 })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(10);
+    return res.status(200).send({
+      message: "All users",
+      success: true,
+      users,
+    });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .send({ message: "something went wrong", error, success: false });
+  }
+};
+
+const deleteUserController = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    await UserModel.findByIdAndRemove({ _id: userId });
+
+    return res.status(200).send({
+      message: "User successfully deleted`",
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .send({ message: "something went wrong", error, success: false });
+  }
+};
+
+export {
+  signupController,
+  loginController,
+  testController,
+  getAllUsersController,
+  deleteUserController,
+};

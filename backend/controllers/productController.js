@@ -6,7 +6,6 @@ const createProduct = async (req, res) => {
     //get all fields of the product
     const { name, description, price, category, quantity, filename } = req.body;
     let { shipping } = req.body;
-    console.log("filename", filename);
     if (shipping === "true") {
       shipping = true;
     } else {
@@ -103,6 +102,7 @@ const allProducts = async (req, res) => {
     });
   }
 };
+
 //get all products
 const productById = async (req, res) => {
   try {
@@ -131,6 +131,46 @@ const productById = async (req, res) => {
       message: "unable to get products ",
       success: false,
       error,
+    });
+  }
+};
+
+const updateProduct = async (req, res) => {
+  try {
+    //get all fields of the product
+    const { productId } = req.params;
+    const { name, description, price, category, quantity, colors, size } =
+      req.body;
+    let { shipping } = req.body;
+    if (shipping === "true") {
+      shipping = true;
+    } else {
+      shipping = false;
+    }
+
+    if (!productId) {
+      return res.status(400).send({
+        message: "product id is required",
+        success: false,
+        error: "Required field",
+      });
+    }
+
+    const product = await ProductModel.findByIdAndUpdate(
+      { _id: productId },
+      { name, description, price, category, quantity, colors, size },
+      { new: true }
+    );
+    return res.status(200).send({
+      message: "product details updated successfully",
+      success: true,
+      product,
+    });
+  } catch (error) {
+    console.log(`Error updating product ${error}`);
+    return res.status(500).send({
+      message: "unable to update product",
+      success: false,
     });
   }
 };
@@ -179,8 +219,9 @@ const getQuantity = async (req, res) => {
         quantity: stock[0].quantity,
       });
     }
+    console.log("stocks available", stock);
     return res.status(200).send({
-      message: `only ${stock.quantity} stock available`,
+      message: `only ${stock[0].quantity} stock available`,
       success: false,
       quantity: stock.quantity,
     });
@@ -207,19 +248,42 @@ const filterProduct = async (req, res) => {
     const skip = page * 10;
 
     let args = {};
-    if (category.length > 0) args.category = category;
-    if (price.length) args.price = { $lte: price };
-    const products = await ProductModel.find(args)
+    //if category is present to filter
+    if (category?.length > 0) args.category = category;
+
+    // if price is present to filter for range price[0] to price[1]
+    if (price?.length && price[1] !== 0)
+      args.price = { $gte: price[0] * 1, $lte: price[1] * 1 };
+
+    //if price is present to filter but only above mention price
+    if (price.length && price[1] === 0) args.price = { $gte: price[0] * 1 };
+
+    //filter product
+
+    console.log("args up", args);
+    const filterResult = await ProductModel.find({
+      $or: [
+        {
+          category: { $in: args.category },
+        },
+        {
+          price: args.price,
+        },
+      ],
+    })
       .sort({ price: -1 })
       .skip(skip)
       .limit(10);
 
     return res.status(200).send({
-      message: "Filtered products",
+      message: filterResult.length
+        ? "Filtered products"
+        : "No product found for this filter",
       success: true,
-      product: filterResult,
+      products: filterResult,
     });
   } catch (error) {
+    console.log("error in filter line no. 233", error);
     return res.status().send({
       message: "Internal server error",
       success: false,
@@ -228,4 +292,11 @@ const filterProduct = async (req, res) => {
   }
 };
 
-export { createProduct, allProducts, productById, filterProduct, getQuantity };
+export {
+  createProduct,
+  allProducts,
+  productById,
+  filterProduct,
+  getQuantity,
+  updateProduct,
+};

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Col,
@@ -12,9 +12,12 @@ import {
 import "./Header.css";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useCart } from "../../context/cartContext";
+import axios from "axios";
+import Message from "../message/Message";
 function Header() {
   //get cart state from context
   const { cartState, cartDispatch } = useCart();
+  const [categories, setCategories] = useState([]);
 
   const navigate = useNavigate();
 
@@ -32,6 +35,26 @@ function Header() {
       console.log(error);
     }
   };
+
+  const getAllCategories = async (event, id) => {
+    try {
+      console.log(event, id);
+      const { data } = await axios.get(`/category/categories`);
+      if (data.success) {
+        setCategories(data.categories);
+        console.log(data);
+      }
+    } catch (error) {
+      console.log(error);
+      Message({
+        type: "error",
+        message: error.response?.data?.message ?? "Something went wrong",
+      });
+    }
+  };
+  useEffect(() => {
+    getAllCategories();
+  }, []);
   return (
     <Navbar expand="lg" className="bg-body-tertiary bg-1">
       <Container>
@@ -72,56 +95,68 @@ function Header() {
 
               {!cartState.user.isAdmin && (
                 <NavDropdown title="Category" id="basic-nav-dropdown">
-                  <NavDropdown.Item to="/myorders">Category0</NavDropdown.Item>
-                  <NavDropdown.Item href="#action/3.2">
-                    Category 1
-                  </NavDropdown.Item>
-                  <NavDropdown.Item href="#action/3.3">
-                    Category 2
-                  </NavDropdown.Item>
-                  <NavDropdown.Divider />
-                  <NavDropdown.Item href="#action/3.4">
-                    Category 3
-                  </NavDropdown.Item>
+                  <>
+                    {categories.map((category) => (
+                      <NavDropdown.Item
+                        as={Link}
+                        key={category._id}
+                        to={`/?category=${category.category}`}
+                      >
+                        {category.category}
+                      </NavDropdown.Item>
+                    ))}
+                  </>
                 </NavDropdown>
               )}
               {!cartState.user.isAdmin ? (
                 <>
-                  <Nav.Link as={NavLink} className="text" to="/login">
-                    Login
-                  </Nav.Link>
-                  <Nav.Link as={NavLink} className="text" to="/signup">
-                    Sign up
-                  </Nav.Link>
-                  <Nav.Link as={NavLink} className="text" to="/user/cart">
+                  {!cartState.token && (
+                    <>
+                      <Nav.Link as={NavLink} className="text" to="/login">
+                        Login
+                      </Nav.Link>
+                      <Nav.Link as={NavLink} className="text" to="/signup">
+                        Sign up
+                      </Nav.Link>
+                    </>
+                  )}
+                  <Nav.Link
+                    as={NavLink}
+                    className="text"
+                    to={cartState.token ? "/user/cart" : "/cart"}
+                  >
                     Cart
                   </Nav.Link>
                 </>
               ) : (
                 ""
               )}
-              <NavDropdown
-                title={cartState.user.name ?? "Profile"}
-                id="user-drop-down"
-              >
-                <NavDropdown.Item
-                  as={Link}
-                  to={
-                    !cartState.user.isAdmin ? "/user/profile" : "/admin/profile"
-                  }
+              {cartState.token && (
+                <NavDropdown
+                  title={cartState.user.name ?? "Profile"}
+                  id="user-drop-down"
                 >
-                  Profile
-                </NavDropdown.Item>
-
-                {!cartState.user.isAdmin && (
-                  <NavDropdown.Item as={Link} to="/user/myorders">
-                    My Orders
+                  <NavDropdown.Item
+                    as={Link}
+                    to={
+                      !cartState.user.isAdmin
+                        ? "/user/profile"
+                        : "/admin/profile"
+                    }
+                  >
+                    Profile
                   </NavDropdown.Item>
-                )}
-                <NavDropdown.Item onClick={handelLogOut}>
-                  Logout
-                </NavDropdown.Item>
-              </NavDropdown>
+
+                  {!cartState.user.isAdmin && (
+                    <NavDropdown.Item as={Link} to="/user/myorders">
+                      My Orders
+                    </NavDropdown.Item>
+                  )}
+                  <NavDropdown.Item onClick={handelLogOut}>
+                    Logout
+                  </NavDropdown.Item>
+                </NavDropdown>
+              )}
             </Nav>
           </Col>
         </Navbar.Collapse>

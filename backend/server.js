@@ -56,6 +56,7 @@ app.use("/api/v1/shipping", shippingRoutes);
 app.use("/api/v1/orders", orderRoutes);
 app.use("/api/v1/myorders", myOrdersRoutes);
 app.use("/api/v1/files", filesRoutes);
+app.use("/api/v1/category", categoryRoutes);
 
 //admin routes
 app.use("/api/v1/admin/category", categoryRoutes);

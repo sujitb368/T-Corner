@@ -25,6 +25,7 @@ const isLogin = (req, res, next) => {
           .status(401)
           .send({ message: "unauthorized user", success: false });
       }
+      console.log("user verified");
       // if token is valid find user and add to request object
       const { _id } = payload;
       const user = await userModel.findById(_id);
@@ -44,13 +45,13 @@ const isLogin = (req, res, next) => {
 const isAdmin = async (req, res, next) => {
   try {
     // get role of login user from request body
-    const { role } = req.body;
+    const { role } = req.user;
     //check role of user from DB
     //get user by id
     // const user = await userModel.findById(req.user._id);
-    if (role !== 1) {
+    if (role !== parseInt(role)) {
       return res.status(200).send({
-        message: "Unauthorised user",
+        message: "Not a admin user",
         success: false,
       });
     } else {

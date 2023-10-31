@@ -7,6 +7,7 @@ import Sidebar from "../component/sidebar/Sidebar";
 import { useCart } from "../../context/cartContext";
 
 import Message from "../../components/message/Message.js";
+import { BsXSquareFill } from "react-icons/bs";
 function AddProduct() {
   //eslint-disable-next-line
   const { cartState, cartDispatch } = useCart();
@@ -19,6 +20,9 @@ function AddProduct() {
   const [quantity, setQuantity] = useState("");
   // const [loding, setLoding] = useState("");
 
+  const [colors, setColors] = useState([]);
+  const [size, setSize] = useState("Small, Medium, Large");
+
   const [image, setImage] = useState({ preview: "", data: "" });
 
   //category
@@ -27,11 +31,14 @@ function AddProduct() {
   const [validated, setValidated] = useState(false);
   const [toggleSideBar, setToggleSideBar] = useState(false);
 
-  const axiosInstance = axios.create({
-    baseURL: "http://localhost:3005", // Set your base URL here
-  });
+  const handelColorAndSize = (value, setState) => {
+    // Split the comma-separated values and store them in the 'colors' state
+    const colorArray = value.split(",").map((color) => color.trim());
+    if (colorArray.length) {
+      setState(colorArray);
+    }
+  };
 
-  //eslint-disable-next-line
   const handelSideBar = () => {
     setToggleSideBar(!toggleSideBar);
   };
@@ -81,26 +88,31 @@ function AddProduct() {
 
         return;
       }
-      const { data } = await axiosInstance.post(
-        `api/v1/admin/files/upload`,
-        formData,
-        {
-          headers: {
-            Authorization: cartState.token,
-          },
-        }
-      );
+      const { data } = await axios.post(`/admin/files/upload`, formData, {
+        headers: {
+          Authorization: cartState.token,
+        },
+      });
       const { filename } = data;
-
-      console.log("file name: " + filename);
 
       if (filename) {
         const response = await axios.post(
           `/admin/product/addProduct`,
-          { name, description, price, category, quantity, shipping, filename },
+          {
+            name,
+            description,
+            price,
+            category,
+            quantity,
+            shipping,
+            filename,
+            colors,
+            size,
+          },
           {
             headers: {
               "Content-Type": "application/json",
+              Authorization: cartState.token,
             },
           }
         );
@@ -126,8 +138,9 @@ function AddProduct() {
       <Container fluid>
         <Row>
           <Col
-            xs={2}
-            className={`side-bar pt-5 side-bar-responsive bg-2${
+            xs={8}
+            md={2}
+            className={`side-bar pt-5 side-bar-responsive bg-2 ${
               toggleSideBar ? "side-bar-responsive-toggle" : ""
             }`}
           >
@@ -135,12 +148,23 @@ function AddProduct() {
           </Col>
 
           <Col className={`bg-4 pt-4 `} xs={window.innerWidth <= 830 ? 12 : 10}>
+            <div className="d-md-none d-flex justify-content-end">
+              {!toggleSideBar ? (
+                <button className="btn bg-3" onClick={handelSideBar}>
+                  Sidebar
+                </button>
+              ) : (
+                <button className="btn bg-3" onClick={handelSideBar}>
+                  <BsXSquareFill />
+                </button>
+              )}
+            </div>
             <h4 className="text-2">Dashboard</h4>
             <hr className="my-2" />
             <Card
               className="login-form m-auto px-2"
               style={
-                window.innerWidth < 540 ? { width: "100%" } : { width: "25rem" }
+                window.innerWidth < 540 ? { width: "100%" } : { width: "30rem" }
               }
             >
               <Card.Body>
@@ -148,8 +172,13 @@ function AddProduct() {
                   <Card.Title>Add Product</Card.Title>
                   <p>Enter details to Add Product</p>
                 </div>
-                <Form noValidate validated={validated} onSubmit={handelProduct}>
-                  <Form.Group className="mb-3">
+                <Form
+                  className="row"
+                  noValidate
+                  validated={validated}
+                  onSubmit={handelProduct}
+                >
+                  <Form.Group className="mb-3 col-md-6">
                     <Form.Control
                       required
                       value={name}
@@ -163,7 +192,7 @@ function AddProduct() {
                       Name is required field
                     </Form.Control.Feedback>
                   </Form.Group>
-                  <Form.Group className="mb-3">
+                  <Form.Group className="mb-3 col-md-6">
                     <Form.Control
                       required
                       value={description}
@@ -177,7 +206,7 @@ function AddProduct() {
                       Description is required field
                     </Form.Control.Feedback>
                   </Form.Group>
-                  <Form.Group className="mb-3">
+                  <Form.Group className="mb-3 col-md-6">
                     <Form.Control
                       required
                       value={price}
@@ -191,7 +220,7 @@ function AddProduct() {
                       Price is required field
                     </Form.Control.Feedback>
                   </Form.Group>
-                  <Form.Group className="mb-3">
+                  <Form.Group className="mb-3 col-md-6">
                     <Form.Select
                       onChange={(e) => setCategory(e.target.value)}
                       value={category}
@@ -213,7 +242,7 @@ function AddProduct() {
                       Category is required field
                     </Form.Control.Feedback>
                   </Form.Group>
-                  <Form.Group className="mb-3">
+                  <Form.Group className="mb-3 col-md-6">
                     <Form.Control
                       required
                       value={quantity}
@@ -227,8 +256,36 @@ function AddProduct() {
                       Quantity is required field
                     </Form.Control.Feedback>
                   </Form.Group>
+                  <Form.Group className="mb-3 col-md-6">
+                    <Form.Control
+                      required
+                      value={quantity}
+                      onChange={(e) => {
+                        handelColorAndSize(e.target.value, setColors);
+                      }}
+                      type="text"
+                      placeholder="Enter Colors"
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      Colors is required field
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                  <Form.Group className="mb-3 col-md-6">
+                    <Form.Control
+                      required
+                      value={quantity}
+                      onChange={(e) => {
+                        handelColorAndSize(e.target.value, setSize);
+                      }}
+                      type="text"
+                      placeholder="Enter Colors"
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      size is required field
+                    </Form.Control.Feedback>
+                  </Form.Group>
 
-                  <Form.Group className="mb-3">
+                  <Form.Group className="mb-3 col-md-6">
                     <Form.Select
                       required
                       value={shipping}
@@ -244,7 +301,7 @@ function AddProduct() {
                       Shipping is required field
                     </Form.Control.Feedback>
                   </Form.Group>
-                  <Form.Group className="mb-3" controlId="fileUpload">
+                  <Form.Group className="mb-3 col-12" controlId="fileUpload">
                     <input
                       onChange={(e) => handleFileSelect(e)}
                       type="file"
@@ -255,11 +312,22 @@ function AddProduct() {
                   <Form.Control.Feedback type="invalid">
                     Image is required
                   </Form.Control.Feedback>
-                  <Button className="bg-1 w-100 text-3" type="submit">
-                    Add Product
-                  </Button>
+                  {image.preview && (
+                    <div className="col-12">
+                      <img
+                        height={200}
+                        style={{ objectFit: "contain" }}
+                        src={image.preview}
+                        alt="product"
+                      />
+                    </div>
+                  )}
+                  <div className="col-12 mt-1">
+                    <Button className="bg-1 w-100 text-3" type="submit">
+                      Add Product
+                    </Button>
+                  </div>
                 </Form>
-                {/* <img src="uploadedFiles\\1695476783822_azan ali.png" /> */}
               </Card.Body>
             </Card>
           </Col>

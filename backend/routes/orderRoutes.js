@@ -4,6 +4,7 @@ const router = express.Router();
 import {
   captureOrder,
   createOrder,
+  getOrderDetailsByOrderId,
   placeOrderController,
 } from "../controllers/orderController.js";
 import { isLogin } from "../middlewares/userMiddleware.js";
@@ -11,6 +12,9 @@ import { isLogin } from "../middlewares/userMiddleware.js";
 //api end point to place order in COD mode
 router.post("/order", isLogin, placeOrderController);
 // router.post("/deleteFromCart/:productId", deleteFromCart);
+
+//get order details by orderId
+router.get("/orders/:orderId", isLogin, getOrderDetailsByOrderId);
 
 // end points to intialize order using paypal
 router.post("/", async (req, res) => {
