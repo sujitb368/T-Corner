@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { BsPencilSquare } from "react-icons/bs";
+import { BsPencilSquare, BsXSquareFill } from "react-icons/bs";
 import { useParams } from "react-router-dom";
 import Message from "../../components/message/Message";
 import { useCart } from "../../context/cartContext";
@@ -28,6 +28,10 @@ const EditAndViewProduct = () => {
   const [toggleSideBar, setToggleSideBar] = useState(false);
 
   const { productId } = useParams();
+
+  const handelSideBar = () => {
+    setToggleSideBar(!toggleSideBar);
+  };
 
   //function to toggle the state of editing of details form
   const handleEditClick = () => {
@@ -157,14 +161,26 @@ const EditAndViewProduct = () => {
     <div className="container-fluid">
       <div className="row">
         <Col
-          xs={2}
-          className={`side-bar pt-5 side-bar-responsive bg-2${
+          xs={8}
+          md={2}
+          className={`side-bar pt-5 side-bar-responsive bg-2 ${
             toggleSideBar ? "side-bar-responsive-toggle" : ""
           }`}
         >
           <Sidebar />
         </Col>
         <Col className={`bg-4 pt-4 `} xs={window.innerWidth <= 830 ? 12 : 10}>
+        <div className="d-md-none d-flex justify-content-end mb-3">
+              {!toggleSideBar ? (
+                <button className="btn bg-3" onClick={handelSideBar}>
+                  Sidebar
+                </button>
+              ) : (
+                <button className="btn bg-3" onClick={handelSideBar}>
+                  <BsXSquareFill />
+                </button>
+              )}
+            </div>
           <div className="card rounded shadow">
             <div className="card-header text-end">
               <BsPencilSquare
