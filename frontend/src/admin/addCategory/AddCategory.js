@@ -3,6 +3,7 @@ import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import Sidebar from "../component/sidebar/Sidebar";
 import axios from "axios";
 import Message from "../../components/message/Message";
+import { BsXSquareFill } from "react-icons/bs";
 function AddCategory() {
   //for form validation
   const [validated, setValidated] = useState(false);
@@ -46,14 +47,26 @@ function AddCategory() {
     <Container fluid>
       <Row>
         <Col
-          xs={2}
-          className={`side-bar pt-5 side-bar-responsive bg-2${
+          xs={8}
+          md={2}
+          className={`side-bar pt-5 side-bar-responsive bg-2 ${
             toggleSideBar ? "side-bar-responsive-toggle" : ""
           }`}
         >
           <Sidebar />
         </Col>
         <Col className={`bg-4 pt-4 `} xs={window.innerWidth <= 830 ? 12 : 10}>
+          <div className="d-md-none d-flex justify-content-end">
+            {!toggleSideBar ? (
+              <button className="btn bg-3" onClick={handelSideBar}>
+                Sidebar
+              </button>
+            ) : (
+              <button className="btn bg-3" onClick={handelSideBar}>
+                <BsXSquareFill />
+              </button>
+            )}
+          </div>
           <h4 className="text-2">Dashboard</h4>
           <hr className="my-3" />
 

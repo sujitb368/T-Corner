@@ -85,14 +85,11 @@ const editImageFileController = async (req, res) => {
     // Access the file details through req.file
     const uploadedFile = req.file;
 
-    console.log("uploaded file", uploadedFile);
-
     const product = await ProductModel.findByIdAndUpdate(
       { _id: productId },
       { image: uploadedFile.filename },
       { new: true }
     );
-    console.log("uploaded file", product);
 
     return res.status(201).send({
       message: "File uploaded",
