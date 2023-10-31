@@ -11,7 +11,8 @@ import Loder from "../../components/loder/Loder";
 function Cart() {
   //state variables
   //cart items
-  const [cart, setCart] = useState([]);
+  //eslint-disable-next-line
+  const [cart, stCart] = useState([]);
   const [price, setPrice] = useState(0);
   const [estimatedPrice, setEstimatedPrice] = useState(0);
   const [shippingCost, setShippingCost] = useState(100);
