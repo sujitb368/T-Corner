@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Button, Card, Container, Form } from "react-bootstrap";
 import { BsEye, BsEyeSlash } from "react-icons/bs";
 import { useNavigate, useParams } from "react-router-dom";
