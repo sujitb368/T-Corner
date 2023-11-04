@@ -1,14 +1,19 @@
 //import userModel
 import userModel from "../models/userModel.js";
+import { frontEndUrl } from "../config.js";
 import {
   hashPassword,
   removePassword,
   comparePassword,
+  generateAndStoreToken,
 } from "../helpers/userHelper.js";
 
 import jwt from "jsonwebtoken";
-import { JWT_SECRET } from "../config.js";
+import { JWT_SECRET, JWT_SECRET_RESET_PASS } from "../config.js";
 import UserModel from "../models/userModel.js";
+import { sendEmail } from "../helpers/nodeMailer.js";
+import { isValidToken } from "../middlewares/userMiddleware.js";
+import ResetPasswordModel from "../models/forgotPasswordTokenModel.js";
 
 //user sign-up/create controller
 const signupController = async (req, res) => {
@@ -51,7 +56,7 @@ const signupController = async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({
-      message: "something went wrong unable to create user",
+      message: "Something went wrong unable to create user",
       message2: error.message,
       success: false,
     });
@@ -101,7 +106,7 @@ const loginController = async (req, res) => {
     console.log(error);
     return res
       .status(500)
-      .send({ message: "something went wrong", error, success: false });
+      .send({ message: "Something went wrong", error, success: false });
   }
 };
 
@@ -127,7 +132,7 @@ const getAllUsersController = async (req, res) => {
     console.log(error);
     return res
       .status(500)
-      .send({ message: "something went wrong", error, success: false });
+      .send({ message: "Something went wrong", error, success: false });
   }
 };
 
@@ -145,7 +150,117 @@ const deleteUserController = async (req, res) => {
     console.log(error);
     return res
       .status(500)
-      .send({ message: "something went wrong", error, success: false });
+      .send({ message: "Something went wrong", error, success: false });
+  }
+};
+
+const forgotPasswordController = async (req, res) => {
+  try {
+    const { email } = req.params;
+    const user = await UserModel.findOne({ email });
+    if (!user) {
+      return res.status(400).send({ message: "Invalid user", success: false });
+    }
+
+    const resetToken = await generateAndStoreToken(email, res);
+
+    if (resetToken.isTokenSaved === true) {
+      // send reset-password email
+      const emailConfig = {
+        to: email,
+        subject: "Reset Password", // Subject line
+        text: "Please click the link to reset your password", // plain text body
+        html: `<a href=${frontEndUrl}/reset-password/${resetToken.token}>${frontEndUrl}/reset-password/${resetToken.token}</a>`, // html body
+      };
+      const isSend = await sendEmail(emailConfig);
+
+      if (isSend) {
+        return res.status(200).send({
+          message: "Reset password email has sent check your inbox",
+          success: true,
+        });
+      }
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({
+      message: "Something went wrong",
+      success: false,
+      error,
+    });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  try {
+    const token = req.headers.authorization;
+    const { email, password } = req.body;
+    //validation
+    //if any of this are not provided, then return with status code 400
+    if (!email || !password) {
+      return res.status(400).send({
+        message: "All fields are required",
+        success: false,
+      });
+    }
+
+    // check token is valid before setting new password
+    const verifyToken = await isValidToken(token, JWT_SECRET_RESET_PASS);
+
+    const storedResetToken = await ResetPasswordModel.findOne({ email });
+
+    if (verifyToken && token !== storedResetToken?.token) {
+      return res.status(400).send({ message: "invalid token" });
+    }
+
+    const hashedPassword = await hashPassword(password);
+
+    //find user by email to check if user already exists
+    const isUserExist = await userModel.updateOne(
+      { email },
+      { $set: { password: hashedPassword } }
+    );
+
+    //remove from db
+    await ResetPasswordModel.findOneAndDelete({ email });
+
+    //if user exist already then return with status code 400
+    if (isUserExist) {
+      return res.status(200).send({
+        message: "password changed successfully",
+        success: true,
+      });
+    }
+    return res.status(400).json({
+      message: "Something went wrong ",
+      success: false,
+    });
+  } catch (error) {
+    console.log("Error in reset password", error);
+    return res.status(500).json({
+      message: "Something went wrong",
+      success: false,
+      error,
+    });
+  }
+};
+
+const getTotalUsers = async (req, res) => {
+  try {
+    const totalUsers = await UserModel.find({ isAdmin: false }).count();
+
+    return res.status(200).json({
+      message: "Total users",
+      success: true,
+      totalUsers,
+    });
+  } catch (error) {
+    console.log("Error in get total user", error);
+    return res.status(500).json({
+      message: error.message ?? "Something went wrong",
+      success: false,
+      error,
+    });
   }
 };
 
@@ -155,4 +270,7 @@ export {
   testController,
   getAllUsersController,
   deleteUserController,
+  forgotPasswordController,
+  resetPassword,
+  getTotalUsers,
 };

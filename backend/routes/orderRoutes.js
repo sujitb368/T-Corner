@@ -6,6 +6,8 @@ import {
   createOrder,
   getOrderDetailsByOrderId,
   placeOrderController,
+  getOrders,
+  changeOrderStatus,
 } from "../controllers/orderController.js";
 import { isLogin } from "../middlewares/userMiddleware.js";
 
@@ -41,4 +43,9 @@ router.post("/:orderID/capture", async (req, res) => {
     res.status(500).json({ error: "Failed to capture order." });
   }
 });
+
+router.get("/get-orders", getOrders);
+
+router.put("/change-status/:orderId", changeOrderStatus);
+
 export default router;

@@ -1,4 +1,3 @@
-import express from "express";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config.js";
 import userModel from "../models/userModel.js";
@@ -25,11 +24,13 @@ const isLogin = (req, res, next) => {
           .status(401)
           .send({ message: "unauthorized user", success: false });
       }
-      console.log("user verified");
+
       // if token is valid find user and add to request object
       const { _id } = payload;
-      const user = await userModel.findById(_id);
-      req.user = user;
+      if (_id) {
+        const user = await userModel.findById(_id);
+        req.user = user;
+      }
       next();
     });
   } catch (error) {
@@ -67,4 +68,23 @@ const isAdmin = async (req, res, next) => {
   }
 };
 
-export { isLogin, isAdmin };
+const isValidToken = async (token, secret) => {
+  try {
+    jwt.verify(token, secret, async (err, payload) => {
+      if (err) {
+        return res.status(401).send({ message: err, success: false });
+      }
+      // if token is valid find user and add to request object
+    });
+    return true;
+  } catch (error) {
+    console.log("Error while validating token", error);
+    return res.status(500).send({
+      message: "Error while validating token",
+      success: false,
+      error,
+    });
+  }
+};
+
+export { isLogin, isAdmin, isValidToken };
