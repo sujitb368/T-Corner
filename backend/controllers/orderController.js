@@ -218,9 +218,55 @@ const getOrderDetailsByOrderId = async (req, res) => {
   }
 };
 
+const getOrders = async (req, res) => {
+  try {
+    // Find all orders from the Order model
+    const orders = await OrderModel.find({}).populate("customer");
+
+    // Send the orders as a JSON response
+    return res
+      .status(200)
+      .send({ message: "Orders list", success: true, orders });
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    return res
+      .status(500)
+      .json({ message: "Failed to fetch orders", success: false, error });
+  }
+};
+const changeOrderStatus = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { orderStatus } = req.body;
+
+    console.log(orderStatus, orderId);
+
+    // Find all orders from the Order model
+    const order = await OrderModel.findOneAndUpdate(
+      { _id: orderId },
+      { $set: { orderStatus } },
+      { new: true }
+    );
+
+    // Send the orders as a JSON response
+    return res
+      .status(200)
+      .send({ message: "Status Updated", success: true, order });
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    return res.status(500).json({
+      message: "Failed to update order Status",
+      success: false,
+      error,
+    });
+  }
+};
+
 export {
   placeOrderController,
   createOrder,
   captureOrder,
   getOrderDetailsByOrderId,
+  getOrders,
+  changeOrderStatus,
 };

@@ -34,12 +34,13 @@ function Sidebar() {
           <BsFillBagPlusFill className="me-3 icon" />
           Add Category
         </Link>
-        {/* <Link
-          to="/admin/inventory"
+        <Link
+          to="/admin/orders"
           className="bg-4 px-2 py-1 rounded text-decoration-none text-2"
         >
-          <BsFillBagPlusFill className="me-3 icon" /> Inventory
-        </Link> */}
+          <BsFillBagPlusFill className="me-3 icon" />
+          Orders
+        </Link>
       </Stack>
     </aside>
   );

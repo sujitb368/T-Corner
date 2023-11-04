@@ -1,4 +1,7 @@
 import bcrypt from "bcrypt";
+import { JWT_SECRET_RESET_PASS } from "../config.js";
+import jwt from "jsonwebtoken";
+import ForgotPasswordTokenModel from "../models/forgotPasswordTokenModel.js";
 
 const hashPassword = async (password) => {
   try {
@@ -31,4 +34,39 @@ const comparePassword = async (password, hashedPassword) => {
   }
 };
 
-export { hashPassword, removePassword, comparePassword };
+// Generate a JWT and store it in MongoDB
+const generateAndStoreToken = async (email, res) => {
+  try {
+    // Generate a unique token
+    const token = jwt.sign({ email }, JWT_SECRET_RESET_PASS, {
+      expiresIn: "1h",
+    });
+
+    //check if already exists
+    const isRequestBefore = await ForgotPasswordTokenModel.findOne({ email });
+
+    if (isRequestBefore) {
+      return res.status(200).send({
+        message: "Already requested before check your email",
+        success: true,
+      });
+    }
+    // Store the token in MongoDB
+    const resetToken = new ForgotPasswordTokenModel({ email, token });
+
+    //save the token in MongoDB
+    await resetToken.save();
+
+    //reset the token
+    return { token, isTokenSaved: true };
+  } catch (error) {
+    console.log("Error in generateAndStoreToken ", error);
+    return res.status(500).send({
+      message: "Something went wrong during token generation",
+      success: false,
+      error,
+    });
+  }
+};
+
+export { hashPassword, removePassword, comparePassword, generateAndStoreToken };

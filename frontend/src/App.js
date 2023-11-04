@@ -11,6 +11,7 @@ import Dashboard from "./admin/dashboard/Dashboard";
 import UserList from "./admin/userlist/UserList";
 import AllProduct from "./admin/allproduct/AllProduct";
 import AddCategory from "./admin/addCategory/AddCategory";
+import Orders from "./admin/orders/Orders";
 import Home from "./pages/home/Home";
 import ProductDetails from "./pages/productDetails/ProductDetails";
 import Cart from "./pages/cart/Cart";
@@ -26,6 +27,7 @@ import axios from "axios";
 import ReviewOrder from "./pages/reviewOrder/ReviewOrder";
 import OrderDetails from "./pages/orderDetails/OrderDetails";
 import EditAndViewProduct from "./admin/editAndViewProduct/EditAndViewProduct";
+import ResetPassword from "./pages/resetPassword/ResetPassword";
 
 function App() {
   const { cartState, cartDispatch } = useCart();
@@ -62,7 +64,7 @@ function App() {
           <Route path="add-category" element={<AddCategory />}></Route>
           <Route path="all-product" element={<AllProduct />}></Route>
           <Route path="user-list" element={<UserList />}></Route>
-          <Route path="inventory" element={<Dashboard />}></Route>
+          <Route path="orders" element={<Orders />}></Route>
           <Route
             path="view-product/:productId"
             element={<EditAndViewProduct />}
@@ -95,6 +97,10 @@ function App() {
         <Route path="/login" element={<Login />}></Route>
         <Route path="/cart" element={<Cart />}></Route>
         <Route path="/signup" element={<Signup />}></Route>
+        <Route
+          path="/reset-password/:token"
+          element={<ResetPassword />}
+        ></Route>
       </Routes>
     </>
   );
