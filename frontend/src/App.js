@@ -109,6 +109,7 @@ function App() {
 function Admin() {
   const { cartState } = useCart();
   const [isAdmin, setIsAdmin] = useState();
+  // const [loggedIn, setLoggedIn] = useState(false);
   useEffect(() => {
     setIsAdmin(cartState.user.isAdmin);
   }, [cartState.user.isAdmin]);

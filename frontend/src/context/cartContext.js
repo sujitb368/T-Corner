@@ -7,6 +7,7 @@ const initialState = {
   user: [],
   token: null,
   shippingAddress: {},
+  searchQuery: "all",
 };
 
 // Create the context object
@@ -23,6 +24,8 @@ const cartReducer = (state, action) => {
         token: action.payload.token,
         user: action.payload.user,
       };
+    case "LOAD_USER":
+      return { ...state, user: action.payload };
     case "LOGIN_FAIL":
       return { ...state, user: [], token: null };
     case "LOAD_CART":
@@ -78,6 +81,8 @@ const cartReducer = (state, action) => {
     //shipping address to deliver the product
     case "SHIPPING_ADDRESS":
       return { ...state, shippingAddress: { ...action.payload } };
+    case "SEARCH":
+      return { ...state, searchQuery: action.payload ?? "all" };
     default:
       return state;
   }

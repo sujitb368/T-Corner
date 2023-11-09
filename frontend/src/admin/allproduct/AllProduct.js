@@ -4,14 +4,22 @@ import Sidebar from "../component/sidebar/Sidebar";
 import axios from "axios";
 import { useCart } from "../../context/cartContext";
 import { BsFillEyeFill, BsXSquareFill } from "react-icons/bs";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Message from "../../components/message/Message.js";
 
 function AllProduct() {
   const [toggleSideBar, setToggleSideBar] = useState(false);
   const [allProducts, setAllProducts] = useState([]);
 
-  const { cartState } = useCart();
+  const [totalPages, setTotalPages] = useState(5);
+
+  //page for search results
+  const [page, setPage] = useState(1);
+
+  // get product from
+  const [productFrom, setProductFrom] = useState("all");
+
+  const { cartState, cartDispatch } = useCart();
 
   const navigate = useNavigate();
 
@@ -31,12 +39,52 @@ function AllProduct() {
     }
   };
 
+  const getSearchProducts = async (currentPage = 1) => {
+    try {
+      const { data } = await axios.get(
+        `/product/search?query=${cartState.searchQuery}&page=${currentPage}&perPage=10`
+      );
+
+      if (data?.success) {
+        setAllProducts(data.products);
+        setTotalPages(data.totalPage);
+        setPage(data.currentPage);
+        if (!data.products.length) {
+          setProductFrom("");
+          cartDispatch({ type: "SEARCH", payload: "" });
+        }
+        Message({ type: "success", message: data.message });
+      }
+    } catch (error) {
+      Message({
+        type: "success",
+        message: error.response.data.message ?? "something went wrong",
+      });
+      console.error(error);
+    }
+  };
+
   const productDetails = (productId) => {
     try {
-      console.log(productId);
       navigate(`/admin/view-product/${productId}`);
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const handlePageChange = (currentPage) => {
+    if (productFrom === "search") {
+      getSearchProducts(currentPage);
+    } else {
+      getAllProducts(currentPage);
+    }
+  };
+
+  const handelNextPrevious = async (currentPage) => {
+    if (productFrom === "search") {
+      getSearchProducts(currentPage);
+    } else {
+      getAllProducts(currentPage);
     }
   };
 
@@ -46,6 +94,16 @@ function AllProduct() {
     }
     //eslint-disable-next-line
   }, [cartState.token]);
+
+  useEffect(() => {
+    if (cartState.searchQuery !== "all") {
+      getSearchProducts();
+    }
+    if (cartState.searchQuery === "all") {
+      getAllProducts();
+    }
+    //eslint-disable-next-line
+  }, [cartState.searchQuery]);
 
   return (
     <Container fluid>
@@ -74,6 +132,11 @@ function AllProduct() {
           <h4 className="text-2">Dashboard</h4>
           <hr className="my-2" />
           <h6>All Products</h6>
+          {!allProducts.length && (
+            <p className="text-danger fw-1 fs-2 text-center">
+              No more products...
+            </p>
+          )}
           <div className="table-responsive">
             <Table bordered hover size="sm table">
               <thead>
@@ -114,6 +177,68 @@ function AllProduct() {
                   })}
               </tbody>
             </Table>
+          </div>
+
+          {/* pagination */}
+          <div className="mt-3 pt-3 d-flex justify-content-center aligns-item-center">
+            <nav aria-label="Page navigation example">
+              <ul className="pagination">
+                <li className="page-item">
+                  <Link
+                    className="page-link text-1"
+                    aria-label="Previous"
+                    onClick={() => {
+                      setPage((page) => {
+                        if (page > 1) {
+                          handelNextPrevious(page - 1);
+                          return page - 1; // Corrected to return the updated value
+                        } else {
+                          return page; // If page is already 1, return the same value
+                        }
+                      });
+                    }}
+                  >
+                    <span aria-hidden="true">&laquo;</span>
+                    {/* <span className="sr-only">Previous</span> */}
+                  </Link>
+                </li>
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <li key={i} className="page-item">
+                    <Link
+                      className={`page-link text-1 ${
+                        i + 1 <= page - 3 || i + 1 >= page + 3 ? "d-none" : ""
+                      } 
+                           
+                          ${i + 1 === page ? "bg-3 text-1" : ""} `}
+                      onClick={() => {
+                        setPage(i + 1);
+                        handlePageChange(i + 1);
+                      }}
+                    >
+                      {i + 1}
+                    </Link>
+                  </li>
+                ))}
+
+                <Link
+                  className="page-link text-1"
+                  aria-label="Next"
+                  onClick={() => {
+                    setPage((page) => {
+                      if (page < totalPages) {
+                        handelNextPrevious(page + 1);
+                        return page + 1; // Corrected to return the updated value
+                      } else {
+                        return page; // If page is already 1, return the same value
+                      }
+                    });
+                  }}
+                >
+                  {/* <span className="sr-only">Next</span> */}
+                  <span aria-hidden="true">&raquo;</span>
+                </Link>
+              </ul>
+            </nav>
           </div>
         </Col>
       </Row>

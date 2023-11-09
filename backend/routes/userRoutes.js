@@ -4,11 +4,14 @@ import {
   signupController,
   loginController,
   testController,
+  isLoggedIn,
   getAllUsersController,
   deleteUserController,
   forgotPasswordController,
   resetPassword,
   getTotalUsers,
+  editUserProfile,
+  getSearchedUser,
 } from "../controllers/userController.js";
 
 import { isAdmin, isLogin } from "../middlewares/userMiddleware.js";
@@ -24,8 +27,14 @@ router.post("/login", loginController);
 
 router.post("/test-user", isLogin, testController);
 
+//protected User routes
+router.get("/isLoggedIn", isLogin, isLoggedIn);
+
 //routes to get all users
-router.get("/all-users", isLogin, getAllUsersController);
+router.get("/all-users/:page", isLogin, getAllUsersController);
+
+//routes to get all users
+router.get("/search-users", isLogin, getSearchedUser);
 
 //routes to delete user
 router.delete("/delete-user/:userId", isLogin, isAdmin, deleteUserController);
@@ -37,5 +46,7 @@ router.post("/forgot-password/:email", forgotPasswordController);
 router.put("/reset-password", resetPassword);
 
 router.get("/total-users", getTotalUsers);
+
+router.put("/edit/:userId", editUserProfile);
 
 export default router;

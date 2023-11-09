@@ -8,6 +8,7 @@ import { useCart } from "../../context/cartContext";
 import Swal from "sweetalert2";
 import Message from "../../components/message/Message.js";
 import Loder from "../../components/loder/Loder";
+import { baseUrl } from "../../constant.js";
 function Cart() {
   //state variables
   //cart items
@@ -134,7 +135,7 @@ function Cart() {
                   <Col xs={3}>
                     <img
                       style={{ objectFit: "contain" }}
-                      src={`http://localhost:8000/api/v1/files/get-file/${item.image}`}
+                      src={`${baseUrl}/files/get-file/${item.image}`}
                       alt="cart-product"
                       className="img-fluid"
                     />

@@ -6,6 +6,7 @@ import Message from "../../components/message/Message";
 import { useCart } from "../../context/cartContext";
 import { Col } from "react-bootstrap";
 import Sidebar from "../component/sidebar/Sidebar";
+import { baseUrl } from "../../constant";
 
 const EditAndViewProduct = () => {
   const { cartState } = useCart();
@@ -170,17 +171,17 @@ const EditAndViewProduct = () => {
           <Sidebar />
         </Col>
         <Col className={`bg-4 pt-4 `} xs={window.innerWidth <= 830 ? 12 : 10}>
-        <div className="d-md-none d-flex justify-content-end mb-3">
-              {!toggleSideBar ? (
-                <button className="btn bg-3" onClick={handelSideBar}>
-                  Sidebar
-                </button>
-              ) : (
-                <button className="btn bg-3" onClick={handelSideBar}>
-                  <BsXSquareFill />
-                </button>
-              )}
-            </div>
+          <div className="d-md-none d-flex justify-content-end mb-3">
+            {!toggleSideBar ? (
+              <button className="btn bg-3" onClick={handelSideBar}>
+                Sidebar
+              </button>
+            ) : (
+              <button className="btn bg-3" onClick={handelSideBar}>
+                <BsXSquareFill />
+              </button>
+            )}
+          </div>
           <div className="card rounded shadow">
             <div className="card-header text-end">
               <BsPencilSquare
@@ -200,7 +201,7 @@ const EditAndViewProduct = () => {
                   />
                 ) : (
                   <img
-                    src={`http://localhost:8000/api/v1/files/get-file/${fileName}`}
+                    src={`${baseUrl}/files/get-file/${fileName}`}
                     alt="Product"
                     className="card-img-top rounded-left"
                   />

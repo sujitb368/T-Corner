@@ -69,7 +69,7 @@ const addShippingAddress = async (req, res) => {
     }
   } catch (error) {
     console.log(error);
-    return res.status(404).send({
+    return res.status(500).send({
       success: false,
       message: "Couldn't add shipping address",
       error,
@@ -107,4 +107,47 @@ const getShippingAddress = async (req, res) => {
   }
 };
 
-export { addShippingAddress, getShippingAddress };
+const editShippingAddress = async (req, res) => {
+  try {
+    const { user } = req.params;
+    const { _id, fName, lName, address, city, state, pin, phone, landMark } =
+      req.body;
+    if (!user) {
+      return res.status(400).send({
+        message: "Please provide user",
+        success: false,
+        error: "Missing required field",
+      });
+    }
+    const updatedAddress = await ShippingModel.findOneAndUpdate(
+      { user, "addresses._id": _id },
+      {
+        $set: {
+          "addresses.$.fName": fName,
+          "addresses.$.lName": lName,
+          "addresses.$.address": address,
+          "addresses.$.city": city,
+          "addresses.$.state": state,
+          "addresses.$.pin": pin,
+          "addresses.$.phone": phone,
+          "addresses.$.landMark": landMark,
+        },
+      },
+      { new: true }
+    );
+    return res.status(201).send({
+      message: "Address updated successfully",
+      success: true,
+      addresses: updatedAddress.addresses,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({
+      success: false,
+      message: "Internal Server Error",
+      error,
+    });
+  }
+};
+
+export { addShippingAddress, getShippingAddress, editShippingAddress };

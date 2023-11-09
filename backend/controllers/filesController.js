@@ -3,6 +3,7 @@ import multer from "multer";
 
 import { __dirname } from "../config.js";
 import ProductModel from "../models/productModel.js";
+import UserModel from "../models/userModel.js";
 
 // Define storage settings for Multer
 const storage = multer.diskStorage({
@@ -106,6 +107,39 @@ const editImageFileController = async (req, res) => {
   }
 };
 
+const editProfileImageFileController = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    if (!req.file) {
+      return res.status(400).send({
+        message: "No file uploaded",
+        success: false,
+      });
+    }
+
+    // Access the file details through req.file
+    const uploadedFile = req.file;
+
+    const user = await UserModel.findByIdAndUpdate(
+      { _id: userId },
+      { profilePic: uploadedFile.filename },
+      { new: true }
+    );
+
+    return res.status(201).send({
+      message: "File uploaded",
+      success: true,
+      user,
+    });
+  } catch (error) {
+    console.log(`Error in uploadFile ${error}`);
+    return res.status({
+      message: "Internal server error",
+      success: false,
+      error,
+    });
+  }
+};
 const downloadFile = (req, res) => {
   const fileName = req.params.filename;
   const path = __dirname + "/uploadedFiles/";
@@ -120,4 +154,10 @@ const downloadFile = (req, res) => {
     }
   });
 };
-export { upload, uploadFileController, downloadFile, editImageFileController };
+export {
+  upload,
+  uploadFileController,
+  downloadFile,
+  editImageFileController,
+  editProfileImageFileController,
+};

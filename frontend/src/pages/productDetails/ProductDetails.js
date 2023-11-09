@@ -7,6 +7,7 @@ import "./ProductDetails.css";
 import { BsFillCartPlusFill, BsGeoAltFill } from "react-icons/bs";
 import { useCart } from "../../context/cartContext";
 import Message from "../../components/message/Message.js";
+import { baseUrl } from "../../constant.js";
 
 function ProductDetails() {
   // const [ProductDetail, setProductDetail] = useState();
@@ -150,7 +151,7 @@ function ProductDetails() {
             <Row className="border flex-column flex-md-row">
               <Col className="p-3 border-end">
                 <img
-                  src={`http://localhost:8000/api/v1/files/get-file/${details.image}`}
+                  src={`${baseUrl}/files/get-file/${details.image}`}
                   className="rounded d-block img-fluid"
                   style={{ objectFit: "contain" }}
                   alt="product view"

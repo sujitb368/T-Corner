@@ -9,7 +9,7 @@ function Filters(props) {
 
   const prices = [
     { price: [0, 500], label: "below 500", _id: "priceRange1" },
-    { price: [500, 1000], label: "500 - 100", _id: "priceRange2" },
+    { price: [500, 1000], label: "500 - 1000", _id: "priceRange2" },
     { price: [1000, 1500], label: "1000 - 1500", _id: "priceRange3" },
     { price: [1500, 2000], label: "1500 - 2000", _id: "priceRange4" },
     { price: [2000, 0], label: "above 2000", _id: "priceRange5" },
@@ -18,18 +18,15 @@ function Filters(props) {
   const handelCheck = (value, id) => {
     try {
       //get all checked categories
-
       let all = [...checked];
       if (value) {
         all.push(id);
       } else {
         all = all.filter((c) => c !== id);
       }
-      console.log(all);
-
       setChecked(all);
     } catch (error) {
-      console.log("error in handelCheck", error);
+      console.log("Error in handelCheck", error);
       Message({ type: "error", message: "something went wrong" });
     }
   };
@@ -44,13 +41,11 @@ function Filters(props) {
   // function to get all categories
   const filter = () => {
     if (props?.onClick) {
-      console.log("props onClick in filter");
       props.onClick(checked, price);
     }
   };
   const getAllCategories = async (event, id) => {
     try {
-      console.log(event, id);
       const { data } = await axios.get(`/category/categories`);
       if (data.success) {
         setCategories(data.categories);

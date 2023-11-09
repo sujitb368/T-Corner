@@ -8,6 +8,7 @@ import {
   productById,
   filterProduct,
   getQuantity,
+  searchProduct,
 } from "../controllers/productController.js";
 
 router.post("/addProduct", createProduct);
@@ -22,6 +23,9 @@ router.get("/getProductId/:productId", productById);
 router.post("/quantity", getQuantity);
 
 // filter by category
-router.post("/filter", filterProduct);
+router.post("/filter/:page", filterProduct);
+
+//search product
+router.get("/search", searchProduct);
 
 export default router;
