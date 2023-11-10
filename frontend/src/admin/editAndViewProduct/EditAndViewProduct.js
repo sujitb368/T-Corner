@@ -63,9 +63,9 @@ const EditAndViewProduct = () => {
   //function to handel size and color as this can have multiple values so using array
   const handelColorAndSize = (value, setState) => {
     // Split the comma-separated values and store them in the 'colors' state
-    const colorArray = value.split(",").map((color) => color.trim());
-    if (colorArray.length) {
-      setState(colorArray);
+    const valueArray = value.split(",").map((color) => color.trim());
+    if (valueArray.length) {
+      setState(valueArray);
     }
   };
 
@@ -183,12 +183,16 @@ const EditAndViewProduct = () => {
             )}
           </div>
           <div className="card rounded shadow">
-            <div className="card-header text-end">
-              <BsPencilSquare
-                size={24}
-                color="blue"
-                onClick={handleEditClick}
-              />
+            <div className="card-header d-flex bg-1 text-3 align-items-center justify-content-between">
+              <h2 className="">Edit Product</h2>
+
+              <span className="float-right btn text-3">
+                <BsPencilSquare
+                  size={24}
+                  className="text-3"
+                  onClick={handleEditClick}
+                />
+              </span>
             </div>
 
             <div className="card-body row m-0">

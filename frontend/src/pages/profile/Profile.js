@@ -221,27 +221,31 @@ const Profile = () => {
       }`}
     >
       <Row>
-        <Col
-          xs={8}
-          md={2}
-          className={`side-bar pt-5 side-bar-responsive bg-2 ${
-            toggleSideBar ? "side-bar-responsive-toggle" : ""
-          }`}
-        >
-          <Sidebar />
-        </Col>
+        {cartState.user?.isAdmin && (
+          <Col
+            xs={8}
+            md={2}
+            className={`side-bar pt-5 side-bar-responsive bg-2 ${
+              toggleSideBar ? "side-bar-responsive-toggle" : ""
+            }`}
+          >
+            <Sidebar />
+          </Col>
+        )}
         <Col md={6}>
-          <div className="mt-3 d-md-none d-flex justify-content-end">
-            {!toggleSideBar ? (
-              <button className="btn bg-3" onClick={handelSideBar}>
-                Sidebar
-              </button>
-            ) : (
-              <button className="btn bg-3" onClick={handelSideBar}>
-                <BsXSquareFill />
-              </button>
-            )}
-          </div>
+          {cartState.user?.isAdmin && (
+            <div className="mt-3 d-md-none d-flex justify-content-end">
+              {!toggleSideBar ? (
+                <button className="btn bg-3" onClick={handelSideBar}>
+                  Sidebar
+                </button>
+              ) : (
+                <button className="btn bg-3" onClick={handelSideBar}>
+                  <BsXSquareFill />
+                </button>
+              )}
+            </div>
+          )}
           <Card className="mt-5 mb-5 rounded shadow">
             <Card.Header
               className="d-flex bg-1 text-3 align-items-center justify-content-between"

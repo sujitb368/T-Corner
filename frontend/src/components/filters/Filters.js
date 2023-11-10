@@ -44,6 +44,12 @@ function Filters(props) {
       props.onClick(checked, price);
     }
   };
+
+  const reset = () => {
+    if (props?.reset) {
+      props.reset();
+    }
+  };
   const getAllCategories = async (event, id) => {
     try {
       const { data } = await axios.get(`/category/categories`);
@@ -103,9 +109,12 @@ function Filters(props) {
           </>
         </div>
 
-        <div className="text-center">
-          <button onClick={filter} className="btn bg-3 text-1">
+        <div className="text-center mt-1">
+          <button onClick={filter} className="btn bg-3 text-1 me-1">
             Filter
+          </button>
+          <button onClick={(e) => reset()} className="btn bg-3 text-1">
+            Reset
           </button>
         </div>
       </div>

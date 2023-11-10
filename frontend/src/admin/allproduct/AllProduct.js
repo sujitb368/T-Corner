@@ -3,7 +3,7 @@ import { Col, Container, Row, Table } from "react-bootstrap";
 import Sidebar from "../component/sidebar/Sidebar";
 import axios from "axios";
 import { useCart } from "../../context/cartContext";
-import { BsFillEyeFill, BsXSquareFill } from "react-icons/bs";
+import { BsFillEyeFill, BsTrash3Fill, BsXSquareFill } from "react-icons/bs";
 import { Link, useNavigate } from "react-router-dom";
 import Message from "../../components/message/Message.js";
 
@@ -88,6 +88,28 @@ function AllProduct() {
     }
   };
 
+  const deleteProduct = async (productId) => {
+    try {
+      const { data } = await axios.delete(`/product/delete/${productId}`, {
+        headers: {
+          Authorization: cartState.token,
+        },
+      });
+      if (data?.success) {
+        Message({ type: "success", message: data.message });
+        getAllProducts();
+      }
+    } catch (error) {
+      Message({
+        type: "error",
+        message:
+          error?.response?.data?.message ??
+          error.message ??
+          "Something went wrong",
+      });
+    }
+  };
+
   useEffect(() => {
     if (cartState.token) {
       getAllProducts();
@@ -164,13 +186,16 @@ function AllProduct() {
                         <td>
                           <button
                             onClick={() => productDetails(product._id)}
-                            className="btn"
+                            className="btn bg-3 me-1"
                           >
                             <BsFillEyeFill />{" "}
                           </button>
-                          {/* <button className="btn">
-                          <BsPencilSquare />
-                        </button> */}
+                          <button
+                            onClick={() => deleteProduct(product._id)}
+                            className="btn btn-danger"
+                          >
+                            <BsTrash3Fill />
+                          </button>
                         </td>
                       </tr>
                     );

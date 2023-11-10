@@ -36,9 +36,7 @@ function ReviewOrder() {
             ? paymentDetails.paymentSource
             : "COD",
           shippingAddress: cartState.shippingAddress,
-          orderStatus: paymentDetails?.status
-            ? paymentDetails.status
-            : "pending",
+          orderStatus: "pending",
           shippingCharge: 100,
           paymentDetails: paymentDetails,
         },

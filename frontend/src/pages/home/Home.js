@@ -9,7 +9,7 @@ import Filters from "../../components/filters/Filters";
 // import { initialUserState, userReducer } from "../../context/userContext";
 
 function Home() {
-  const { cartState } = useCart();
+  const { cartState, cartDispatch } = useCart();
   const [allproducts, setAllProducts] = useState([]);
   const [categoryToFilter, setCategoryToFilter] = useState([]);
   const [priceToFilter, setPriceToFilter] = useState([]);
@@ -30,18 +30,26 @@ function Home() {
   let location = useLocation();
 
   // to filter product based on category
-  const queryParams = location.search.split("=")[1]?.join();
+  const queryParams = decodeURIComponent(location?.search?.split("=")[1]);
 
   const navigate = useNavigate();
 
   const handelFilter = (category, price) => {
     if (category) {
-      console.log("handel filter in home", category);
       setCategoryToFilter(category);
     }
     if (price) {
       setPriceToFilter(price);
     }
+  };
+
+  const reset = (reset) => {
+    setCategoryToFilter([]);
+    setPriceToFilter([]);
+
+    cartDispatch({ type: "SEARCH", payload: "all" });
+
+    getAllProducts();
   };
 
   const handlePageChange = (pageNumber) => {
@@ -100,8 +108,6 @@ function Home() {
           type: data.products.length ? "success" : "No product found",
           message: data.message,
         });
-        console.log("category to filter", categoryToFilter);
-        console.log("price to filter", priceToFilter);
       }
     } catch (error) {
       Message({
@@ -135,15 +141,27 @@ function Home() {
   };
 
   useEffect(() => {
+    // making categoryToFilter and priceToFilter to empty on component rendering
+    //if we do not make it empty it will load product from previous filter only
+    // as we are setting this value in handelFilter function
+    setCategoryToFilter([]);
+    setPriceToFilter([]);
+
     if (!location.search) {
       getAllProducts();
     }
+
     //eslint-disable-next-line
   }, [location.search]);
 
   //this useEffect will trigger when we have filtered parameter i.e. priceToFilter and categoryToFilter
   useEffect(() => {
-    if (queryParams?.length) {
+    if (
+      queryParams !== undefined &&
+      queryParams !== "undefined" &&
+      queryParams?.length &&
+      !categoryToFilter?.length
+    ) {
       //when we have query params to filter
       setCategoryToFilter(queryParams);
       getFilteredProducts();
@@ -168,7 +186,7 @@ function Home() {
       <Container fluid>
         <Row>
           <Col xs={2} className={`side-bar pt-5 side-bar-responsive`}>
-            <Filters onClick={handelFilter} />
+            <Filters reset={reset} onClick={handelFilter} />
           </Col>
           <Col className="px-3 py-5" xs={10}>
             {!allproducts.length && (
@@ -183,7 +201,6 @@ function Home() {
                     <Product
                       key={product._id}
                       onClick={() => {
-                        console.log("product._id", product._id);
                         navigate(`/product-details/${product._id}`);
                       }}
                       product={product}

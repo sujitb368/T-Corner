@@ -4,7 +4,16 @@ import ProductModel from "../models/productModel.js";
 const createProduct = async (req, res) => {
   try {
     //get all fields of the product
-    const { name, description, price, category, quantity, filename } = req.body;
+    const {
+      name,
+      description,
+      price,
+      category,
+      quantity,
+      filename,
+      colors,
+      size,
+    } = req.body;
     let { shipping } = req.body;
     if (shipping === "true") {
       shipping = true;
@@ -38,11 +47,11 @@ const createProduct = async (req, res) => {
           message: "Required field",
           error: "Category is Required",
         });
-      case !quantity:
+      case !quantity || colors || size:
         return res.status(400).send({
           success: false,
-          message: "Required field",
-          error: "Quantity is Required",
+          message: "All fields are Required field",
+          error: "Required fields",
         });
     }
 
@@ -54,6 +63,8 @@ const createProduct = async (req, res) => {
       price,
       category,
       shipping,
+      colors,
+      size,
       image: filename,
     });
 
@@ -190,21 +201,20 @@ const deleteProduct = async (req, res) => {
       return res.status(404).send({
         message: "unable to get products",
         success: false,
-        error: "Product id not provided",
+        error: "Required field",
       });
     }
 
-    const product = await ProductModel.find({ _id: productId });
+    const product = await ProductModel.findByIdAndRemove({ _id: productId });
 
     //send response to client
     return res.status(200).send({
-      message: "product details found",
+      message: "Product deleted successfully",
       success: true,
-      product,
     });
   } catch (error) {
     return res.status(500).send({
-      message: "unable to get products ",
+      message: "Unable to delete",
       success: false,
       error,
     });
@@ -248,6 +258,8 @@ APIs for filter and search
 const filterProduct = async (req, res) => {
   try {
     const { price, category } = req.body;
+
+    console.log(price, category);
 
     const { page } = req.params ?? 1;
     const perPage = req.query?.perPage ?? 10;
@@ -352,5 +364,6 @@ export {
   filterProduct,
   getQuantity,
   updateProduct,
+  deleteProduct,
   searchProduct,
 };

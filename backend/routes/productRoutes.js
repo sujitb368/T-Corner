@@ -9,11 +9,15 @@ import {
   filterProduct,
   getQuantity,
   searchProduct,
+  deleteProduct,
 } from "../controllers/productController.js";
 
 router.post("/addProduct", createProduct);
 
 router.put("/updateProduct/:productId", updateProduct);
+
+//to delete the product
+router.delete("/delete/:productId", deleteProduct);
 
 router.get("/allproducts/:page", allProducts);
 

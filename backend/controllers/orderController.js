@@ -21,7 +21,7 @@ const placeOrderController = async (req, res) => {
       shippingCharge,
       paymentDetails,
     } = req.body;
-    console.log(orderDate);
+
     const order = new OrderModel({
       customer,
       orderItems,

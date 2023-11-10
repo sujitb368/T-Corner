@@ -43,8 +43,6 @@ function MyOrders() {
   };
 
   const handleRating = async (productId, myRating) => {
-    // setMyRating(myRating);
-
     const { data } = await axios.post(
       `/rating/rating`,
       {
@@ -122,9 +120,8 @@ function MyOrders() {
                   >
                     <p className="m-0 mb-1 status">
                       <span className="span d-inline-block w-100">
-                        {order.orderStatus.toLowerCase() === "pending"
-                          ? "Processing"
-                          : order.orderStatus}
+                        {order.orderStatus[0].toUpperCase() +
+                          order.orderStatus.slice(1)}
                       </span>
                     </p>
 
