@@ -1,5 +1,4 @@
-//import userModel
-import userModel from "../models/userModel.js";
+//import UserModel
 import { frontEndUrl } from "../config.js";
 import {
   hashPassword,
@@ -28,18 +27,18 @@ const signupController = async (req, res) => {
       });
     }
     //find user by email to check if user already exists
-    const isUserExist = await userModel.findOne({ email });
+    const isUserExist = await UserModel.findOne({ email });
 
     //if user exist already then return with status code 400
     if (isUserExist) {
       return res.status(400).send({
-        message: "User allready exists",
+        message: "User all ready exists",
         success: false,
       });
     }
     const hashedPassword = await hashPassword(password);
     //user details
-    const user = new userModel({
+    const user = new UserModel({
       name,
       email,
       password: hashedPassword,
@@ -78,7 +77,7 @@ const loginController = async (req, res) => {
     }
 
     //find user by email
-    const user = await userModel.findOne({ email });
+    const user = await UserModel.findOne({ email });
 
     //check if user provided password is correct or not
     const checkPassword = await comparePassword(password, user.password);
@@ -88,7 +87,7 @@ const loginController = async (req, res) => {
       //user details object without password field
       const userDetails = await removePassword(user);
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
-        expiresIn: "1d",
+        expiresIn: "1day",
       });
 
       return res.status(200).send({
@@ -115,18 +114,78 @@ const testController = async (req, res) => {
   return res.send({ user: req.user, message: "testing" });
 };
 
+// controller function to authorize normal user
+const isLoggedIn = async (req, res) => {
+  return res.status(200).send({
+    message: "access granted",
+    success: true,
+    loggedIn: true,
+  });
+};
+
 const getAllUsersController = async (req, res) => {
   try {
-    const { page } = req.params ?? 0;
-    const skip = page * 10;
-    const users = await UserModel.find({}, { password: 0 })
+    const { page } = req.params ?? 1;
+
+    const perPage = req.query?.perPage ?? 10;
+
+    //here page will be type cast to number if it is in string format '1' due to minus(-)
+    const skip = (page - 1) * 10;
+
+    const users = await UserModel.find({ isAdmin: false }, { password: 0 })
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(10);
+    //length of the filtered result
+    const totalUsers = users.length;
+
     return res.status(200).send({
       message: "All users",
       success: true,
       users,
+      totalPage: Math.ceil(totalUsers / perPage),
+      currentPage: page,
+    });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .send({ message: "Something went wrong", error, success: false });
+  }
+};
+
+const getSearchedUser = async (req, res) => {
+  try {
+    const { page = 1, query, perPage = 10 } = req.query;
+
+    //here page will be type cast to number if it is in string format '1' due to minus(-)
+    const skip = (page - 1) * 10;
+
+    // Use a regular expression to perform a case-insensitive search on product names and descriptions
+    const regex = new RegExp(query, "i");
+
+    const users = await UserModel.find(
+      {
+        $or: [
+          { name: { $regex: regex } },
+          { email: { $regex: regex } },
+          { phone: { $regex: regex } },
+        ],
+      },
+      { password: 0 }
+    )
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(10);
+    //length of the filtered result
+    const totalUsers = users.length;
+
+    return res.status(200).send({
+      message: "Searched users",
+      success: true,
+      users,
+      totalPage: Math.ceil(totalUsers / perPage),
+      currentPage: page,
     });
   } catch (error) {
     console.log(error);
@@ -216,7 +275,7 @@ const resetPassword = async (req, res) => {
     const hashedPassword = await hashPassword(password);
 
     //find user by email to check if user already exists
-    const isUserExist = await userModel.updateOne(
+    const isUserExist = await UserModel.updateOne(
       { email },
       { $set: { password: hashedPassword } }
     );
@@ -264,13 +323,37 @@ const getTotalUsers = async (req, res) => {
   }
 };
 
+const editUserProfile = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await UserModel.findByIdAndUpdate({ _id: userId }, req.body, {
+      new: true,
+    });
+
+    return res.status(200).send({
+      message: "User profile successfully updated",
+      success: true,
+      user,
+    });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .send({ message: "Something went wrong", error, success: false });
+  }
+};
+
 export {
   signupController,
   loginController,
   testController,
+  isLoggedIn,
   getAllUsersController,
   deleteUserController,
   forgotPasswordController,
   resetPassword,
   getTotalUsers,
+  editUserProfile,
+  getSearchedUser,
 };

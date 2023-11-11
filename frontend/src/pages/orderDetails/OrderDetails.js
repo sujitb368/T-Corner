@@ -6,6 +6,10 @@ import { useCart } from "../../context/cartContext";
 import { Col } from "react-bootstrap";
 
 import "./OrderDetails.css";
+import { baseUrl } from "../../constant";
+
+import moment from "moment";
+moment().format();
 
 function OrderDetails() {
   const { cartState } = useCart();
@@ -19,12 +23,15 @@ function OrderDetails() {
           Authorization: cartState.token,
         },
       });
-      console.log("order  details", data.details);
-
-      setOrderDetails(data.details);
-      Message({ type: "success", message: data.message });
+      if (data.success) {
+        setOrderDetails(data.details);
+        Message({ type: "success", message: data.message });
+      }
     } catch (error) {
-      Message({ type: "error", message: error.response.message });
+      Message({
+        type: "error",
+        message: error?.response?.data?.message ?? "Something went wrong",
+      });
     }
   };
 
@@ -40,41 +47,39 @@ function OrderDetails() {
             {orderDetails &&
               orderDetails[0]?.orderItems?.map((order) => {
                 return (
-                  <>
-                    <Col key={order._id} xs={12}>
-                      <div className="shadow row p-2 me-1 mb-4 rounded">
-                        <div className="col-3">
-                          <img
-                            className="w-100"
-                            src={`http://localhost:8000/api/v1/files/get-file/${order.image}`}
-                            alt="Product"
-                            style={{
-                              height: "150px",
-                              objectFit: "contain",
-                            }}
-                          />
-                        </div>
-                        <div className="col-6">
-                          <p className="m-0 mb-1 product-name text-muted">
-                            {order.name}
-                          </p>
-
-                          <p className="m-0 mb-1 status">{order.price}</p>
-
-                          <p className="m-0 mb-1 status">
-                            Quantity :{order.quantity}
-                          </p>
-
-                          {order.color && (
-                            <p className="m-0 mb-1 status">{order.color}</p>
-                          )}
-                          {order.size && (
-                            <p className="m-0 mb-1 status">{order.size}</p>
-                          )}
-                        </div>
+                  <Col key={order._id} xs={12}>
+                    <div className="shadow row p-2 me-1 mb-4 rounded">
+                      <div className="col-3">
+                        <img
+                          className="w-100"
+                          src={`${baseUrl}/files/get-file/${order.image}`}
+                          alt="Product"
+                          style={{
+                            height: "150px",
+                            objectFit: "contain",
+                          }}
+                        />
                       </div>
-                    </Col>
-                  </>
+                      <div className="col-6">
+                        <p className="m-0 mb-1 product-name text-muted">
+                          {order.name}
+                        </p>
+
+                        <p className="m-0 mb-1 status">{order.price}</p>
+
+                        <p className="m-0 mb-1 status">
+                          Quantity :{order.quantity}
+                        </p>
+
+                        {order.color && (
+                          <p className="m-0 mb-1 status">{order.color}</p>
+                        )}
+                        {order.size && (
+                          <p className="m-0 mb-1 status">{order.size}</p>
+                        )}
+                      </div>
+                    </div>
+                  </Col>
                 );
               })}
           </div>
@@ -112,7 +117,7 @@ function OrderDetails() {
                 <p>
                   Order Date :{" "}
                   <span className="details-span">
-                    {orderDetails[0]?.orderDate}{" "}
+                    {moment(orderDetails[0]?.orderDate).format("Do MMM YYYY")}
                   </span>
                 </p>
               )}

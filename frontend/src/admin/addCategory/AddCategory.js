@@ -32,12 +32,20 @@ function AddCategory() {
           },
         }
       );
-      if (response.data) {
+      if (response?.data) {
         Message({ type: "success", message: response.data.message });
         setCategory("");
       }
-      console.log("category response = ", response);
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+      Message({
+        type: "error",
+        message:
+          error?.response?.data?.message ??
+          error?.message ??
+          "Something went wrong",
+      });
+    }
   };
   //eslint-disable-next-line
   const handelSideBar = () => {

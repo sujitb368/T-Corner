@@ -33,7 +33,6 @@ const myOrders = async (req, res) => {
 const getMyOrderDetailsByOrderId = async (req, res) => {
   try {
     const { orderId } = req.params;
-    console.log("orderid ", orderId);
     if (!orderId) {
       return res.status(400).send({
         message: "Order Id is required",
@@ -47,7 +46,6 @@ const getMyOrderDetailsByOrderId = async (req, res) => {
       },
       { "orders.$": 1 }
     );
-    console.log(details);
     return res.status(200).send({
       message: "Order details",
       success: true,

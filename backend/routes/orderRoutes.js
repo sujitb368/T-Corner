@@ -8,8 +8,9 @@ import {
   placeOrderController,
   getOrders,
   changeOrderStatus,
+  getSearchedOrders,
 } from "../controllers/orderController.js";
-import { isLogin } from "../middlewares/userMiddleware.js";
+import { isAdmin, isLogin } from "../middlewares/userMiddleware.js";
 
 //api end point to place order in COD mode
 router.post("/order", isLogin, placeOrderController);
@@ -44,8 +45,11 @@ router.post("/:orderID/capture", async (req, res) => {
   }
 });
 
-router.get("/get-orders", getOrders);
+router.get("/get-orders", isLogin, getOrders);
 
-router.put("/change-status/:orderId", changeOrderStatus);
+router.put("/change-status/:orderId", isLogin, isAdmin, changeOrderStatus);
+
+//get order details by orderId
+router.get("/search-orders", isLogin, getSearchedOrders);
 
 export default router;

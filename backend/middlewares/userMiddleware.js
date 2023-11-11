@@ -9,8 +9,8 @@ const isLogin = (req, res, next) => {
     //if authorization token is not present then return with status code 401
     if (!authorization) {
       return res
-        .status(401)
-        .send({ message: "unauthorized user", success: false });
+        .status(400)
+        .send({ message: "No token unauthorized user", success: false });
     }
     //if authorization token is present then get token
     const token = authorization.includes("Bearer")
@@ -20,9 +20,13 @@ const isLogin = (req, res, next) => {
     // verify authorization token
     jwt.verify(token, JWT_SECRET, async (err, payload) => {
       if (err) {
+        console.log(err);
         return res
           .status(401)
-          .send({ message: "unauthorized user", success: false });
+          .send({
+            message: err.message ?? "unauthorized user",
+            success: false,
+          });
       }
 
       // if token is valid find user and add to request object

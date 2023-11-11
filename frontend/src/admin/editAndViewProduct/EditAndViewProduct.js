@@ -6,6 +6,7 @@ import Message from "../../components/message/Message";
 import { useCart } from "../../context/cartContext";
 import { Col } from "react-bootstrap";
 import Sidebar from "../component/sidebar/Sidebar";
+import { baseUrl } from "../../constant";
 
 const EditAndViewProduct = () => {
   const { cartState } = useCart();
@@ -62,9 +63,9 @@ const EditAndViewProduct = () => {
   //function to handel size and color as this can have multiple values so using array
   const handelColorAndSize = (value, setState) => {
     // Split the comma-separated values and store them in the 'colors' state
-    const colorArray = value.split(",").map((color) => color.trim());
-    if (colorArray.length) {
-      setState(colorArray);
+    const valueArray = value.split(",").map((color) => color.trim());
+    if (valueArray.length) {
+      setState(valueArray);
     }
   };
 
@@ -170,24 +171,28 @@ const EditAndViewProduct = () => {
           <Sidebar />
         </Col>
         <Col className={`bg-4 pt-4 `} xs={window.innerWidth <= 830 ? 12 : 10}>
-        <div className="d-md-none d-flex justify-content-end mb-3">
-              {!toggleSideBar ? (
-                <button className="btn bg-3" onClick={handelSideBar}>
-                  Sidebar
-                </button>
-              ) : (
-                <button className="btn bg-3" onClick={handelSideBar}>
-                  <BsXSquareFill />
-                </button>
-              )}
-            </div>
+          <div className="d-md-none d-flex justify-content-end mb-3">
+            {!toggleSideBar ? (
+              <button className="btn bg-3" onClick={handelSideBar}>
+                Sidebar
+              </button>
+            ) : (
+              <button className="btn bg-3" onClick={handelSideBar}>
+                <BsXSquareFill />
+              </button>
+            )}
+          </div>
           <div className="card rounded shadow">
-            <div className="card-header text-end">
-              <BsPencilSquare
-                size={24}
-                color="blue"
-                onClick={handleEditClick}
-              />
+            <div className="card-header d-flex bg-1 text-3 align-items-center justify-content-between">
+              <h2 className="">Edit Product</h2>
+
+              <span className="float-right btn text-3">
+                <BsPencilSquare
+                  size={24}
+                  className="text-3"
+                  onClick={handleEditClick}
+                />
+              </span>
             </div>
 
             <div className="card-body row m-0">
@@ -200,7 +205,7 @@ const EditAndViewProduct = () => {
                   />
                 ) : (
                   <img
-                    src={`http://localhost:8000/api/v1/files/get-file/${fileName}`}
+                    src={`${baseUrl}/files/get-file/${fileName}`}
                     alt="Product"
                     className="card-img-top rounded-left"
                   />

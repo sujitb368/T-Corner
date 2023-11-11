@@ -8,6 +8,7 @@ import axios from "axios";
 import { useCart } from "../../context/cartContext";
 import { Link } from "react-router-dom";
 import Message from "../../components/message/Message";
+import { baseUrl } from "../../constant";
 function MyOrders() {
   //eslint-disable-next-line
   const { cartState, cartDispatch } = useCart();
@@ -34,13 +35,14 @@ function MyOrders() {
       }
     } catch (error) {
       console.log(error);
-      Message({ type: "error", message: error.message });
+      Message({
+        type: "error",
+        message: error?.response?.data?.message ?? "Something went wrong",
+      });
     }
   };
 
   const handleRating = async (productId, myRating) => {
-    // setMyRating(myRating);
-
     const { data } = await axios.post(
       `/rating/rating`,
       {
@@ -84,7 +86,7 @@ function MyOrders() {
                             <div className="col-4 border border-bottom-0">
                               <img
                                 className="w-100"
-                                src={`http://localhost:8000/api/v1/files/get-file/${item.image}`}
+                                src={`${baseUrl}/files/get-file/${item.image}`}
                                 alt="Product"
                                 style={{
                                   height: "150px",
@@ -118,9 +120,8 @@ function MyOrders() {
                   >
                     <p className="m-0 mb-1 status">
                       <span className="span d-inline-block w-100">
-                        {order.orderStatus.toLowerCase() === "pending"
-                          ? "Processing"
-                          : order.orderStatus}
+                        {order.orderStatus[0].toUpperCase() +
+                          order.orderStatus.slice(1)}
                       </span>
                     </p>
 
@@ -135,37 +136,6 @@ function MyOrders() {
               </Col>
             );
           })}
-
-        {/* <Col lg={6} md={12}>
-          <div>
-            <h1>Order Details</h1>
-            <p>Order ID: {order.orderId}</p>
-            <p>Date of Purchase:{order.date}</p>
-
-            <h2>Ordered Items</h2>
-            <ul>
-              {order.items.map((item) => (
-                <li key={item.id}>
-                  {item.name} (Quantity: {item.quantity})
-                  <span>${item.price * item.quantity}</span>
-                </li>
-              ))}
-            </ul>
-
-            <p>
-              Shipping Address:{" "}
-              {order.shippingAddress.street +
-                " " +
-                order.shippingAddress.city +
-                " " +
-                order.shippingAddress.postalCode}
-            </p>
-            <p>Payment Method: {order.paymentMethod}</p>
-            <p>Order Status: {order.status}</p>
-
-          
-          </div>
-        </Col> */}
       </Row>
     </Container>
   );

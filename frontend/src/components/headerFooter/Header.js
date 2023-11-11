@@ -14,10 +14,13 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useCart } from "../../context/cartContext";
 import axios from "axios";
 import Message from "../message/Message";
-function Header() {
+function Header(props) {
   //get cart state from context
   const { cartState, cartDispatch } = useCart();
   const [categories, setCategories] = useState([]);
+
+  //query string to search
+  const [query, setQuery] = useState("");
 
   const navigate = useNavigate();
 
@@ -38,11 +41,9 @@ function Header() {
 
   const getAllCategories = async (event, id) => {
     try {
-      console.log(event, id);
       const { data } = await axios.get(`/category/categories`);
-      if (data.success) {
+      if (data?.success) {
         setCategories(data.categories);
-        console.log(data);
       }
     } catch (error) {
       console.log(error);
@@ -51,6 +52,12 @@ function Header() {
         message: error.response?.data?.message ?? "Something went wrong",
       });
     }
+  };
+
+  const sendQuery = async (e) => {
+    e.preventDefault();
+    cartDispatch({ type: "SEARCH", payload: query.length ? query : "all" });
+    setQuery("");
   };
   useEffect(() => {
     getAllCategories();
@@ -71,10 +78,12 @@ function Header() {
                     type="text"
                     placeholder="Search"
                     className=" mr-sm-2"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
                   />
                 </Col>
                 <Col className="mt-1 mt-md-0" sm="auto">
-                  <Button className="bg-2" type="submit">
+                  <Button onClick={sendQuery} className="bg-2" type="submit">
                     Submit
                   </Button>
                 </Col>
@@ -88,7 +97,7 @@ function Header() {
                   Home
                 </Nav.Link>
               ) : (
-                <Nav.Link as={NavLink} className="text" to="/">
+                <Nav.Link as={NavLink} className="text d-none" to="/">
                   Pending Orders
                 </Nav.Link>
               )}

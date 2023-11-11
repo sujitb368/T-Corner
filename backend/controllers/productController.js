@@ -4,7 +4,16 @@ import ProductModel from "../models/productModel.js";
 const createProduct = async (req, res) => {
   try {
     //get all fields of the product
-    const { name, description, price, category, quantity, filename } = req.body;
+    const {
+      name,
+      description,
+      price,
+      category,
+      quantity,
+      filename,
+      colors,
+      size,
+    } = req.body;
     let { shipping } = req.body;
     if (shipping === "true") {
       shipping = true;
@@ -38,11 +47,11 @@ const createProduct = async (req, res) => {
           message: "Required field",
           error: "Category is Required",
         });
-      case !quantity:
+      case !quantity || colors || size:
         return res.status(400).send({
           success: false,
-          message: "Required field",
-          error: "Quantity is Required",
+          message: "All fields are Required field",
+          error: "Required fields",
         });
     }
 
@@ -54,6 +63,8 @@ const createProduct = async (req, res) => {
       price,
       category,
       shipping,
+      colors,
+      size,
       image: filename,
     });
 
@@ -76,22 +87,27 @@ const createProduct = async (req, res) => {
 
 //get all products
 const allProducts = async (req, res) => {
-  console.log("Product called");
   try {
     //get page number
-    const { page } = req.params ?? 0;
-    const skip = page * 10;
+    const { page } = req.params ?? 1;
+    const perPage = req.query?.perPage ?? 10;
+    const skip = (page - 1) * perPage;
 
     //find all products then sort with latest first
-    const products = await ProductModel.find({});
-    // .sort({ createdAt: -1 })
-    // .skip(skip)
-    // .limit(10);
+    const products = await ProductModel.find({})
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(10);
     //send response to client
+
+    const totalProducts = products.length;
+
     return res.status(200).send({
       message: "All products",
       success: true,
       products,
+      totalPage: Math.ceil(totalProducts / perPage),
+      currentPage: parseInt(page),
     });
   } catch (error) {
     console.log("error in getAllProducts", error);
@@ -185,21 +201,20 @@ const deleteProduct = async (req, res) => {
       return res.status(404).send({
         message: "unable to get products",
         success: false,
-        error: "Product id not provided",
+        error: "Required field",
       });
     }
 
-    const product = await ProductModel.find({ _id: productId });
+    const product = await ProductModel.findByIdAndRemove({ _id: productId });
 
     //send response to client
     return res.status(200).send({
-      message: "product details found",
+      message: "Product deleted successfully",
       success: true,
-      product,
     });
   } catch (error) {
     return res.status(500).send({
-      message: "unable to get products ",
+      message: "Unable to delete",
       success: false,
       error,
     });
@@ -244,8 +259,13 @@ const filterProduct = async (req, res) => {
   try {
     const { price, category } = req.body;
 
-    const { page } = req.params ?? 0;
-    const skip = page * 10;
+    console.log(price, category);
+
+    const { page } = req.params ?? 1;
+    const perPage = req.query?.perPage ?? 10;
+
+    //here page will be type cast to number if it is in string format '1' due to minus(-)
+    const skip = (page - 1) * 10;
 
     let args = {};
     //if category is present to filter
@@ -258,9 +278,7 @@ const filterProduct = async (req, res) => {
     //if price is present to filter but only above mention price
     if (price.length && price[1] === 0) args.price = { $gte: price[0] * 1 };
 
-    //filter product
-
-    console.log("args up", args);
+    //filter product based on given filter parameters
     const filterResult = await ProductModel.find({
       $or: [
         {
@@ -275,15 +293,21 @@ const filterProduct = async (req, res) => {
       .skip(skip)
       .limit(10);
 
+    //length of the filtered result
+    const totalProducts = filterProduct.length;
+
     return res.status(200).send({
       message: filterResult.length
         ? "Filtered products"
         : "No product found for this filter",
       success: true,
       products: filterResult,
+
+      totalPage: Math.ceil(totalProducts / perPage),
+      currentPage: page,
     });
   } catch (error) {
-    console.log("error in filter line no. 233", error);
+    console.log("error in filter line no. 294", error);
     return res.status().send({
       message: "Internal server error",
       success: false,
@@ -292,6 +316,47 @@ const filterProduct = async (req, res) => {
   }
 };
 
+const searchProduct = async (req, res) => {
+  try {
+    // Get search query, page, and perPage from the request
+    const { query, page = 1, perPage = 10 } = req.query;
+
+    // Use a regular expression to perform a case-insensitive search on product names and descriptions
+    const regex = new RegExp(query, "i");
+
+    // change to integer
+    const pageNumber = parseInt(page) || 1;
+
+    // skip value for pagination
+    const skip = (page - 1) * perPage;
+
+    // Find products matching the search query and apply pagination
+    const searchResults = await ProductModel.find({
+      $or: [{ name: { $regex: regex } }, { description: { $regex: regex } }],
+    })
+      .sort({ price: 1 })
+      .skip(skip)
+      .limit(parseInt(perPage));
+
+    //total length searchResults array
+    const totalProducts = searchResults.length;
+
+    return res.status(200).send({
+      message: "searched result",
+      success: true,
+      products: searchResults,
+      totalPage: Math.ceil(totalProducts / perPage),
+      currentPage: pageNumber,
+    });
+  } catch (error) {
+    console.log("error in filter line no. 338", error);
+    return res.status(500).send({
+      message: "Internal server error",
+      success: false,
+      error,
+    });
+  }
+};
 export {
   createProduct,
   allProducts,
@@ -299,4 +364,6 @@ export {
   filterProduct,
   getQuantity,
   updateProduct,
+  deleteProduct,
+  searchProduct,
 };

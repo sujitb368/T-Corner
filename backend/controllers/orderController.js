@@ -21,7 +21,7 @@ const placeOrderController = async (req, res) => {
       shippingCharge,
       paymentDetails,
     } = req.body;
-    console.log(orderDate);
+
     const order = new OrderModel({
       customer,
       orderItems,
@@ -218,15 +218,74 @@ const getOrderDetailsByOrderId = async (req, res) => {
   }
 };
 
+//function to get all orders
 const getOrders = async (req, res) => {
   try {
+    const { page = 1, perPage = 10 } = req.query;
+
+    // change to integer
+    const pageNumber = parseInt(page) || 1;
+
+    // skip value for pagination
+    const skip = (page - 1) * perPage;
+
     // Find all orders from the Order model
-    const orders = await OrderModel.find({}).populate("customer");
+    const orders = await OrderModel.find({})
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(perPage)
+      .populate("customer");
+
+    const totalOrders = orders.length;
+    // Send the orders as a JSON response
+    return res.status(200).send({
+      message: "Orders list",
+      success: true,
+      orders,
+      totalPage: Math.ceil(totalOrders / perPage),
+      currentPage: parseInt(page),
+    });
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    return res
+      .status(500)
+      .send({ message: "Failed to fetch orders", success: false, error });
+  }
+};
+
+const getSearchedOrders = async (req, res) => {
+  try {
+    // Get search query, page, and perPage from the request
+    const { query, page = 1, perPage = 10 } = req.query;
+
+    // Use a regular expression to perform a case-insensitive search on product names and descriptions
+    const regex = new RegExp(query, "i");
+
+    // change to integer
+    const pageNumber = parseInt(page) || 1;
+
+    // skip value for pagination
+    const skip = (page - 1) * perPage;
+
+    // Find all orders from the Order model
+    const orders = await OrderModel.find({
+      $or: [{ orderStatus: { $regex: regex } }],
+    })
+      .populate("customer")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(perPage);
+
+    const totalOrders = orders.length;
 
     // Send the orders as a JSON response
-    return res
-      .status(200)
-      .send({ message: "Orders list", success: true, orders });
+    return res.status(200).send({
+      message: "Orders list",
+      success: true,
+      orders,
+      totalPage: Math.ceil(totalOrders / perPage),
+      currentPage: pageNumber,
+    });
   } catch (error) {
     console.error("Error fetching orders:", error);
     return res
@@ -234,6 +293,8 @@ const getOrders = async (req, res) => {
       .json({ message: "Failed to fetch orders", success: false, error });
   }
 };
+
+//function to change status of order
 const changeOrderStatus = async (req, res) => {
   try {
     const { orderId } = req.params;
@@ -269,4 +330,5 @@ export {
   getOrderDetailsByOrderId,
   getOrders,
   changeOrderStatus,
+  getSearchedOrders,
 };

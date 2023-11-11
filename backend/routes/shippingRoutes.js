@@ -3,7 +3,8 @@ import express from "express";
 import { isLogin } from "../middlewares/userMiddleware.js";
 import {
   addShippingAddress,
-  getShippingAddress
+  getShippingAddress,
+  editShippingAddress,
 } from "../controllers/shippingAddressController.js";
 
 //router object
@@ -14,4 +15,8 @@ router.post("/shipping-address/:user", addShippingAddress);
 
 //get shipping address routes
 router.get("/shipping-address/:user", getShippingAddress);
+
+//edit shipping address routes
+router.put("/edit-address/:user", editShippingAddress);
+
 export default router;

@@ -5,6 +5,7 @@ import { BsXSquareFill } from "react-icons/bs";
 import Message from "../../components/message/Message";
 import axios from "axios";
 import { useCart } from "../../context/cartContext";
+import { Link } from "react-router-dom";
 
 function UserList() {
   //getting state from global context
@@ -14,16 +15,57 @@ function UserList() {
 
   const [allUsers, setAllUsers] = useState([]);
 
-  const getAllUsers = async () => {
+  const [totalPages, setTotalPages] = useState(5);
+
+  //page for search results
+  const [page, setPage] = useState(1);
+
+  const getAllUsers = async (currentPage = 1) => {
     try {
-      const { data } = await axios.get(`/user/all-users`, {
+      const { data } = await axios.get(`/user/all-users/${currentPage}`, {
         headers: {
           Authorization: cartState.token,
         },
       });
       if (data.success) {
+        setAllUsers(data.users);
+        setTotalPages(data.totalPage);
+        setPage(data.currentPage);
+        if (!data.users.length) {
+          Message({
+            type: "success",
+            message: "No more user found",
+          });
+        }
+      }
+    } catch (error) {
+      Message({
+        type: "error",
+        message: error?.response?.data?.message ?? "Something went wrong",
+      });
+    }
+  };
+  const getSearchedUser = async (currentPage = 1) => {
+    try {
+      const { data } = await axios.get(
+        `/user/search-users?query=${cartState.searchQuery}&page=${currentPage}`,
+        {
+          headers: {
+            Authorization: cartState.token,
+          },
+        }
+      );
+      if (data.success) {
         console.log("users", data.users);
         setAllUsers(data.users);
+        setTotalPages(data.totalPage);
+        setPage(data.currentPage);
+        if (!data.users.length) {
+          Message({
+            type: "success",
+            message: "No more user found",
+          });
+        }
       }
     } catch (error) {
       Message({
@@ -59,10 +101,29 @@ function UserList() {
     setToggleSideBar(!toggleSideBar);
   };
 
+  const handlePageChange = (currentPage) => {
+    getAllUsers(currentPage);
+  };
+
+  const handelNextPrevious = async (currentPage) => {
+    getAllUsers(currentPage);
+  };
+
   useEffect(() => {
     getAllUsers();
     // eslint-disable-next-line
   }, []);
+
+  useEffect(() => {
+    if (cartState.searchQuery !== "all" && cartState.searchQuery.length > 1) {
+      getSearchedUser();
+    }
+    if (cartState.searchQuery === "all") {
+      getAllUsers();
+    }
+    //eslint-disable-next-line
+  }, [cartState.searchQuery]);
+
   return (
     <>
       <Container className="" fluid>
@@ -107,7 +168,7 @@ function UserList() {
                   {allUsers.length > 0 &&
                     allUsers.map((user, index) => {
                       return (
-                        <tr>
+                        <tr key={user._id}>
                           <td>{index + 1}</td>
                           <td>{user.name}</td>
                           <td>{user.email}</td>
@@ -126,6 +187,68 @@ function UserList() {
                     })}
                 </tbody>
               </Table>
+            </div>
+
+            <div className="mt-3 pt-3 d-flex justify-content-center aligns-item-center">
+              <nav aria-label="Page navigation example">
+                <ul className="pagination">
+                  <li className="page-item">
+                    <Link
+                      className="page-link text-1"
+                      aria-label="Previous"
+                      onClick={() => {
+                        setPage((page) => {
+                          if (page > 1) {
+                            handelNextPrevious(page - 1);
+                            return page - 1; // Corrected to return the updated value
+                          } else {
+                            return page; // If page is already 1, return the same value
+                          }
+                        });
+                      }}
+                    >
+                      <span aria-hidden="true">&laquo;</span>
+                      {/* <span className="sr-only">Previous</span> */}
+                    </Link>
+                  </li>
+                  {Array.from({ length: totalPages }, (_, i) => (
+                    <li key={"list" + i} className="page-item">
+                      <Link
+                        key={i}
+                        className={`page-link text-1 ${
+                          i + 1 <= page - 3 || i + 1 >= page + 3 ? "d-none" : ""
+                        } 
+                           
+                          ${i + 1 === page ? "bg-3 text-1" : ""} `}
+                        onClick={() => {
+                          setPage(i + 1);
+                          handlePageChange(i + 1);
+                        }}
+                      >
+                        {i + 1}
+                      </Link>
+                    </li>
+                  ))}
+
+                  <Link
+                    className="page-link text-1"
+                    aria-label="Next"
+                    onClick={() => {
+                      setPage((page) => {
+                        if (page < totalPages) {
+                          handelNextPrevious(page + 1);
+                          return page + 1; // Corrected to return the updated value
+                        } else {
+                          return page; // If page is already 1, return the same value
+                        }
+                      });
+                    }}
+                  >
+                    {/* <span className="sr-only">Next</span> */}
+                    <span aria-hidden="true">&raquo;</span>
+                  </Link>
+                </ul>
+              </nav>
             </div>
           </Col>
         </Row>

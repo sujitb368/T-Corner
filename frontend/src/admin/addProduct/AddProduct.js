@@ -21,7 +21,7 @@ function AddProduct() {
   // const [loding, setLoding] = useState("");
 
   const [colors, setColors] = useState([]);
-  const [size, setSize] = useState("Small, Medium, Large");
+  const [size, setSize] = useState("");
 
   const [image, setImage] = useState({ preview: "", data: "" });
 
@@ -33,9 +33,9 @@ function AddProduct() {
 
   const handelColorAndSize = (value, setState) => {
     // Split the comma-separated values and store them in the 'colors' state
-    const colorArray = value.split(",").map((color) => color.trim());
-    if (colorArray.length) {
-      setState(colorArray);
+    const valueArray = value.split(",").map((color) => color.trim());
+    if (valueArray.length) {
+      setState(valueArray);
     }
   };
 
@@ -118,15 +118,21 @@ function AddProduct() {
         );
         // setLoding(false);
 
-        if (response.data.success) {
-          Message({ type: "error", message: response.data.message });
+        if (response?.data?.success) {
+          Message({ type: "success", message: response.data.message });
         } else {
           Message({ type: "error", message: response.data.message });
         }
       }
     } catch (error) {
-      console.log("Error while signing up", error);
-      Message({ type: "error", message: error.response?.data?.message });
+      console.log("Error while creating the product", error);
+      Message({
+        type: "error",
+        message:
+          error.response?.data?.message ??
+          error.message ??
+          "Something went wrong",
+      });
     }
   };
 
@@ -259,12 +265,12 @@ function AddProduct() {
                   <Form.Group className="mb-3 col-md-6">
                     <Form.Control
                       required
-                      value={quantity}
+                      value={colors}
                       onChange={(e) => {
                         handelColorAndSize(e.target.value, setColors);
                       }}
                       type="text"
-                      placeholder="Enter Colors"
+                      placeholder="Use (,) for multiple colors"
                     />
                     <Form.Control.Feedback type="invalid">
                       Colors is required field
@@ -273,12 +279,12 @@ function AddProduct() {
                   <Form.Group className="mb-3 col-md-6">
                     <Form.Control
                       required
-                      value={quantity}
+                      value={size}
                       onChange={(e) => {
                         handelColorAndSize(e.target.value, setSize);
                       }}
                       type="text"
-                      placeholder="Enter Colors"
+                      placeholder="Use (,) for multiple sizes"
                     />
                     <Form.Control.Feedback type="invalid">
                       size is required field

@@ -7,15 +7,18 @@ import "./ProductDetails.css";
 import { BsFillCartPlusFill, BsGeoAltFill } from "react-icons/bs";
 import { useCart } from "../../context/cartContext";
 import Message from "../../components/message/Message.js";
+import { baseUrl } from "../../constant.js";
 
 function ProductDetails() {
   // const [ProductDetail, setProductDetail] = useState();
+  const { cartState, cartDispatch } = useCart();
   const [details, setDetails] = useState([]);
   const { productId } = useParams();
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
+  const [locationCheckResult, setLocationCheckResult] = useState("");
   const [quantity] = useState(1);
-  const { cartState, cartDispatch } = useCart();
+  const [checkPin, setCheckPin] = useState("");
 
   const loggedInUsers = JSON.parse(localStorage.getItem("user"));
 
@@ -31,8 +34,6 @@ function ProductDetails() {
   const getProduct = async () => {
     try {
       const response = await axios.get(`/product/getProductId/${productId}`);
-      response.data.product[0].colors = ["red", "green", "blue"];
-      response.data.product[0].sizes = ["x", "xl", "m", "xxl", "s"];
 
       setDetails(response.data.product[0]);
     } catch (error) {
@@ -137,6 +138,18 @@ function ProductDetails() {
     }
   };
 
+  const locationCheck = async () => {
+    if (checkPin.length <= 3) {
+      Message({
+        type: "error",
+        message: "Please provide a valid pin of minimum 6 numbers",
+      });
+    } else {
+      setTimeout(() => {
+        setLocationCheckResult("Yes we deliver at your location");
+      }, 1000);
+    }
+  };
   useEffect(() => {
     getProduct();
     // eslint-disable-next-line
@@ -150,7 +163,7 @@ function ProductDetails() {
             <Row className="border flex-column flex-md-row">
               <Col className="p-3 border-end">
                 <img
-                  src={`http://localhost:8000/api/v1/files/get-file/${details.image}`}
+                  src={`${baseUrl}/files/get-file/${details.image}`}
                   className="rounded d-block img-fluid"
                   style={{ objectFit: "contain" }}
                   alt="product view"
@@ -176,7 +189,6 @@ function ProductDetails() {
                         } ${index !== details.colors.length - 1 ? "me-1" : ""}`}
                         onClick={() => {
                           setSelectedColor(color);
-                          console.log(selectedColor);
                         }}
                       ></span>
                     );
@@ -184,7 +196,7 @@ function ProductDetails() {
                 </div>
                 <div className="m-0">
                   <p className="fw-bold mb-0">Size</p>
-                  {details?.sizes?.map((size, index) => {
+                  {details?.size?.map((size, index) => {
                     return (
                       <button
                         key={index}
@@ -193,9 +205,9 @@ function ProductDetails() {
                         }}
                         className={`d-inline-block product-size mt-1 text-2 px-2 ${
                           selectedSize === size ? "product-size-selected" : ""
-                        }  ${index !== details.sizes.length - 1 ? "me-2" : ""}`}
+                        }  ${index !== details.size.length - 1 ? "me-2" : ""}`}
                       >
-                        {size}
+                        {size.toUpperCase()}
                       </button>
                     );
                   })}
@@ -213,14 +225,26 @@ function ProductDetails() {
                           className="form-control"
                           type="text"
                           placeholder="Enter your pin and check"
+                          required
+                          min={3}
+                          max={6}
+                          value={checkPin}
+                          onChange={(e) => setCheckPin(e.target.value)}
                         />
                         <button
+                          onClick={locationCheck}
                           type="button"
                           className="position-absolute top-0 end-0 bottom-0 bg-3 color-2 px-1 py-2 border-0"
                         >
                           Check
                         </button>
                       </form>
+                      <span
+                        style={{ fontSize: "14px" }}
+                        className="fw-bold text-danger"
+                      >
+                        {locationCheckResult}
+                      </span>
                     </Col>
                   </div>
                 </div>

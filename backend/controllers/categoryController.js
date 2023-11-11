@@ -10,7 +10,17 @@ const createCategory = async (req, res) => {
         error: "required field not provided",
       });
     }
-    //create a new category
+
+    const isExist = await CategoryModel.findOne({ category });
+
+    console.log("isExist category", isExist);
+
+    if (isExist) {
+      return res.status(400).send({
+        message: "Category already exist",
+        success: true,
+      });
+    } //create a new category
     const createCategory = new CategoryModel({ category });
     //save the category
     const savedCategory = await createCategory.save();
@@ -29,17 +39,15 @@ const createCategory = async (req, res) => {
   }
 };
 
-const getCategories = async(req, res)=>{
+const getCategories = async (req, res) => {
   try {
-    const categories = await CategoryModel.find({})
+    const categories = await CategoryModel.find({});
 
     return res.status(200).send({
       message: "All categories ",
       success: true,
       categories,
     });
-    
-    
   } catch (error) {
     console.log("Error in addCategory controller function " + error);
     return res.status(500).send({
@@ -48,6 +56,6 @@ const getCategories = async(req, res)=>{
       error,
     });
   }
-}
+};
 
 export { createCategory, getCategories };
