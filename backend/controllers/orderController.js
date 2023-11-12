@@ -4,6 +4,7 @@ import OrderModel from "../models/orderModel.js";
 import fetch from "node-fetch";
 
 import moment from "moment-timezone";
+import ProductModel from "../models/productModel.js";
 
 const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env;
 const base = "https://api-m.sandbox.paypal.com";
@@ -34,6 +35,18 @@ const placeOrderController = async (req, res) => {
     });
 
     await order.save();
+
+    //updating the quantity in product model for each product
+    const updateQuantity = orderItems.map((item) => ({
+      updateOne: {
+        filter: { _id: item.productId },
+        update: { $inc: { quantity: -item.quantity } },
+      },
+    }));
+
+    // update product quantity by subtracting ordered quantity from product quantity
+    // bulkWrite
+    await ProductModel.bulkWrite(updateQuantity);
 
     // Update the user's myOrder record
     const myOrder = await MyOrderModel.findOne({ user: customer });
@@ -68,7 +81,6 @@ const placeOrderController = async (req, res) => {
           orderDate: orderDate,
         },
       ];
-      console.log("else block");
       const newMyOrder = new MyOrderModel({
         user: customer,
         orders: myOrder,
@@ -230,20 +242,22 @@ const getOrders = async (req, res) => {
     const skip = (page - 1) * perPage;
 
     // Find all orders from the Order model
+
     const orders = await OrderModel.find({})
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(perPage)
       .populate("customer");
 
-    const totalOrders = orders.length;
+    const totalOrders = await OrderModel.find({}).count();
+
     // Send the orders as a JSON response
     return res.status(200).send({
       message: "Orders list",
       success: true,
       orders,
       totalPage: Math.ceil(totalOrders / perPage),
-      currentPage: parseInt(page),
+      currentPage: pageNumber,
     });
   } catch (error) {
     console.error("Error fetching orders:", error);
@@ -276,7 +290,9 @@ const getSearchedOrders = async (req, res) => {
       .skip(skip)
       .limit(perPage);
 
-    const totalOrders = orders.length;
+    const totalOrders = await OrderModel.find({
+      $or: [{ orderStatus: { $regex: regex } }],
+    }).count();
 
     // Send the orders as a JSON response
     return res.status(200).send({
@@ -323,6 +339,46 @@ const changeOrderStatus = async (req, res) => {
   }
 };
 
+//function to get new order
+const getNewOrders = async (req, res) => {
+  try {
+    //shipped to be in lower case
+    const orders = await OrderModel.find({ orderStatus: "pending" });
+
+    // Send the orders as a JSON response
+    return res.status(200).send({
+      message: "New Orders",
+      success: true,
+      orders: orders.length,
+    });
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    return res
+      .status(500)
+      .send({ message: "Failed to fetch new orders", success: false, error });
+  }
+};
+
+//function to get shipped order
+const getShippedOrders = async (req, res) => {
+  try {
+    //shipped to be in lower case
+    const orders = await OrderModel.find({ orderStatus: "shipped" });
+
+    // Send the orders as a JSON response
+    return res.status(200).send({
+      message: "Shipped Orders",
+      success: true,
+      orders: orders.length,
+    });
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    return res
+      .status(500)
+      .send({ message: "Failed to fetch new orders", success: false, error });
+  }
+};
+
 export {
   placeOrderController,
   createOrder,
@@ -331,4 +387,6 @@ export {
   getOrders,
   changeOrderStatus,
   getSearchedOrders,
+  getNewOrders,
+  getShippedOrders,
 };

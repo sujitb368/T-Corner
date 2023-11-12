@@ -9,6 +9,9 @@ import Message from "../../components/message/Message";
 
 function ReviewOrder() {
   const { cartState, cartDispatch } = useCart();
+
+  let isQuantityAvailable = true;
+
   //eslint-disable-next-line
   const [searchParams, setSearchParams] = useSearchParams();
   const payment = searchParams.get("payment");
@@ -24,9 +27,58 @@ function ReviewOrder() {
 
   const navigate = useNavigate();
 
+  const checkProductQuantities = async () => {
+    try {
+      const promisesOfQuantityCount = cartState.cartItems.map(async (item) => {
+        try {
+          const { data } = await axios.post(`/product/quantity`, {
+            productId: item.productId,
+            quantity: item.quantity * 1,
+          });
+
+          if (data.quantity < item.quantity) {
+            console.log("quantity: " + item.quantity);
+            console.log("data . quantity: " + data.quantity);
+            isQuantityAvailable = false;
+            Message({
+              type: "error",
+              message: `${item.name} is not available`,
+            });
+          }
+        } catch (error) {
+          Message({
+            type: "error",
+            message:
+              error?.response?.data?.message ??
+              error.message ??
+              "Can't check quantity of exist",
+          });
+          console.error(
+            `Error checking quantity for product ${item.productId}:`,
+            error
+          );
+        }
+      });
+
+      await Promise.all(promisesOfQuantityCount);
+    } catch (error) {
+      Message({ type: "error", message: error });
+      console.error("Error checking product quantities:", error);
+    }
+  };
+
   //function to handle placing order
   const placeOrder = async (paymentDetails) => {
     try {
+      //checking quantity exist before placing order
+      await checkProductQuantities();
+
+      //stop execution if quantity not exist
+      if (isQuantityAvailable === false) {
+        console.log("isQuantityAvailable", isQuantityAvailable);
+        return;
+      }
+
       //call api to place order in backend
       const response = await axios.post(
         `/orders/order`,
@@ -69,6 +121,15 @@ function ReviewOrder() {
       }
     } catch (error) {
       Message({ type: "error", message: error.response.data.message });
+
+      if (
+        error?.response?.data?.message.toLowerCase() === "jwt expired" ||
+        error?.response?.data?.message.toLowerCase() === "unauthorized user"
+      ) {
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+        navigate("/login");
+      }
 
       console.log(error);
     }

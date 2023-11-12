@@ -7,12 +7,20 @@ import {
   BsReverseLayoutTextSidebarReverse,
   BsGiftFill,
   BsFillCartPlusFill,
+  BsHouseDoorFill,
 } from "react-icons/bs";
 import "./Sidebar.css";
 function Sidebar() {
   return (
     <aside className="aside">
       <Stack gap={2}>
+        <Link
+          to="/admin"
+          className="bg-4 px-2 py-1 rounded text-decoration-none text-2"
+        >
+          <BsHouseDoorFill className="me-3 icon" />
+          Home
+        </Link>
         <Link
           to="/admin/add-category"
           className="bg-4 px-2 py-1 rounded text-decoration-none text-2"

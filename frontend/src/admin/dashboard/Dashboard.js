@@ -6,11 +6,16 @@ import Sidebar from "../component/sidebar/Sidebar";
 import { BsXSquareFill } from "react-icons/bs";
 import Message from "../../components/message/Message.js";
 import axios from "axios";
+import { useCart } from "../../context/cartContext.js";
 
 function Dashboard() {
+  const { cartState } = useCart();
+
   const [toggleSideBar, setToggleSideBar] = useState(false);
 
   const [totalUsers, setTotalUsers] = useState();
+  const [newOrders, setNewOrders] = useState(0);
+  const [shippedOrders, setShippedOrders] = useState(0);
 
   const handelSideBar = () => {
     setToggleSideBar(!toggleSideBar);
@@ -32,8 +37,52 @@ function Dashboard() {
     }
   };
 
+  const getNewOrders = async () => {
+    try {
+      const { data } = await axios.get(`/orders/newOrders-orders`, {
+        headers: {
+          Authorization: cartState.token,
+        },
+      });
+      Message({ type: "success", message: data?.message + data.orders });
+      setNewOrders(data.orders);
+    } catch (error) {
+      console.log("Error getting orders in admin dashboard", error);
+      Message({
+        type: "error",
+        message:
+          error?.response?.data?.message ??
+          error?.message ??
+          "Something went wrong",
+      });
+    }
+  };
+  const getShippedOrders = async () => {
+    try {
+      const { data } = await axios.get(`/orders/Shipped-orders`, {
+        headers: {
+          Authorization: cartState.token,
+        },
+      });
+      Message({ type: "success", message: data?.message + data.orders });
+      setShippedOrders(data.orders);
+    } catch (error) {
+      console.log("Error getting orders in admin dashboard", error);
+      Message({
+        type: "error",
+        message:
+          error?.response?.data?.message ??
+          error?.message ??
+          "Something went wrong",
+      });
+    }
+  };
+
   useEffect(() => {
     getTotalUsers();
+    getNewOrders();
+    getShippedOrders();
+    //eslint-disable-next-line
   }, []);
   return (
     <>
@@ -64,9 +113,11 @@ function Dashboard() {
 
             <Row className="px-2">
               <Itemcard valueOfCard={totalUsers} titleOfCard="Total user" />
-              <Itemcard valueOfCard="100" titleOfCard="New Order" />
-              <Itemcard valueOfCard="500" titleOfCard="Active user" />
-              <Itemcard valueOfCard="100" titleOfCard="Shipped Order" />
+              <Itemcard valueOfCard={newOrders} titleOfCard="New Order" />
+              <Itemcard
+                valueOfCard={shippedOrders}
+                titleOfCard="Shipped Order"
+              />
             </Row>
           </Col>
         </Row>

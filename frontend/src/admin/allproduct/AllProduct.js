@@ -30,12 +30,17 @@ function AllProduct() {
   const getAllProducts = async (page = 1) => {
     try {
       const response = await axios.get(`/product/allproducts/${page}`);
-      if (response.data?.success) {
-        setAllProducts(response.data?.products);
+      if (response?.data?.success) {
+        setAllProducts(response?.data?.products);
+        setTotalPages(response?.data?.totalPage);
+        setPage(response?.data?.currentPage);
       }
     } catch (error) {
       console.log(error);
-      Message({ type: "error", message: error.response.data.message });
+      Message({
+        type: "error",
+        message: error?.response?.data?.message ?? error?.message,
+      });
     }
   };
 

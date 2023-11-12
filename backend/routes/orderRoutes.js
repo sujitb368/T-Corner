@@ -9,6 +9,8 @@ import {
   getOrders,
   changeOrderStatus,
   getSearchedOrders,
+  getNewOrders,
+  getShippedOrders,
 } from "../controllers/orderController.js";
 import { isAdmin, isLogin } from "../middlewares/userMiddleware.js";
 
@@ -45,11 +47,15 @@ router.post("/:orderID/capture", async (req, res) => {
   }
 });
 
-router.get("/get-orders", isLogin, getOrders);
+router.get("/get-orders", isLogin, isAdmin, getOrders);
 
 router.put("/change-status/:orderId", isLogin, isAdmin, changeOrderStatus);
 
 //get order details by orderId
-router.get("/search-orders", isLogin, getSearchedOrders);
+router.get("/search-orders", isLogin, isAdmin, getSearchedOrders);
+
+router.get("/newOrders-orders", isLogin, isAdmin, getNewOrders);
+
+router.get("/shipped-orders", isLogin, isAdmin, getShippedOrders);
 
 export default router;

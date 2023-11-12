@@ -10,7 +10,7 @@ import { Link } from "react-router-dom";
 import Message from "../../components/message/Message";
 import { baseUrl } from "../../constant";
 function MyOrders() {
-  //eslint-disable-next-line
+  // eslint-disable-next-line
   const { cartState, cartDispatch } = useCart();
 
   // const [myRating, setMyRating] = useState('');
@@ -43,20 +43,34 @@ function MyOrders() {
   };
 
   const handleRating = async (productId, myRating) => {
-    const { data } = await axios.post(
-      `/rating/rating`,
-      {
-        user: cartState.user._id,
-        rating: myRating,
-        productId: productId,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
+    try {
+      const { data } = await axios.post(
+        `/rating/rating`,
+        {
+          user: cartState.user._id,
+          rating: myRating,
+          productId: productId,
         },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (data.success) {
+        Message({ type: "success", message: data.message });
       }
-    );
-    console.log(data);
+    } catch (error) {
+      console.log(error);
+      Message({
+        type: "error",
+        message:
+          error?.response?.data?.message ??
+          error?.message ??
+          "Something went wrong",
+      });
+    }
   };
 
   useEffect(() => {

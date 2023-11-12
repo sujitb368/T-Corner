@@ -21,12 +21,10 @@ const isLogin = (req, res, next) => {
     jwt.verify(token, JWT_SECRET, async (err, payload) => {
       if (err) {
         console.log(err);
-        return res
-          .status(401)
-          .send({
-            message: err.message ?? "unauthorized user",
-            success: false,
-          });
+        return res.status(401).send({
+          message: err.message ?? "unauthorized user",
+          success: false,
+        });
       }
 
       // if token is valid find user and add to request object
@@ -51,10 +49,12 @@ const isAdmin = async (req, res, next) => {
   try {
     // get role of login user from request body
     const { role } = req.user;
+
     //check role of user from DB
     //get user by id
-    // const user = await userModel.findById(req.user._id);
-    if (role !== parseInt(role)) {
+    const user = await userModel.findById(req.user._id);
+
+    if (parseInt(role) !== user.role) {
       return res.status(200).send({
         message: "Not a admin user",
         success: false,

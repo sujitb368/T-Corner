@@ -227,6 +227,7 @@ const getQuantity = async (req, res) => {
     const { productId, quantity } = req.body;
     //get the available quantity of the product
     const stock = await ProductModel.find({ _id: productId });
+    console.log("stocks available", stock);
     if (stock[0].quantity > quantity) {
       return res.status(200).send({
         message: "stock available",
@@ -234,11 +235,10 @@ const getQuantity = async (req, res) => {
         quantity: stock[0].quantity,
       });
     }
-    console.log("stocks available", stock);
     return res.status(200).send({
       message: `only ${stock[0].quantity} stock available`,
       success: false,
-      quantity: stock.quantity,
+      quantity: stock[0].quantity,
     });
   } catch (error) {
     console.log(`error while getting stock`, error);
