@@ -316,7 +316,7 @@ const EditAndViewProduct = () => {
                     </div>
                     <div className="col">
                       <label className="form-label">
-                        Colors: Use comma(,) separated for multiple color
+                        Use comma(,) separated for multiple Color :
                       </label>
                       <input
                         type="text"
@@ -331,7 +331,7 @@ const EditAndViewProduct = () => {
                   </div>
                   <div className="mb-3">
                     <label className="form-label">
-                      Size: Use comma(,) separated for multiple Size{" "}
+                      Use comma(,) separated for multiple Size :
                     </label>
                     <input
                       type="text"

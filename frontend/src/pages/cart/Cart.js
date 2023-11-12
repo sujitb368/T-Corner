@@ -22,8 +22,6 @@ function Cart() {
   //get cart state from context
   const { cartState, cartDispatch } = useCart();
 
-  console.log(cartState.cartItems);
-
   const token = cartState.token;
   const user = cartState.user;
 
@@ -260,8 +258,11 @@ function Cart() {
 
           <div className="p-3 d-flex justify-content-center">
             <Link
-              className="btn m-auto bg-3 text-decoration-none fw-bold text-2 "
-              to="/user/checkout"
+              className={`btn m-auto bg-3 text-decoration-none fw-bold text-2 ${
+                cartState?.cartItems?.length === 0 ? "disabled-link" : ""
+              }`}
+              to={cartState?.cartItems?.length > 0 ? "/user/checkout" : "#"}
+              disabled={!cartState?.cartItems?.length}
             >
               Checkout
             </Link>

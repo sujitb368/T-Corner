@@ -38,6 +38,10 @@ const orderSchema = new mongoose.Schema(
     ],
     orderStatus: {
       type: String,
+      enum: {
+        values: ["pending", "processing", "shipped", "cancelled", "delivered"],
+        message: "{VALUE} is not supported",
+      },
     },
     paymentMethod: {
       type: String,

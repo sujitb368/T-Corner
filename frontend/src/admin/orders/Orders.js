@@ -148,7 +148,7 @@ const Orders = ({ allOrders }) => {
   };
 
   useEffect(() => {
-    getOrders();
+    getOrders(page);
     //eslint-disable-next-line
   }, []);
 
@@ -157,7 +157,7 @@ const Orders = ({ allOrders }) => {
       getSearchedOrders();
     }
     if (cartState.searchQuery === "all") {
-      getOrders();
+      getOrders(page);
     }
     //eslint-disable-next-line
   }, [cartState.searchQuery]);
@@ -230,6 +230,14 @@ const Orders = ({ allOrders }) => {
                                 value="select"
                               >
                                 Select
+                              </option>
+                              <option
+                                selected={
+                                  order.orderStatus.toLowerCase() === "pending"
+                                }
+                                value="pending"
+                              >
+                                pending
                               </option>
                               <option
                                 selected={
