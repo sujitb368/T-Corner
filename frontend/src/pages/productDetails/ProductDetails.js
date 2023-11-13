@@ -26,6 +26,21 @@ function ProductDetails() {
 
   const navigate = useNavigate();
 
+  const getQuantity = async (productId, quantity) => {
+    try {
+      const { data } = await axios.post(`/product/quantity`, {
+        productId,
+        quantity: quantity * 1,
+      });
+      if (data) {
+        return data.quantity;
+      }
+    } catch (error) {
+      console.log(error);
+      Message({ type: "error", message: error.response.data.message });
+    }
+  };
+
   // Functions to add items to the cart
   const addItemToCart = (item) => {
     cartDispatch({ type: "ADD_TO_CART", payload: item });
@@ -68,6 +83,13 @@ function ProductDetails() {
       productDetails.size = selectedSize;
       productDetails.quantity = quantity;
       productDetails.productId = _id;
+
+      const isQuantityAvailable = await getQuantity(_id, 1);
+
+      if (isQuantityAvailable < 1) {
+        Message({ type: "error", message: "Not available" });
+        return;
+      }
 
       //push product details to localCart array then store it to localStorage
       //if localCart don't have any items
