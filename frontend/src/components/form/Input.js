@@ -10,8 +10,13 @@ export const Input = ({
   placeholder,
 }) => {
   const handelChange = (e) => {
-    const inputedValue = e.target.value;
-    onChange(fieldName, inputedValue);
+    if (type === "checkbox") {
+      const inputedValue = e.target.checked;
+      onChange(fieldName, inputedValue);
+    } else {
+      const inputedValue = e.target.value;
+      onChange(fieldName, inputedValue);
+    }
   };
   return (
     <>

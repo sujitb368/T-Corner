@@ -54,6 +54,7 @@ const Profile = () => {
     pin: "",
     phone: "",
     landMark: "",
+    isPrimary: "",
   });
 
   //function to get all saved addresses w.r.t user
@@ -402,6 +403,7 @@ const Profile = () => {
                                     pin: address.pin,
                                     phone: address.phone,
                                     landMark: address.landMark,
+                                    isPrimary: address.isPrimary,
                                   });
                                   setIdOfShippingAddress({
                                     index: index + 1,
@@ -564,6 +566,26 @@ const Profile = () => {
                                       })
                                     }
                                   />
+                                </div>
+                                <div className="form-check col-md-6">
+                                  <input
+                                    type="checkbox"
+                                    className="form-check-input mb-1"
+                                    id="isPrimary"
+                                    key="isPrimary"
+                                    onChange={(e) =>
+                                      setUpdatedAddress({
+                                        ...updatedAddress,
+                                        isPrimary: e.target.checked,
+                                      })
+                                    }
+                                  />
+                                  <label
+                                    className="ms-1 form-check-label"
+                                    for="isPrimary"
+                                  >
+                                    Make it primary address
+                                  </label>
                                 </div>
 
                                 {/* Add similar form fields for other address fields */}

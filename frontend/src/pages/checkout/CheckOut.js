@@ -204,6 +204,7 @@ export const CheckOut = () => {
 
   //function to handel value from input component
   const handelChildChanges = (fieldName, value) => {
+    console.log("fieldname, value", fieldName, value);
     setFormFields((prevFields) => ({
       ...prevFields,
       [fieldName]: value,
@@ -226,21 +227,21 @@ export const CheckOut = () => {
 
         //default address to delivered the product
         setShippingAddress({
-          name: primaryAddress[0].fName + " " + primaryAddress[0].lName,
-          address: primaryAddress[0].address,
-          phone: primaryAddress[0].phone,
-          pin: primaryAddress[0].pin,
-          landMark: primaryAddress[0].landMark,
+          name: primaryAddress[0]?.fName + " " + primaryAddress[0]?.lName,
+          address: primaryAddress[0]?.address,
+          phone: primaryAddress[0]?.phone,
+          pin: primaryAddress[0]?.pin,
+          landMark: primaryAddress[0]?.landMark,
         });
 
         cartDispatch({
           type: "SHIPPING_ADDRESS",
           payload: {
-            name: primaryAddress[0].fName + " " + primaryAddress[0].lName,
-            address: primaryAddress[0].address,
-            phone: primaryAddress[0].phone,
-            pin: primaryAddress[0].pin,
-            landMark: primaryAddress[0].landMark,
+            name: primaryAddress[0]?.fName + " " + primaryAddress[0]?.lName,
+            address: primaryAddress[0]?.address,
+            phone: primaryAddress[0]?.phone,
+            pin: primaryAddress[0]?.pin,
+            landMark: primaryAddress[0]?.landMark,
           },
         });
         console.log(
@@ -259,7 +260,10 @@ export const CheckOut = () => {
       }
     } catch (error) {
       console.log(error);
-      Message({ type: "error", message: error.response.data.message });
+      Message({
+        type: "error",
+        message: error?.response?.data?.message ?? error?.message ?? error,
+      });
     }
   };
 
@@ -518,7 +522,7 @@ export const CheckOut = () => {
                           </div>
                         </div>
                         <div className="row">
-                          <div className="col-md-12">
+                          <div className="col-md-6">
                             <Input
                               fieldName="landMark"
                               key="landMark"
@@ -561,6 +565,24 @@ export const CheckOut = () => {
                               type="text"
                             />
                           </div>
+                        </div>
+
+                        <div className="form-check">
+                          <Input
+                            fieldName="isPrimary"
+                            key="isPrimary"
+                            onChange={handelChildChanges}
+                            className="form-check-input mb-1"
+                            name="IsPrimary"
+                            type="checkbox"
+                            id="flexCheckDefault"
+                          />
+                          <label
+                            className="ms-1 form-check-label"
+                            for="flexCheckDefault"
+                          >
+                            Make it primary address
+                          </label>
                         </div>
 
                         <div className="d-flex pt-2">

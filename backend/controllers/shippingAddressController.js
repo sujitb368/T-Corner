@@ -22,6 +22,13 @@ const addShippingAddress = async (req, res) => {
     const isAddress = await ShippingModel.findOne({ user });
 
     if (isAddress) {
+      if (isPrimary === true) {
+        const findPrimary = await ShippingModel.updateMany(
+          { user, "addresses.isPrimary": true },
+          { $set: { "addresses.$[item].isPrimary": false } },
+          { arrayFilters: [{ "item.isPrimary": true }] }
+        );
+      }
       isAddress.addresses.push({
         fName,
         lName,
@@ -110,14 +117,31 @@ const getShippingAddress = async (req, res) => {
 const editShippingAddress = async (req, res) => {
   try {
     const { user } = req.params;
-    const { _id, fName, lName, address, city, state, pin, phone, landMark } =
-      req.body;
+    const {
+      _id,
+      fName,
+      lName,
+      address,
+      city,
+      state,
+      pin,
+      phone,
+      landMark,
+      isPrimary,
+    } = req.body;
     if (!user) {
       return res.status(400).send({
         message: "Please provide user",
         success: false,
         error: "Missing required field",
       });
+    }
+    if (isPrimary === true) {
+      const findPrimary = await ShippingModel.updateMany(
+        { user, "addresses.isPrimary": true },
+        { $set: { "addresses.$[item].isPrimary": false } },
+        { arrayFilters: [{ "item.isPrimary": true }] }
+      );
     }
     const updatedAddress = await ShippingModel.findOneAndUpdate(
       { user, "addresses._id": _id },
@@ -131,6 +155,7 @@ const editShippingAddress = async (req, res) => {
           "addresses.$.pin": pin,
           "addresses.$.phone": phone,
           "addresses.$.landMark": landMark,
+          "addresses.$.isPrimary": isPrimary,
         },
       },
       { new: true }
