@@ -12,25 +12,29 @@ function AddProduct() {
   //eslint-disable-next-line
   const { cartState, cartDispatch } = useCart();
 
+  // State variables for product details
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [category, setCategory] = useState("");
   const [shipping, setShipping] = useState("");
   const [quantity, setQuantity] = useState("");
-  // const [loding, setLoding] = useState("");
-
   const [colors, setColors] = useState([]);
   const [size, setSize] = useState("");
 
+  // to set the image preview and the selected file raw data
   const [image, setImage] = useState({ preview: "", data: "" });
 
-  //category
+  // Category state variable
   const [categories, setCategories] = useState("");
+
   //for form validation
   const [validated, setValidated] = useState(false);
+
+  // Sidebar toggle state
   const [toggleSideBar, setToggleSideBar] = useState(false);
 
+  // Function to handle colors and size from comma-separated values
   const handelColorAndSize = (value, setState) => {
     // Split the comma-separated values and store them in the 'colors' state
     const valueArray = value.split(",").map((color) => color.trim());
@@ -39,10 +43,12 @@ function AddProduct() {
     }
   };
 
+  // Function to handle sidebar toggle
   const handelSideBar = () => {
     setToggleSideBar(!toggleSideBar);
   };
 
+  // Function to fetch categories
   const getCategories = async () => {
     try {
       const response = await axios.get(`/admin/category/categories`);
@@ -55,6 +61,7 @@ function AddProduct() {
     }
   };
 
+  // Function to handle file selection
   const handleFileSelect = (event) => {
     try {
       const img = {
@@ -68,6 +75,7 @@ function AddProduct() {
     }
   };
 
+  // Function to handle product submission
   const handelProduct = async (e) => {
     e.preventDefault();
     try {
@@ -78,23 +86,28 @@ function AddProduct() {
         setValidated(true);
         return;
       }
-      // setLoding(true);
 
+      // Create a FormData object to handle file upload
       const formData = new FormData();
       formData.append("file", image.data);
 
+      // Check if an image is selected
       if (!image.data) {
         Message({ type: "error", message: "Image is mandatory for post" });
 
         return;
       }
+
+      // Upload the image using Axios
       const { data } = await axios.post(`/admin/files/upload`, formData, {
         headers: {
           Authorization: cartState.token,
         },
       });
+
       const { filename } = data;
 
+      // If the image upload is successful, proceed to add the product
       if (filename) {
         const response = await axios.post(
           `/admin/product/addProduct`,
@@ -116,8 +129,7 @@ function AddProduct() {
             },
           }
         );
-        // setLoding(false);
-
+        // Handle the response and display messages
         if (response?.data?.success) {
           Message({ type: "success", message: response.data.message });
         } else {
@@ -135,6 +147,8 @@ function AddProduct() {
       });
     }
   };
+
+  // Fetch categories on component mount
 
   useEffect(() => {
     getCategories();

@@ -8,31 +8,44 @@ import { Link, useNavigate } from "react-router-dom";
 import Message from "../../components/message/Message.js";
 
 function AllProduct() {
+  // State for sidebar toggle
   const [toggleSideBar, setToggleSideBar] = useState(false);
+
+  // State for storing all products
   const [allProducts, setAllProducts] = useState([]);
 
+  // for total pages in pagination
   const [totalPages, setTotalPages] = useState(5);
 
-  //page for search results
+  //for the current page in pagination
   const [page, setPage] = useState(1);
 
-  // get product from
+  // State to identify the source of products (all/search)
+
   const [productFrom, setProductFrom] = useState("all");
+
+  // Cart context for accessing user token and search query
 
   const { cartState, cartDispatch } = useCart();
 
+  // Navigation hook for page redirection
+
   const navigate = useNavigate();
 
+  // Function to toggle the sidebar
   const handelSideBar = () => {
     setToggleSideBar(!toggleSideBar);
   };
 
+  // Function to fetch all products
   const getAllProducts = async (page = 1) => {
     try {
       const response = await axios.get(`/product/allproducts/${page}`);
       if (response?.data?.success) {
         setAllProducts(response?.data?.products);
+        // set total page
         setTotalPages(response?.data?.totalPage);
+        // set current page
         setPage(response?.data?.currentPage);
       }
     } catch (error) {
@@ -44,6 +57,7 @@ function AllProduct() {
     }
   };
 
+  // Function to fetch search products
   const getSearchProducts = async (currentPage = 1) => {
     try {
       const { data } = await axios.get(
@@ -52,7 +66,9 @@ function AllProduct() {
 
       if (data?.success) {
         setAllProducts(data.products);
+        // set total page
         setTotalPages(data.totalPage);
+        // set current page
         setPage(data.currentPage);
         if (!data.products.length) {
           setProductFrom("");
@@ -69,6 +85,7 @@ function AllProduct() {
     }
   };
 
+  //function to get the details of product
   const productDetails = (productId) => {
     try {
       navigate(`/admin/view-product/${productId}`);
@@ -77,6 +94,7 @@ function AllProduct() {
     }
   };
 
+  //function to handel the product source (all/searched)
   const handlePageChange = (currentPage) => {
     if (productFrom === "search") {
       getSearchProducts(currentPage);
@@ -85,6 +103,7 @@ function AllProduct() {
     }
   };
 
+  //function to handel previous and next button in pagination
   const handelNextPrevious = async (currentPage) => {
     if (productFrom === "search") {
       getSearchProducts(currentPage);
@@ -93,6 +112,7 @@ function AllProduct() {
     }
   };
 
+  //function to delete product
   const deleteProduct = async (productId) => {
     try {
       const { data } = await axios.delete(`/product/delete/${productId}`, {

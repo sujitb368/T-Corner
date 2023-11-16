@@ -1,3 +1,14 @@
+/**
+ * Main application component.
+ *
+ * This component serves as the entry point for this React application.
+ * It includes the necessary routes and components for both the admin and user interfaces.
+ * The component also handles the initialization of the shopping cart and user authentication.
+ *
+ * @component
+ * @returns {JSX.Element} - The main application component.
+ */
+
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
@@ -43,15 +54,30 @@ function App() {
     const cart = JSON.parse(localStorage.getItem("cart"));
     const user = JSON.parse(localStorage.getItem("user"));
     const token = localStorage.getItem("token");
+
+    // Load cart if it exists
     if (cart?.length > 0) {
       cartDispatch({ type: "LOAD_CART", payload: cart });
     }
+    // Log in user if token and user exist
     if (token && user) {
       cartDispatch({ type: "LOGIN_SUCCESS", payload: { token, user } });
     }
     //disable next line
     // eslint-disable-next-line
   }, []);
+
+  /**
+   * Routing logic for the application.
+   *
+   * This section defines the routing structure using React Router for both the admin and user interfaces.
+   * It includes routes for various pages, such as the dashboard, product management, user orders, and profile.
+   * The routing logic dynamically determines whether to render the admin or user interface based on the user's role.
+   * Additionally, loading indicators are displayed during role validation.
+   *
+   * @component
+   * @returns {JSX.Element} - The JSX element containing the application's routing logic.
+   */
 
   return (
     <>
@@ -106,6 +132,12 @@ function App() {
   );
 }
 
+/**
+ * The Admin function checks if the user is an admin and renders the Outlet component if true,
+ * otherwise it renders the Loader component.
+ * @returns either the `<Outlet />` component or the `<Loader />` component, depending on the value of
+ * the `isAdmin` state variable.
+ */
 function Admin() {
   const { cartState } = useCart();
   const [isAdmin, setIsAdmin] = useState();
@@ -116,6 +148,13 @@ function Admin() {
   return isAdmin ? <Outlet /> : <Loder />;
 }
 
+/**
+ * The function checks the role of the user in the cart state and renders different components based on
+ * the user's role.
+ * @returns The code is returning either the `<Outlet />` component or the `<Loader />` component based
+ * on the value of the `isUser` variable. If `isUser` is equal to 0, then `<Outlet />` is returned.
+ * Otherwise, `<Loader />` is returned.
+ */
 function User() {
   const { cartState } = useCart();
   const [isUser, setIsUser] = useState();
