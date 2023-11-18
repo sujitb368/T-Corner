@@ -2,6 +2,7 @@ import React from "react";
 import { Card, Col, Row } from "react-bootstrap";
 
 function Itemcard(props) {
+  // This component used to display data on dashboard
   return (
     <>
       <Col

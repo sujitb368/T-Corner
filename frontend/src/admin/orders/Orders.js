@@ -1,3 +1,4 @@
+// Importing necessary dependencies and components
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Message from "../../components/message/Message";
@@ -7,32 +8,30 @@ import { BsXSquareFill } from "react-icons/bs";
 import { useCart } from "../../context/cartContext";
 import { Link, useNavigate } from "react-router-dom";
 
+// Functional component for displaying and managing orders
 const Orders = ({ allOrders }) => {
+  // Destructuring values from the cart context
   const { cartState, cartDispatch } = useCart();
+
+  // State variables for managing the component's state
   const [toggleSideBar, setToggleSideBar] = useState(false);
-
-  // const [orderType, setOrderType] = useState("Pending");
-
   const [orders, setOrders] = useState([]);
-
   // get product from
   const [productFrom, setProductFrom] = useState("all");
-
   //total number of page for pagination
   const [totalPages, setTotalPages] = useState(5);
-
-  //page for search results
+  //current page for pagination
   const [page, setPage] = useState(1);
 
-  // const [newStatus, setNewStatus] = useState("");
-
+  // Navigation hook for redirecting users
   const navigate = useNavigate();
 
+  // Function to handle sidebar toggling
   const handelSideBar = () => {
     setToggleSideBar(!toggleSideBar);
   };
 
-  // Function to fetch all orders
+  // Function to fetch all orders based on the current page
   const getOrders = async (currentPage) => {
     try {
       const { data } = await axios.get(
@@ -43,10 +42,12 @@ const Orders = ({ allOrders }) => {
           },
         }
       );
+      // Updating state variables with fetched data
       if (data?.success) {
         setOrders(data.orders);
         setTotalPages(data.totalPage);
         setPage(data.currentPage);
+        // Resetting search-related state when there are no orders
         if (!data.orders.length) {
           setProductFrom("");
           cartDispatch({ type: "SEARCH", payload: "" });
@@ -106,6 +107,7 @@ const Orders = ({ allOrders }) => {
     }
   };
 
+  // Function to handle changing order status
   const handelNewStatus = async (value, orderId) => {
     try {
       const { data } = await axios.put(
@@ -118,6 +120,7 @@ const Orders = ({ allOrders }) => {
           },
         }
       );
+      // Refreshing orders after status change
       if (data?.success) {
         getOrders();
       }
@@ -131,6 +134,7 @@ const Orders = ({ allOrders }) => {
     }
   };
 
+  // Function to handle page changes for pagination
   const handlePageChange = (currentPage) => {
     if (productFrom === "search") {
       getSearchedOrders(currentPage);
@@ -139,6 +143,7 @@ const Orders = ({ allOrders }) => {
     }
   };
 
+  // Function to handle next/previous page changes
   const handelNextPrevious = async (currentPage) => {
     if (productFrom === "search") {
       getSearchedOrders(currentPage);
@@ -147,11 +152,13 @@ const Orders = ({ allOrders }) => {
     }
   };
 
+  // Initial useEffect to fetch orders on component mount
   useEffect(() => {
     getOrders(page);
     //eslint-disable-next-line
   }, []);
 
+  // useEffect to handle search-related changes and fetch orders accordingly
   useEffect(() => {
     if (cartState.searchQuery !== "all") {
       getSearchedOrders();

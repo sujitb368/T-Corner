@@ -7,6 +7,12 @@ import { Link } from "react-router-dom";
 
 import { baseUrl } from "../../constant.js";
 
+/**
+ * Product component for displaying individual product information.
+ * @param {Object} props - Component properties.
+ * @param {Object} props.product - The product data to be displayed.
+ */
+
 function Product(props) {
   const { product } = props;
 

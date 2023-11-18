@@ -1,3 +1,4 @@
+// Importing necessary libraries and components
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { BsPencilSquare, BsXSquareFill } from "react-icons/bs";
@@ -8,8 +9,13 @@ import { Col } from "react-bootstrap";
 import Sidebar from "../component/sidebar/Sidebar";
 import { baseUrl } from "../../constant";
 
+// Functional component for editing and viewing product details
 const EditAndViewProduct = () => {
+  // Accessing state and functions from the cart context
   const { cartState } = useCart();
+
+  // State variables for managing component state
+
   const [isEditing, setEditing] = useState(false);
   const [isImageEditing, setImageEditing] = useState(false);
   const [name, setName] = useState("");
@@ -26,10 +32,13 @@ const EditAndViewProduct = () => {
     data: "",
   });
 
+  // State variable for toggling the sidebar
   const [toggleSideBar, setToggleSideBar] = useState(false);
 
+  // Accessing the productId from the URL parameters
   const { productId } = useParams();
 
+  // Function to toggle the sidebar
   const handelSideBar = () => {
     setToggleSideBar(!toggleSideBar);
   };
@@ -39,10 +48,12 @@ const EditAndViewProduct = () => {
     setEditing(!isEditing);
   };
 
+  // Function to toggle the state of editing the details form
   const handleEditImageClick = () => {
     setImageEditing(!isImageEditing);
   };
 
+  // Function to fetch and set product details
   const getProduct = async () => {
     try {
       const { data } = await axios.get(`/product/getProductId/${productId}`);
@@ -69,6 +80,7 @@ const EditAndViewProduct = () => {
     }
   };
 
+  // Function to save the edited product details
   const handleSave = async () => {
     try {
       const { data } = await axios.put(
@@ -158,6 +170,7 @@ const EditAndViewProduct = () => {
     []
   );
 
+  // JSX structure of the component
   return (
     <div className="container-fluid">
       <div className="row">

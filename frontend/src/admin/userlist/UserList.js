@@ -1,3 +1,4 @@
+// Importing necessary dependencies and components
 import React, { useEffect, useState } from "react";
 import { Col, Container, Row, Table } from "react-bootstrap";
 import Sidebar from "../component/sidebar/Sidebar";
@@ -7,10 +8,13 @@ import axios from "axios";
 import { useCart } from "../../context/cartContext";
 import { Link } from "react-router-dom";
 
+// Functional component for displaying and managing user list
+
 function UserList() {
   //getting state from global context
   const { cartState } = useCart();
 
+  // State variables for managing the component's state
   const [toggleSideBar, setToggleSideBar] = useState(false);
 
   const [allUsers, setAllUsers] = useState([]);
@@ -20,6 +24,7 @@ function UserList() {
   //page for search results
   const [page, setPage] = useState(1);
 
+  // Function to fetch all users based on the current page
   const getAllUsers = async (currentPage = 1) => {
     try {
       const { data } = await axios.get(`/user/all-users/${currentPage}`, {
@@ -27,11 +32,13 @@ function UserList() {
           Authorization: cartState.token,
         },
       });
+      // Updating state variables with fetched data
       if (data.success) {
         setAllUsers(data.users);
         setTotalPages(data.totalPage);
         setPage(data.currentPage);
         if (!data.users.length) {
+          // Displaying a message when no users are found
           Message({
             type: "success",
             message: "No more user found",
@@ -39,12 +46,15 @@ function UserList() {
         }
       }
     } catch (error) {
+      // Handling errors during user fetching
       Message({
         type: "error",
         message: error?.response?.data?.message ?? "Something went wrong",
       });
     }
   };
+
+  // Function to fetch searched users based on the current page
   const getSearchedUser = async (currentPage = 1) => {
     try {
       const { data } = await axios.get(
@@ -55,11 +65,13 @@ function UserList() {
           },
         }
       );
+      // Updating state variables with fetched data
       if (data.success) {
         console.log("users", data.users);
         setAllUsers(data.users);
         setTotalPages(data.totalPage);
         setPage(data.currentPage);
+        // Displaying a message when no users are found
         if (!data.users.length) {
           Message({
             type: "success",
@@ -68,6 +80,7 @@ function UserList() {
         }
       }
     } catch (error) {
+      // Handling errors during user search
       Message({
         type: "error",
         message: error?.response?.data?.message ?? "Something went wrong",
@@ -75,6 +88,7 @@ function UserList() {
     }
   };
 
+  // Function to delete a user by their ID
   const deleteUser = async (userId) => {
     try {
       const { data } = await axios.delete(`/user/delete-user/${userId}`, {
@@ -82,6 +96,7 @@ function UserList() {
           Authorization: cartState.token,
         },
       });
+      // Displaying a success message and refreshing user list after deletion
       if (data.success) {
         Message({
           type: "success",
@@ -90,6 +105,7 @@ function UserList() {
         getAllUsers();
       }
     } catch (error) {
+      // Handling errors during user deletion
       console.log(error);
       Message({
         type: "error",
@@ -97,23 +113,29 @@ function UserList() {
       });
     }
   };
+
+  // Function to handle sidebar toggling
   const handelSideBar = () => {
     setToggleSideBar(!toggleSideBar);
   };
 
+  // Function to handle page changes for pagination
   const handlePageChange = (currentPage) => {
     getAllUsers(currentPage);
   };
 
+  // Function to handle next/previous page changes
   const handelNextPrevious = async (currentPage) => {
     getAllUsers(currentPage);
   };
 
+  // useEffect to fetch all users on component mount
   useEffect(() => {
     getAllUsers();
     // eslint-disable-next-line
   }, []);
 
+  // useEffect to handle search-related changes and fetch users accordingly
   useEffect(() => {
     if (cartState.searchQuery !== "all" && cartState.searchQuery.length > 1) {
       getSearchedUser();
@@ -124,6 +146,7 @@ function UserList() {
     //eslint-disable-next-line
   }, [cartState.searchQuery]);
 
+  //component jsx
   return (
     <>
       <Container className="" fluid>
