@@ -1,21 +1,22 @@
 import React, { useEffect, useState } from "react";
 import Product from "../productCard/Product";
+// import Product from "../productCard/Product";
 
 function Carousel(props) {
-  const [carouselItems, setCarouselItems] = useState([]);
+  // const [carouselItems, setCarouselItems] = useState([]);
   const [cardsPerSlide, setCardsPerSlide] = useState();
 
   useEffect(() => {
-    setCarouselItems();
     setCardsPerSlide(props.cardsPerSlide);
   }, [props.cardsPerSlide]);
 
   // Create chunks of products for each slide w.r.t screen size
   // To make proper sliders and correct number of products
   const chunkedProducts = [];
-  for (let i = 0; i < carouselItems.length; i += cardsPerSlide) {
-    chunkedProducts.push(carouselItems.slice(i, i + cardsPerSlide));
+  for (let i = 0; i < props.carouselItems.length; i += cardsPerSlide) {
+    chunkedProducts.push(props.carouselItems.slice(i, i + cardsPerSlide));
   }
+
   return (
     <>
       <div className="container my-5">
@@ -35,9 +36,9 @@ function Carousel(props) {
                   <div className="d-flex justify-content-center">
                     {chunk.map((item, cardIndex) => {
                       return (
-                        <div key={cardIndex} style={{ width: "18rem" }}>
-                          <Product product={item} />
-                        </div>
+                        <Product key={item._id} product={item} />
+                        // <div key={cardIndex} style={{ width: "18rem" }}>
+                        // </div>
                       );
                     })}
                   </div>

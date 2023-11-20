@@ -1,3 +1,4 @@
+// Import necessary models and libraries for product management (productModel.js)
 import ProductModel from "../models/productModel.js";
 
 //controller function to create a new Product
@@ -151,6 +152,7 @@ const productById = async (req, res) => {
   }
 };
 
+//function to update product
 const updateProduct = async (req, res) => {
   try {
     //get all fields of the product
@@ -255,6 +257,7 @@ const getQuantity = async (req, res) => {
 APIs for filter and search
  */
 
+//function to get product based on filter query
 const filterProduct = async (req, res) => {
   try {
     const { price, category } = req.body;
@@ -316,6 +319,7 @@ const filterProduct = async (req, res) => {
   }
 };
 
+//function to get product based on searched query
 const searchProduct = async (req, res) => {
   try {
     // Get search query, page, and perPage from the request
@@ -357,6 +361,8 @@ const searchProduct = async (req, res) => {
     });
   }
 };
+
+// Export the functions
 export {
   createProduct,
   allProducts,

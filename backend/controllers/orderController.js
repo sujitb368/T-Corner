@@ -1,3 +1,5 @@
+// Import necessary models and libraries for order management and PayPal integration
+
 import MyOrderModel from "../models/myOrderModel.js";
 import OrderModel from "../models/orderModel.js";
 
@@ -9,8 +11,10 @@ import ProductModel from "../models/productModel.js";
 const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env;
 const base = "https://api-m.sandbox.paypal.com";
 
+// Controller function to place a new order
 const placeOrderController = async (req, res) => {
   try {
+    // Extract necessary information from the request
     const customer = req.user.id;
     const date = new Date();
     const orderDate = moment.utc(date).tz("Asia/Kolkata");
@@ -23,6 +27,7 @@ const placeOrderController = async (req, res) => {
       paymentDetails,
     } = req.body;
 
+    // Create a new order in the OrderModel
     const order = new OrderModel({
       customer,
       orderItems,
@@ -34,6 +39,7 @@ const placeOrderController = async (req, res) => {
       orderDate: orderDate,
     });
 
+    // Save the order to the database
     await order.save();
 
     //updating the quantity in product model for each product
@@ -64,7 +70,6 @@ const placeOrderController = async (req, res) => {
       });
 
       await myOrder.save();
-      console.log(444);
     } else {
       // If the user's myOrder record doesn't exist, create a new one
       // Add the new order to the user's myOrder record
@@ -88,6 +93,7 @@ const placeOrderController = async (req, res) => {
       await newMyOrder.save();
     }
 
+    // Return a success response with the created order
     return res.status(200).send({
       message: "Order created successfully",
       success: true,
@@ -129,9 +135,12 @@ const generateAccessToken = async () => {
   }
 };
 
+// Function to create an order using PayPal
 const createOrder = async (cart) => {
+  //cost of cart
   let total = 0;
   cart?.cartItems?.map((item) => {
+    //adding each item price to total price
     total += item.quantity * item.price;
   });
 
@@ -155,12 +164,6 @@ const createOrder = async (cart) => {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${accessToken}`,
-      // Uncomment one of these to force an error for negative testing (in sandbox mode only). Documentation:
-      // https://developer.paypal.com/tools/sandbox/negative-testing/request-headers/
-      // "PayPal-Mock-Response": '{"mock_application_codes": "MISSING_REQUIRED_PARAMETER"}'
-      // "PayPal-Mock-Response": '{"mock_application_codes": "PERMISSION_DENIED"}'
-      // "PayPal-Mock-Response":
-      //   '{"mock_application_codes": "INTERNAL_SERVER_ERROR"}',
     },
     method: "POST",
     body: JSON.stringify(payload),
@@ -169,6 +172,7 @@ const createOrder = async (cart) => {
   return handleResponse(response, cart?.cartItems);
 };
 
+// Function to capture an order using PayPal
 const captureOrder = async (orderID) => {
   const accessToken = await generateAccessToken();
   const url = `${base}/v2/checkout/orders/${orderID}/capture`;
@@ -379,6 +383,7 @@ const getShippedOrders = async (req, res) => {
   }
 };
 
+// Export the functions
 export {
   placeOrderController,
   createOrder,

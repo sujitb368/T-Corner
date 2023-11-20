@@ -9,14 +9,18 @@ import axios from "axios";
 import { useCart } from "../../context/cartContext.js";
 
 function Dashboard() {
+  // Accessing cart state from the CartContext
   const { cartState } = useCart();
 
+  // Accessing cart state from the CartContext
   const [toggleSideBar, setToggleSideBar] = useState(false);
 
+  // State variables to store dashboard data
   const [totalUsers, setTotalUsers] = useState();
   const [newOrders, setNewOrders] = useState(0);
   const [shippedOrders, setShippedOrders] = useState(0);
 
+  // Function to handle sidebar toggle
   const handelSideBar = () => {
     setToggleSideBar(!toggleSideBar);
   };
@@ -30,6 +34,7 @@ function Dashboard() {
         Message({ type: "success", message: data.message });
       }
     } catch (error) {
+      // Handling errors and displaying error messages
       Message({
         type: "error",
         message: error?.response?.data?.message ?? "Something went wrong",
@@ -37,6 +42,7 @@ function Dashboard() {
     }
   };
 
+  // Function to fetch the count of new orders from the server
   const getNewOrders = async () => {
     try {
       const { data } = await axios.get(`/orders/newOrders-orders`, {
@@ -47,6 +53,7 @@ function Dashboard() {
       Message({ type: "success", message: data?.message + data.orders });
       setNewOrders(data.orders);
     } catch (error) {
+      // Handling errors and displaying error messages
       console.log("Error getting orders in admin dashboard", error);
       Message({
         type: "error",
@@ -57,6 +64,8 @@ function Dashboard() {
       });
     }
   };
+
+  // Function to fetch the count of shipped orders from the server
   const getShippedOrders = async () => {
     try {
       const { data } = await axios.get(`/orders/Shipped-orders`, {
@@ -78,6 +87,7 @@ function Dashboard() {
     }
   };
 
+  // useEffect hook to fetch data when the component mounts
   useEffect(() => {
     getTotalUsers();
     getNewOrders();

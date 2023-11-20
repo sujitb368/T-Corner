@@ -9,24 +9,29 @@ import Swal from "sweetalert2";
 import Message from "../../components/message/Message.js";
 import Loder from "../../components/loder/Loder";
 import { baseUrl } from "../../constant.js";
+
+/**
+ * Cart component for displaying and managing the user's shopping cart.
+ */
 function Cart() {
   //state variables
   //cart items
   //eslint-disable-next-line
-  const [cart, stCart] = useState([]);
+  const [cart, setCart] = useState([]);
   const [price, setPrice] = useState(0);
   const [estimatedPrice, setEstimatedPrice] = useState(0);
   const [shippingCost, setShippingCost] = useState(100);
   const [loader, setLoader] = useState(false);
-  //setCartQuantity
+
   //get cart state from context
   const { cartState, cartDispatch } = useCart();
 
+  // Token and user information
   const token = cartState.token;
   const user = cartState.user;
 
+  // Calculate total price and estimated price whenever the cart changes
   useEffect(() => {
-    // setCart(cartState.cartItems);
     setPrice(
       cartState.cartItems.reduce(
         (prePrice, item) => prePrice + item.price * item.quantity,
@@ -38,6 +43,10 @@ function Cart() {
     //eslint-disable-next-line
   }, [price, cartState]);
 
+  /**
+   * Delete a cart item by productId.
+   * @param {string} productId - The productId of the item to be deleted.
+   */
   const deleteCartItem = async (productId) => {
     try {
       const cart = JSON.parse(localStorage.getItem("cart"));
@@ -65,6 +74,13 @@ function Cart() {
     }
   };
 
+  /**
+   * Update the quantity of a cart item.
+   * @param {string} type - The type of quantity update ("INCREASE_QUANTITY" or "DECREASE_QUANTITY").
+   * @param {string} productId - The productId of the item whose quantity is to be updated.
+   * @param {number} index - The index of the item in the cart.
+   * @param {number} quantity - The current quantity of the item.
+   */
   const updateQuantity = async (type, productId, index, quantity) => {
     if (type === "INCREASE_QUANTITY") {
       //show loader
@@ -99,6 +115,12 @@ function Cart() {
     }
   };
 
+  /**
+   * Fetch the available quantity for a product.
+   * @param {string} productId - The productId of the product.
+   * @param {number} quantity - The quantity to be checked.
+   * @returns {Promise<Object>} - The response object from the server.
+   */
   const getQuantity = async (productId, quantity) => {
     try {
       const { data } = await axios.post(`/product/quantity`, {

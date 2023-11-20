@@ -6,7 +6,13 @@ import axios from "axios";
 import Loder from "../../components/loder/Loder";
 import Message from "../../components/message/Message";
 
+/**
+ * ResetPassword component for resetting user passwords.
+ */
 function ResetPassword() {
+  /**
+   * useState to manage the state of email, password, loading indicator, and password visibility.
+   */
   //eslint-disable-next-line
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [email, setEmail] = useState("");
@@ -14,14 +20,23 @@ function ResetPassword() {
   const [loading, setloading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  // Get token from URL parameters
   const token = useParams();
 
+  // Navigation hook
   const navigate = useNavigate();
 
+  /**
+   * Toggle the visibility of the password input.
+   */
   const togglePassword = () => {
     setShowPassword(!showPassword);
   };
 
+  /**
+   * Handle the password reset process.
+   * @param {Event} e - The form submission event.
+   */
   const resetPassword = async (e) => {
     e.preventDefault();
     try {

@@ -11,6 +11,7 @@ import {
 } from "react-icons/bs";
 import "./Sidebar.css";
 function Sidebar() {
+  // This component used to display side navigation buttons
   return (
     <aside className="aside">
       <Stack gap={2}>

@@ -14,6 +14,13 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useCart } from "../../context/cartContext";
 import axios from "axios";
 import Message from "../message/Message";
+
+import logo from "../../images/logo1.png";
+
+/**
+ * Header component for navigation and search functionality.
+ * @param {Object} props - Component properties.
+ */
 function Header(props) {
   //get cart state from context
   const { cartState, cartDispatch } = useCart();
@@ -24,6 +31,10 @@ function Header(props) {
 
   const navigate = useNavigate();
 
+  /**
+   * Handles user logout by removing user and token from localStorage,
+   * dispatches login fail action, and redirects to the login page.
+   */
   const handelLogOut = () => {
     try {
       localStorage.removeItem("user");
@@ -39,6 +50,11 @@ function Header(props) {
     }
   };
 
+  /**
+   * Retrieves all categories from the server.
+   * @param {Object} event - The event object (unused).
+   * @param {string} id - The unique identifier (unused).
+   */
   const getAllCategories = async (event, id) => {
     try {
       const { data } = await axios.get(`/category/categories`);
@@ -54,6 +70,10 @@ function Header(props) {
     }
   };
 
+  /**
+   * Sends the search query to update the cart context on form submission.
+   * @param {Object} e - The event object.
+   */
   const sendQuery = async (e) => {
     e.preventDefault();
     cartDispatch({ type: "SEARCH", payload: query.length ? query : "all" });
@@ -65,8 +85,8 @@ function Header(props) {
   return (
     <Navbar expand="lg" className="bg-body-tertiary bg-1">
       <Container>
-        <Navbar.Brand className="text-white" to="/">
-          T-Corner
+        <Navbar.Brand className="" to="/">
+          <img style={{ width: "110px" }} alt="logo" src={logo} />
         </Navbar.Brand>
         <Navbar.Toggle className="bg-3" aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">

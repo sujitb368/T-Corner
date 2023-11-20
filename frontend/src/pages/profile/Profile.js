@@ -9,7 +9,9 @@ import Message from "../../components/message/Message";
 import { baseUrl } from "../../constant";
 import Sidebar from "../../admin/component/sidebar/Sidebar";
 
-//component function
+/**
+ * Profile component for displaying and editing user profiles and shipping addresses.
+ */
 const Profile = () => {
   //eslint-disable-next-line
   const { cartState, cartDispatch } = useCart();
@@ -54,6 +56,7 @@ const Profile = () => {
     pin: "",
     phone: "",
     landMark: "",
+    isPrimary: "",
   });
 
   //function to get all saved addresses w.r.t user
@@ -122,8 +125,6 @@ const Profile = () => {
       //set the value of state variable `image` with `img` from above object
       setImage(img);
       setEditProfileImage(true);
-
-      console.log("after file selection");
     } catch (error) {
       console.log("error: " + error);
     }
@@ -402,6 +403,7 @@ const Profile = () => {
                                     pin: address.pin,
                                     phone: address.phone,
                                     landMark: address.landMark,
+                                    isPrimary: address.isPrimary,
                                   });
                                   setIdOfShippingAddress({
                                     index: index + 1,
@@ -564,6 +566,26 @@ const Profile = () => {
                                       })
                                     }
                                   />
+                                </div>
+                                <div className="form-check col-md-6">
+                                  <input
+                                    type="checkbox"
+                                    className="form-check-input mb-1"
+                                    id="isPrimary"
+                                    key="isPrimary"
+                                    onChange={(e) =>
+                                      setUpdatedAddress({
+                                        ...updatedAddress,
+                                        isPrimary: e.target.checked,
+                                      })
+                                    }
+                                  />
+                                  <label
+                                    className="ms-1 form-check-label"
+                                    for="isPrimary"
+                                  >
+                                    Make it primary address
+                                  </label>
                                 </div>
 
                                 {/* Add similar form fields for other address fields */}

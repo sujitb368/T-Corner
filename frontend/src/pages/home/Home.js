@@ -6,10 +6,20 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import Message from "../../components/message/Message.js";
 import { useCart } from "../../context/cartContext";
 import Filters from "../../components/filters/Filters";
+import HomeCover from "./HomeCover.js";
+import Carousel from "../../components/carousel/Carousel.js";
 // import { initialUserState, userReducer } from "../../context/userContext";
 
+import "./Home.css";
+
+/**
+ * Home component for displaying and filtering products.
+ */
 function Home() {
+  // Cart context
   const { cartState, cartDispatch } = useCart();
+
+  // State variables
   const [allproducts, setAllProducts] = useState([]);
   const [categoryToFilter, setCategoryToFilter] = useState([]);
   const [priceToFilter, setPriceToFilter] = useState([]);
@@ -26,14 +36,20 @@ function Home() {
   // get product from
   const [productFrom, setProductFrom] = useState("all");
 
-  //get query parameters from url with useLocation hook
+  // Location hook to get query parameters from URL
   let location = useLocation();
 
   // to filter product based on category
   const queryParams = decodeURIComponent(location?.search?.split("=")[1]);
 
+  // Navigation hook
   const navigate = useNavigate();
 
+  /**
+   * Handler for applying filters.
+   * @param {Array} category - Selected category for filtering.
+   * @param {Array} price - Selected price range for filtering.
+   */
   const handelFilter = (category, price) => {
     if (category) {
       setCategoryToFilter(category);
@@ -43,6 +59,10 @@ function Home() {
     }
   };
 
+  /**
+   * Reset filters.
+   * @param {Boolean} reset - Flag to reset filters.
+   */
   const reset = (reset) => {
     setCategoryToFilter([]);
     setPriceToFilter([]);
@@ -52,6 +72,10 @@ function Home() {
     getAllProducts();
   };
 
+  /**
+   * Handle page change.
+   * @param {Number} pageNumber - Selected page number.
+   */
   const handlePageChange = (pageNumber) => {
     if (productFrom === "all") {
       getAllProducts(pageNumber);
@@ -62,6 +86,10 @@ function Home() {
     }
   };
 
+  /**
+   * Handle next/previous page navigation.
+   * @param {Number} currentPage - Current page number.
+   */
   const handelNextPrevious = async (currentPage) => {
     if (productFrom === "all") {
       getAllProducts(currentPage);
@@ -72,6 +100,10 @@ function Home() {
     }
   };
 
+  /**
+   * Get all products.
+   * @param {Number} pageNumber - Page number for pagination.
+   */
   const getAllProducts = async (pageNumber = 1) => {
     try {
       const { data } = await axios.get(`/product/allproducts/${pageNumber}`);
@@ -88,6 +120,10 @@ function Home() {
     }
   };
 
+  /**
+   * Get filtered products.
+   * @param {Number} pageNumber - Page number for pagination.
+   */
   const getFilteredProducts = async (pageNumber = 1) => {
     try {
       const { data } = await axios.post(
@@ -118,6 +154,9 @@ function Home() {
     }
   };
 
+  /**
+   * Get search products.
+   */
   const getSearchProducts = async () => {
     try {
       const { data } = await axios.get(
@@ -185,16 +224,26 @@ function Home() {
     <>
       <Container fluid>
         <Row>
-          <Col xs={2} className={`side-bar pt-5 side-bar-responsive`}>
+          <Col
+            xs={2}
+            className={`d-none d-md-block side-bar pt-5 side-bar-responsive-user`}
+          >
             <Filters reset={reset} onClick={handelFilter} />
           </Col>
-          <Col className="px-3 py-5" xs={10}>
+          <Col className="p-0 m-0" xs={12} md={10}>
+            <HomeCover />
+            <Carousel
+              carouselItems={allproducts}
+              cardsPerSlide={
+                window.innerWidth < 764 ? 1 : window.innerWidth <= 1000 ? 2 : 5
+              }
+            />
             {!allproducts.length && (
               <h6 className="text-2 px-3 py-5">
                 No product found for selected filter
               </h6>
             )}
-            <Row>
+            <Row className="px-3 mx-0">
               {allproducts &&
                 allproducts?.map((product) => {
                   return (

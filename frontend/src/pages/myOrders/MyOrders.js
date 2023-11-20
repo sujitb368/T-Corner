@@ -9,6 +9,10 @@ import { useCart } from "../../context/cartContext";
 import { Link } from "react-router-dom";
 import Message from "../../components/message/Message";
 import { baseUrl } from "../../constant";
+
+/**
+ * MyOrders component for displaying user's order history.
+ */
 function MyOrders() {
   // eslint-disable-next-line
   const { cartState, cartDispatch } = useCart();
@@ -17,6 +21,9 @@ function MyOrders() {
 
   const [myOrders, setMyOrders] = useState([]);
 
+  /**
+   * Function to fetch user's order history.
+   */
   const getMyOrders = async () => {
     try {
       const response = await axios.post(
@@ -42,6 +49,11 @@ function MyOrders() {
     }
   };
 
+  /**
+   * Function to handle user's product rating.
+   * @param {string} productId - ID of the product being rated.
+   * @param {number} myRating - User's rating for the product.
+   */
   const handleRating = async (productId, myRating) => {
     try {
       const { data } = await axios.post(

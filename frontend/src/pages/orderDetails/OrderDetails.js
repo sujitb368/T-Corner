@@ -11,11 +11,20 @@ import { baseUrl } from "../../constant";
 import moment from "moment";
 moment().format();
 
+/**
+ * OrderDetails component for displaying details of a specific order.
+ */
 function OrderDetails() {
+  //cart state form context
   const { cartState } = useCart();
+  //variable for order details
   const [orderDetails, setOrderDetails] = useState([]);
+  //get order id using useParams
   let { orderId } = useParams();
 
+  /**
+   * Function to fetch details of a specific order.
+   */
   const getOrderDetails = async () => {
     try {
       const { data } = await axios.get(`/myorders/orders/${orderId}`, {

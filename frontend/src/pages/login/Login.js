@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button, Card, Col, Container, Form } from "react-bootstrap";
 import { BsEye, BsEyeSlash } from "react-icons/bs";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import axios from "axios";
 import "./Login.css";
 import { useCart } from "../../context/cartContext";
@@ -9,23 +9,29 @@ import Loder from "../../components/loder/Loder";
 import Message from "../../components/message/Message";
 // import { initialUserState, userReducer } from "../../reducer/userReducer.js";
 
+/**
+ * Login component to handle user login and password recovery.
+ */
 function Login() {
   //get cart state from context
   // eslint-disable-next-line
   const { cartState, cartDispatch } = useCart();
 
+  // State variables for managing email, password, loading state, and password visibility
   const [showPassword, setShowPassword] = useState(false);
-
-  /* `useState` hook from React to create three state variables: `email`,
-  `password`, and `loading`. */
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setloading] = useState(false);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
 
+  // Hooks for navigation and location
   const navigate = useNavigate();
   const location = useLocation();
 
+  /**
+   * Function to handle the login process.
+   * @param {Object} e - The event object.
+   */
   const handelLogin = async (e) => {
     e.preventDefault();
     /* The code block you provided is handling the login process. Here's a breakdown of what it does: */
@@ -45,7 +51,8 @@ function Login() {
       );
 
       //if login is successful enter inside if block
-      if (response.data.success) {
+      // update state and perform necessary actions
+      if (response?.data?.success) {
         Message({ type: "success", message: response.data.message });
 
         //store the token, user into local storage
@@ -201,9 +208,13 @@ function Login() {
 
                 <p className="text-center mt-2">
                   Don't have an account?{" "}
-                  <span style={{ cursor: "pointer" }} className="ms-1 text-2">
+                  <Link
+                    to="/signup"
+                    style={{ cursor: "pointer" }}
+                    className="ms-1 text-2"
+                  >
                     Signup
-                  </span>
+                  </Link>
                 </p>
               </Form>
             ) : (

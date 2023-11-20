@@ -1,11 +1,16 @@
 import React, { useState } from "react";
 import { Button, Card, Col, Container, Form } from "react-bootstrap";
 import "./Signup.css";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import Message from "../../components/message/Message";
+
+/**
+ * Signup component for user registration.
+ */
 function Signup() {
+  // State variables for user registration details
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -14,12 +19,19 @@ function Signup() {
   //eslint-disable-next-line
   const [loding, setLoding] = useState("");
 
+  // Navigation hook
   const navigate = useNavigate();
 
+  /**
+   * Function to handle user signup.
+   * @param {Object} e - The event object.
+   */
   const handelSignup = async (e) => {
     e.preventDefault();
     try {
       setLoding(true);
+
+      // API call to register user
       const response = await axios.post(
         `/user/signup`,
         { name, email, password, confirmPassword, phone },
@@ -31,7 +43,8 @@ function Signup() {
       );
       setLoding(false);
 
-      if (response.data.success) {
+      // Check if signup is successful and display appropriate message
+      if (response?.data?.success) {
         Message({ type: "success", message: response.data.message });
         navigate("/login");
       } else {
@@ -121,9 +134,13 @@ function Signup() {
               </div>
               <p className="text-center mt-2">
                 Already have an account?{" "}
-                <span style={{ cursor: "pointer" }} className="ms-1 text-2">
+                <Link
+                  to="/login"
+                  style={{ cursor: "pointer" }}
+                  className="ms-1 text-2"
+                >
                   Login
-                </span>
+                </Link>
               </p>
             </Form>
           </Card.Body>

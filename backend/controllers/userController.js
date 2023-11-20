@@ -1,4 +1,4 @@
-//import UserModel
+// Import necessary modules, libraries, and models
 import { frontEndUrl } from "../config.js";
 import {
   hashPassword,
@@ -14,7 +14,11 @@ import { sendEmail } from "../helpers/nodeMailer.js";
 import { isValidToken } from "../middlewares/userMiddleware.js";
 import ResetPasswordModel from "../models/forgotPasswordTokenModel.js";
 
-//user sign-up/create controller
+/**
+ * Controller function to handle user sign-up.
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ */
 const signupController = async (req, res) => {
   try {
     const { name, email, password, phone } = req.body;
@@ -62,7 +66,11 @@ const signupController = async (req, res) => {
   }
 };
 
-//user login controller
+/**
+ * Controller function to handle user login.
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ */
 const loginController = async (req, res) => {
   try {
     //user login credentials
@@ -109,12 +117,11 @@ const loginController = async (req, res) => {
   }
 };
 
-const testController = async (req, res) => {
-  console.log("testController", req.user);
-  return res.send({ user: req.user, message: "testing" });
-};
-
-// controller function to authorize normal user
+/**
+ * Controller function to authorize normal user.
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ */
 const isLoggedIn = async (req, res) => {
   return res.status(200).send({
     message: "access granted",
@@ -123,6 +130,11 @@ const isLoggedIn = async (req, res) => {
   });
 };
 
+/**
+ * Controller function to get all users excluding admins.
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ */
 const getAllUsersController = async (req, res) => {
   try {
     const { page } = req.params ?? 1;
@@ -154,6 +166,11 @@ const getAllUsersController = async (req, res) => {
   }
 };
 
+/**
+ * Controller function to get users based on search query.
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ */
 const getSearchedUser = async (req, res) => {
   try {
     const { page = 1, query, perPage = 10 } = req.query;
@@ -195,10 +212,17 @@ const getSearchedUser = async (req, res) => {
   }
 };
 
+/**
+ * Controller function to delete a user by ID.
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ */
 const deleteUserController = async (req, res) => {
   try {
+    //get user id from request params
     const { userId } = req.params;
 
+    //remove user from database with given user id
     await UserModel.findByIdAndRemove({ _id: userId });
 
     return res.status(200).send({
@@ -213,14 +237,25 @@ const deleteUserController = async (req, res) => {
   }
 };
 
+/**
+ * Controller function to handle forgot password requests.
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ */
 const forgotPasswordController = async (req, res) => {
   try {
+    //get email of user from request params
     const { email } = req.params;
+
+    // find user by email
     const user = await UserModel.findOne({ email });
+
+    // if user is not found return response
     if (!user) {
       return res.status(400).send({ message: "Invalid user", success: false });
     }
 
+    // generate password reset token
     const resetToken = await generateAndStoreToken(email, res);
 
     if (resetToken.isTokenSaved === true) {
@@ -250,10 +285,19 @@ const forgotPasswordController = async (req, res) => {
   }
 };
 
+/**
+ * Controller function to reset user password.
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ */
 const resetPassword = async (req, res) => {
   try {
+    //get token from req headers
     const token = req.headers.authorization;
+
+    //destructure from request body
     const { email, password } = req.body;
+
     //validation
     //if any of this are not provided, then return with status code 400
     if (!email || !password) {
@@ -266,12 +310,15 @@ const resetPassword = async (req, res) => {
     // check token is valid before setting new password
     const verifyToken = await isValidToken(token, JWT_SECRET_RESET_PASS);
 
+    //get reset token from reset password model
     const storedResetToken = await ResetPasswordModel.findOne({ email });
 
+    //if not validated return response
     if (verifyToken && token !== storedResetToken?.token) {
       return res.status(400).send({ message: "invalid token" });
     }
 
+    //hash password
     const hashedPassword = await hashPassword(password);
 
     //find user by email to check if user already exists
@@ -304,8 +351,14 @@ const resetPassword = async (req, res) => {
   }
 };
 
+/**
+ * Controller function to get the total number of normal users.
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ */
 const getTotalUsers = async (req, res) => {
   try {
+    //total users excluding admin users
     const totalUsers = await UserModel.find({ isAdmin: false }).count();
 
     return res.status(200).json({
@@ -323,10 +376,17 @@ const getTotalUsers = async (req, res) => {
   }
 };
 
+/**
+ * Controller function to edit user profile.
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ */
 const editUserProfile = async (req, res) => {
   try {
+    // get user id from request params
     const { userId } = req.params;
 
+    // get user from user model
     const user = await UserModel.findByIdAndUpdate({ _id: userId }, req.body, {
       new: true,
     });
@@ -347,7 +407,6 @@ const editUserProfile = async (req, res) => {
 export {
   signupController,
   loginController,
-  testController,
   isLoggedIn,
   getAllUsersController,
   deleteUserController,

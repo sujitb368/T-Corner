@@ -5,23 +5,33 @@ import axios from "axios";
 import Message from "../../components/message/Message";
 import { BsXSquareFill } from "react-icons/bs";
 function AddCategory() {
-  //for form validation
+  //// State for form validation
   const [validated, setValidated] = useState(false);
+
+  // State for sidebar toggle
   const [toggleSideBar, setToggleSideBar] = useState(false);
+
+  // State for category input
   const [category, setCategory] = useState("");
 
+  // Get token from local storage
   const token = localStorage.getItem("token");
 
+  // Function to handle category submission
   const handelCategory = async (e) => {
     e.preventDefault();
     try {
       const form = e.currentTarget;
+
+      // Check if form is valid
       if (form.checkValidity() === false) {
-        console.log(validated);
+        // console.log(validated);
         e.stopPropagation();
         setValidated(true);
         return;
       }
+
+      // Send a POST request to create a new category
       const response = await axios.post(
         `/admin/category/create-category`,
         { category },
@@ -47,7 +57,8 @@ function AddCategory() {
       });
     }
   };
-  //eslint-disable-next-line
+
+  // Function to handle sidebar toggle
   const handelSideBar = () => {
     setToggleSideBar(!toggleSideBar);
   };

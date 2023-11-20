@@ -35,6 +35,7 @@ router.post("/", async (req, res) => {
   }
 });
 
+// API endpoint to retrieve order details by orderId
 router.post("/:orderID/capture", async (req, res) => {
   try {
     console.log("captured order id", req.params.orderID);
@@ -47,15 +48,20 @@ router.post("/:orderID/capture", async (req, res) => {
   }
 });
 
+// Endpoint to get all orders (requires admin and user login)
 router.get("/get-orders", isLogin, isAdmin, getOrders);
 
+// Endpoint to change the status of an order (requires admin and user login)
 router.put("/change-status/:orderId", isLogin, isAdmin, changeOrderStatus);
 
-//get order details by orderId
+//get order details by orderId (requires admin and user login)
 router.get("/search-orders", isLogin, isAdmin, getSearchedOrders);
 
+// Endpoint to get new orders (requires admin and user login)
 router.get("/newOrders-orders", isLogin, isAdmin, getNewOrders);
 
+// Endpoint to get shipped orders (requires admin and user login)
 router.get("/shipped-orders", isLogin, isAdmin, getShippedOrders);
 
+// Export the router for use in other parts of the application
 export default router;

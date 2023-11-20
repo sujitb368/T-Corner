@@ -1,6 +1,7 @@
+// Import cart models
 import CartModel from "../models/cartModel.js"; // import cart models
+// Import userModel from '../models/user'
 import UserModel from "../models/userModel.js"; // import userModel from '../models/user
-import ProductModel from "../models/productModel.js"; // Import the Product model
 
 // POST route to add a product to the user's cart
 const addToCart = async (req, res) => {
@@ -18,24 +19,10 @@ const addToCart = async (req, res) => {
         .status(404)
         .send({ message: "User not found", success: false });
     }
-
-    // Find the product by ID (You should implement this logic based on your Product model)
-    //   const product = await Product.findById(productId);
-
-    //   if (!product) {
-    //     return res.status(404).json({ message: 'Product not found' });
-    //   }
-
-    // Check if the product is already in the user's cart
-    //   const cartItem = await CartItem.findOneAndUpdate(
-    //     { user: userId, product: productId },
-    //     { $inc: { quantity } }, // Increment the quantity if the product is already in the cart
-    //     { new: true } // Return the updated cart item
-    //   );
+    // Find and update the user's cart with the new cart items
     let cartItem = await CartModel.findOneAndUpdate(
       { user: userId },
       { cartItems },
-      // { $inc: { quantity } }, // Increment the quantity if the product is already in the cart
       { new: true } // Return the updated cart item
     );
 
@@ -60,20 +47,24 @@ const addToCart = async (req, res) => {
   }
 };
 
+// Route to delete a product from the user's cart
 const deleteFromCart = async (req, res) => {
   try {
     const { userId, cartItems } = req.body;
 
+    // Find and update the user's cart with the updated cart items
     const cartItem = await CartModel.findOneAndUpdate(
       { user: userId },
       { cartItems }
     );
 
+    // Return a success response if the item is deleted from the cart
     return res.status(200).send({
       message: "Item deleted",
       success: true,
     });
   } catch (error) {
+    // Return an error response if there's an exception during deletion
     console.log(error);
     return res
       .status(500)

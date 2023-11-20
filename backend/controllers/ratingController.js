@@ -1,3 +1,5 @@
+// Import necessary models for order, product, and rating management
+
 import MyOrderModel from "../models/myOrderModel.js";
 import ProductModel from "../models/productModel.js";
 import RatingModel from "../models/ratingModel.js";
@@ -5,7 +7,10 @@ import RatingModel from "../models/ratingModel.js";
 //Api function to store reviews and ratings
 const createRatings = async (req, res) => {
   try {
+    // Destructure rating, user, and productId from the request body
     const { rating, user, productId } = req.body;
+
+    // Check if required fields are provided
     if (!rating || !user || !productId) {
       return res.status(400).send({
         message: "user or rating is not provided",
@@ -13,14 +18,12 @@ const createRatings = async (req, res) => {
         error: "Required field missing",
       });
     }
+    // Call myRating function to update the user's order with the given rating
     await myRating(rating, user, productId, res);
     //find product by productId
     const isProductExist = await RatingModel.findOne({ productId });
 
-    console.log("product found", isProductExist);
-
     // Check if the user has already rated the product
-
     const userHasRated = isProductExist?.rating.some(
       (rating) => rating.user.toString() === user
     );
@@ -94,40 +97,14 @@ const createRatings = async (req, res) => {
   }
 };
 
-// const myRating = async (rating, user, productId, res) => {
-//   try {
-//     console.log(rating, user, productId);
-
-//     const myOrders = await MyOrderModel.findOne({ user });
-
-//     if (myOrders) {
-//       const myProduct = await MyOrderModel.findOne(
-//         {
-//           user,
-//           "orders.orderItems.productId": productId,
-//         },
-//         {
-//           $set: {
-//             "orders.$[].orderItems$[xxx].myRating": rating, // Update the rating
-//           },
-//         },
-//         { arrayFilters : [
-//           {"xxx._id":productId}
-//         ]},
-//         { new: true }
-//       );
-//       res.send(user);
-//       console.log("my rated product", myProduct);
-//     }
-//   } catch (error) {
-//     console.log("error in 2", error);
-//   }
-// };
-
+/**
+ * Function to update the user's order with the given rating.
+ * @param {number} rating - The rating to be updated.
+ * @param {string} user - The user ID.
+ * @param {string} productId - The product ID.
+ */
 const myRating = async (rating, user, productId) => {
   try {
-    console.log(rating, user, productId);
-
     const myOrders = await MyOrderModel.findOne({ user });
 
     if (myOrders) {
@@ -164,4 +141,5 @@ const myRating = async (rating, user, productId) => {
   }
 };
 
+// Export the function for use in routes
 export { createRatings };

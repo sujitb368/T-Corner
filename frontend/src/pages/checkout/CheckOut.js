@@ -13,7 +13,12 @@ import {
   BsFillWalletFill,
 } from "react-icons/bs";
 
+/**
+ * CheckOut component for managing the user's checkout process.
+ */
 export const CheckOut = () => {
+  // State variables
+
   //get cart state from context
   const { cartState, cartDispatch } = useCart();
   // user all saved address will be stored
@@ -214,9 +219,11 @@ export const CheckOut = () => {
   const getAddress = async () => {
     try {
       const response = await axios.get(
-        `/shipping/shipping-address/${cartState.user._id}`
+        `/shipping/shipping-address/${cartState.user._id}`,
+        {
+          headers: { Authorization: cartState?.token },
+        }
       );
-      console.log(response.data);
       if (response.data.success) {
         const addresses = response.data.address;
         const primaryAddress = addresses.filter((address) => address.isPrimary);
@@ -226,40 +233,37 @@ export const CheckOut = () => {
 
         //default address to delivered the product
         setShippingAddress({
-          name: primaryAddress[0].fName + " " + primaryAddress[0].lName,
-          address: primaryAddress[0].address,
-          phone: primaryAddress[0].phone,
-          pin: primaryAddress[0].pin,
-          landMark: primaryAddress[0].landMark,
+          name: primaryAddress[0]?.fName + " " + primaryAddress[0]?.lName,
+          address: primaryAddress[0]?.address,
+          phone: primaryAddress[0]?.phone,
+          pin: primaryAddress[0]?.pin,
+          landMark: primaryAddress[0]?.landMark,
         });
 
         cartDispatch({
           type: "SHIPPING_ADDRESS",
           payload: {
-            name: primaryAddress[0].fName + " " + primaryAddress[0].lName,
-            address: primaryAddress[0].address,
-            phone: primaryAddress[0].phone,
-            pin: primaryAddress[0].pin,
-            landMark: primaryAddress[0].landMark,
+            name: primaryAddress[0]?.fName + " " + primaryAddress[0]?.lName,
+            address: primaryAddress[0]?.address,
+            phone: primaryAddress[0]?.phone,
+            pin: primaryAddress[0]?.pin,
+            landMark: primaryAddress[0]?.landMark,
           },
         });
-        console.log(
-          "response.data.address.length",
-          response.data.address.length
-        );
+
         if (response.data.address.length > 0) {
           setShowAddressForm(false);
         }
 
         //will loop through this address and show in all address section
         setSavedAddress(response.data.address);
-
-        console.log("saved address", savedAddress);
-        console.log("new address");
       }
     } catch (error) {
       console.log(error);
-      Message({ type: "error", message: error.response.data.message });
+      Message({
+        type: "error",
+        message: error?.response?.data?.message ?? error?.message ?? error,
+      });
     }
   };
 
@@ -351,7 +355,6 @@ export const CheckOut = () => {
   //function to handle moving to the next step
   const nextStep = () => {
     setCurrentStep(currentStep + 1);
-    console.log(currentStep);
   };
 
   //function to handle moving to the previous step
@@ -429,7 +432,6 @@ export const CheckOut = () => {
                               value={address}
                               checked={selectedAddress?._id === address._id}
                               onChange={(e) => {
-                                console.log("on change", address);
                                 setSelectedAddress(address);
                                 handelShippingAddress(address);
                               }}
@@ -518,7 +520,7 @@ export const CheckOut = () => {
                           </div>
                         </div>
                         <div className="row">
-                          <div className="col-md-12">
+                          <div className="col-md-6">
                             <Input
                               fieldName="landMark"
                               key="landMark"
@@ -561,6 +563,24 @@ export const CheckOut = () => {
                               type="text"
                             />
                           </div>
+                        </div>
+
+                        <div className="form-check">
+                          <Input
+                            fieldName="isPrimary"
+                            key="isPrimary"
+                            onChange={handelChildChanges}
+                            className="form-check-input mb-1"
+                            name="IsPrimary"
+                            type="checkbox"
+                            id="flexCheckDefault"
+                          />
+                          <label
+                            className="ms-1 form-check-label"
+                            for="flexCheckDefault"
+                          >
+                            Make it primary address
+                          </label>
                         </div>
 
                         <div className="d-flex pt-2">

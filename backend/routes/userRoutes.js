@@ -1,9 +1,9 @@
+// Import necessary modules and controllers for managing users
 import express from "express";
 
 import {
   signupController,
   loginController,
-  testController,
   isLoggedIn,
   getAllUsersController,
   deleteUserController,
@@ -24,8 +24,6 @@ router.post("/signup", signupController);
 
 //login user routes
 router.post("/login", loginController);
-
-router.post("/test-user", isLogin, testController);
 
 //protected User routes
 router.get("/isLoggedIn", isLogin, isLoggedIn);
