@@ -1,5 +1,8 @@
+// Nodemailer Configuration
+
 import nodemailer from "nodemailer";
 
+// 2. Create a nodemailer transporter with Gmail service and authentication credentials.
 const transporter = nodemailer.createTransport({
   service: "Gmail",
   auth: {
@@ -8,11 +11,14 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// asynchronous function to send emails using nodemailer.
 async function sendEmail(emailConfig) {
   try {
+    // Extract necessary information from the email configuration object.
     const { to, subject, text, html, attachments } = emailConfig;
 
     // send mail with defined transport object
+    // Use the transporter to send the email with specified content and attachments.
     const info = await transporter.sendMail({
       from: "sujitb368@gmail.com", // sender address
       to, // receivers
@@ -37,4 +43,5 @@ async function sendEmail(emailConfig) {
   }
 }
 
+// Export the sendEmail function for use in other modules.
 export { sendEmail };

@@ -1,7 +1,10 @@
+// Import Multer for handling file uploads
 import multer from "multer";
-// import { relativeDirname } from "../config.js";
 
+// Import the __dirname variable from the config
 import { __dirname } from "../config.js";
+
+// Import necessary models
 import ProductModel from "../models/productModel.js";
 import UserModel from "../models/userModel.js";
 
@@ -24,6 +27,7 @@ const upload = multer({
     fileSize: 3 * 1024 * 1024,
   },
   fileFilter: (req, file, cb) => {
+    // Allow only specific file types (image/png, image/jpg, image/jpeg)
     if (
       file.mimetype == "image/png" ||
       file.mimetype == "image/jpg" ||
@@ -86,6 +90,7 @@ const editImageFileController = async (req, res) => {
     // Access the file details through req.file
     const uploadedFile = req.file;
 
+    // Update the product image in the database
     const product = await ProductModel.findByIdAndUpdate(
       { _id: productId },
       { image: uploadedFile.filename },
@@ -107,6 +112,7 @@ const editImageFileController = async (req, res) => {
   }
 };
 
+// Function to handle file uploads for editing user profile images
 const editProfileImageFileController = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -120,6 +126,7 @@ const editProfileImageFileController = async (req, res) => {
     // Access the file details through req.file
     const uploadedFile = req.file;
 
+    // Update the user's profile picture in the database
     const user = await UserModel.findByIdAndUpdate(
       { _id: userId },
       { profilePic: uploadedFile.filename },
@@ -140,12 +147,14 @@ const editProfileImageFileController = async (req, res) => {
     });
   }
 };
+// Function to download a file
 const downloadFile = (req, res) => {
   const fileName = req.params.filename;
   const path = __dirname + "/uploadedFiles/";
 
+  // Download the file
   res.download(path + fileName, (error) => {
-    console.log(path + fileName);
+    // console.log(path + fileName);
     if (error) {
       res.status(500).send({
         success: false,
@@ -154,6 +163,8 @@ const downloadFile = (req, res) => {
     }
   });
 };
+
+// Export Multer instance and file handling functions
 export {
   upload,
   uploadFileController,

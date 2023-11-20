@@ -25,7 +25,7 @@ function AddCategory() {
 
       // Check if form is valid
       if (form.checkValidity() === false) {
-        console.log(validated);
+        // console.log(validated);
         e.stopPropagation();
         setValidated(true);
         return;

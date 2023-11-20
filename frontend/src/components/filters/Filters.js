@@ -79,7 +79,6 @@ function Filters(props) {
       const { data } = await axios.get(`/category/categories`);
       if (data.success) {
         setCategories(data.categories);
-        console.log(data);
       }
     } catch (error) {
       console.log(error);

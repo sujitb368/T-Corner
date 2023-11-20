@@ -11,16 +11,22 @@ import {
   searchProduct,
   deleteProduct,
 } from "../controllers/productController.js";
+import { isAdmin, isLogin } from "../middlewares/userMiddleware.js";
 
-router.post("/addProduct", createProduct);
+// Endpoint to add a new product (requires user login and admin access)
+router.post("/addProduct", isLogin, isAdmin, createProduct);
 
-router.put("/updateProduct/:productId", updateProduct);
+// Endpoint to update an existing product (requires user login and admin access)
+router.put("/updateProduct/:productId", isLogin, isAdmin, updateProduct);
 
 //to delete the product
-router.delete("/delete/:productId", deleteProduct);
+// Endpoint to delete a product (requires user login and admin access)
+router.delete("/delete/:productId", isLogin, isAdmin, deleteProduct);
 
+// Endpoint to retrieve all products with pagination
 router.get("/allproducts/:page", allProducts);
 
+// Endpoint to retrieve a product by its ID
 router.get("/getProductId/:productId", productById);
 
 //get product quantity
@@ -32,4 +38,5 @@ router.post("/filter/:page", filterProduct);
 //search product
 router.get("/search", searchProduct);
 
+// Export the router for use in other parts of the application
 export default router;

@@ -9,7 +9,9 @@ import Message from "../../components/message/Message";
 import { baseUrl } from "../../constant";
 import Sidebar from "../../admin/component/sidebar/Sidebar";
 
-//component function
+/**
+ * Profile component for displaying and editing user profiles and shipping addresses.
+ */
 const Profile = () => {
   //eslint-disable-next-line
   const { cartState, cartDispatch } = useCart();
@@ -123,8 +125,6 @@ const Profile = () => {
       //set the value of state variable `image` with `img` from above object
       setImage(img);
       setEditProfileImage(true);
-
-      console.log("after file selection");
     } catch (error) {
       console.log("error: " + error);
     }

@@ -13,7 +13,12 @@ import {
   BsFillWalletFill,
 } from "react-icons/bs";
 
+/**
+ * CheckOut component for managing the user's checkout process.
+ */
 export const CheckOut = () => {
+  // State variables
+
   //get cart state from context
   const { cartState, cartDispatch } = useCart();
   // user all saved address will be stored
@@ -204,7 +209,6 @@ export const CheckOut = () => {
 
   //function to handel value from input component
   const handelChildChanges = (fieldName, value) => {
-    console.log("fieldname, value", fieldName, value);
     setFormFields((prevFields) => ({
       ...prevFields,
       [fieldName]: value,
@@ -215,9 +219,11 @@ export const CheckOut = () => {
   const getAddress = async () => {
     try {
       const response = await axios.get(
-        `/shipping/shipping-address/${cartState.user._id}`
+        `/shipping/shipping-address/${cartState.user._id}`,
+        {
+          headers: { Authorization: cartState?.token },
+        }
       );
-      console.log(response.data);
       if (response.data.success) {
         const addresses = response.data.address;
         const primaryAddress = addresses.filter((address) => address.isPrimary);
@@ -244,19 +250,13 @@ export const CheckOut = () => {
             landMark: primaryAddress[0]?.landMark,
           },
         });
-        console.log(
-          "response.data.address.length",
-          response.data.address.length
-        );
+
         if (response.data.address.length > 0) {
           setShowAddressForm(false);
         }
 
         //will loop through this address and show in all address section
         setSavedAddress(response.data.address);
-
-        console.log("saved address", savedAddress);
-        console.log("new address");
       }
     } catch (error) {
       console.log(error);
@@ -355,7 +355,6 @@ export const CheckOut = () => {
   //function to handle moving to the next step
   const nextStep = () => {
     setCurrentStep(currentStep + 1);
-    console.log(currentStep);
   };
 
   //function to handle moving to the previous step
@@ -433,7 +432,6 @@ export const CheckOut = () => {
                               value={address}
                               checked={selectedAddress?._id === address._id}
                               onChange={(e) => {
-                                console.log("on change", address);
                                 setSelectedAddress(address);
                                 handelShippingAddress(address);
                               }}

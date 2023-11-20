@@ -1,7 +1,9 @@
+// Import necessary libraries and modules
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config.js";
 import userModel from "../models/userModel.js";
 
+// Middleware for Checking User Login
 const isLogin = (req, res, next) => {
   try {
     //get authorization token from request headers
@@ -45,6 +47,7 @@ const isLogin = (req, res, next) => {
   }
 };
 
+// Middleware for Checking Admin Status
 const isAdmin = async (req, res, next) => {
   try {
     // get role of login user from request body
@@ -54,12 +57,14 @@ const isAdmin = async (req, res, next) => {
     //get user by id
     const user = await userModel.findById(req.user._id);
 
+    // If the user's role does not match the expected role, return with status code 200
     if (parseInt(role) !== user.role) {
       return res.status(200).send({
         message: "Not a admin user",
         success: false,
       });
     } else {
+      // If the user is an admin, proceed to the next middleware
       next();
     }
   } catch (error) {
@@ -72,13 +77,13 @@ const isAdmin = async (req, res, next) => {
   }
 };
 
+// Function to Validate Token
 const isValidToken = async (token, secret) => {
   try {
     jwt.verify(token, secret, async (err, payload) => {
       if (err) {
         return res.status(401).send({ message: err, success: false });
       }
-      // if token is valid find user and add to request object
     });
     return true;
   } catch (error) {
@@ -91,4 +96,5 @@ const isValidToken = async (token, secret) => {
   }
 };
 
+// Export the middleware functions for use in other modules
 export { isLogin, isAdmin, isValidToken };

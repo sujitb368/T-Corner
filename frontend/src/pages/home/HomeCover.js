@@ -3,6 +3,10 @@ import "./HomeCover.css";
 /* is importing an image file named "logo1.png" from
 the "./images" directory*/
 import logo from "../../images/logo1.png";
+
+/**
+ * HomeCover component for displaying a banner with a logo and text.
+ */
 function HomeCover() {
   return (
     <>

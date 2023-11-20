@@ -11,7 +11,6 @@ const LOGIN_SUCCESS = "LOGIN_SUCCESS";
 const LOGOUT = "LOGOUT";
 
 const userReducer = (state, action) => {
-  console.log("state, action: ", action.payload.user);
   switch (action.type) {
     case "LOGIN_SUCCESS":
       return {
@@ -21,7 +20,6 @@ const userReducer = (state, action) => {
         token: action.payload.token,
       };
     case "LOGOUT":
-      console.log("in logout state");
       return {
         ...state,
         user: null,
@@ -29,7 +27,6 @@ const userReducer = (state, action) => {
         token: null,
       };
     default:
-      console.log("in default state");
       return state;
   }
 };

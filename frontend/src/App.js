@@ -39,6 +39,7 @@ import ReviewOrder from "./pages/reviewOrder/ReviewOrder";
 import OrderDetails from "./pages/orderDetails/OrderDetails";
 import EditAndViewProduct from "./admin/editAndViewProduct/EditAndViewProduct";
 import ResetPassword from "./pages/resetPassword/ResetPassword";
+import Footer from "./components/headerFooter/Footer";
 
 function App() {
   const { cartState, cartDispatch } = useCart();
@@ -48,6 +49,7 @@ function App() {
 
   //local backend
   axios.defaults.baseURL = "http://localhost:8000/api/v1";
+  axios.defaults.headers.common["Authorization"] = cartState.token;
 
   useEffect(() => {
     //get user cart from local storage
@@ -128,6 +130,8 @@ function App() {
           element={<ResetPassword />}
         ></Route>
       </Routes>
+
+      <Footer />
     </>
   );
 }

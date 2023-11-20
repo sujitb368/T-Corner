@@ -67,7 +67,6 @@ function UserList() {
       );
       // Updating state variables with fetched data
       if (data.success) {
-        console.log("users", data.users);
         setAllUsers(data.users);
         setTotalPages(data.totalPage);
         setPage(data.currentPage);

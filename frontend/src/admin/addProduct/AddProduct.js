@@ -52,9 +52,6 @@ function AddProduct() {
   const getCategories = async () => {
     try {
       const response = await axios.get(`/admin/category/categories`);
-
-      console.log(response);
-
       setCategories(response.data.categories);
     } catch (error) {
       console.log(error);
@@ -81,7 +78,6 @@ function AddProduct() {
     try {
       const form = e.currentTarget;
       if (form.checkValidity() === false) {
-        console.log(validated);
         e.stopPropagation();
         setValidated(true);
         return;
@@ -132,6 +128,15 @@ function AddProduct() {
         // Handle the response and display messages
         if (response?.data?.success) {
           Message({ type: "success", message: response.data.message });
+          setName("");
+          setDescription("");
+          setPrice("");
+          setCategory("");
+          setShipping("");
+          setQuantity("");
+          setColors("");
+          setSize("");
+          setImage({ preview: "", data: "" });
         } else {
           Message({ type: "error", message: response.data.message });
         }

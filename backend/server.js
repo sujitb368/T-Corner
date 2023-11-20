@@ -1,4 +1,5 @@
 import express from "express";
+// Create an Express application
 const app = express();
 
 import cors from "cors";
@@ -7,9 +8,6 @@ import mongoose from "mongoose";
 
 // Import config file
 import { dbURL } from "./config.js";
-
-// import { dirname } from "path";
-// import { fileURLToPath } from "url";
 
 import "dotenv/config";
 
@@ -36,16 +34,12 @@ import filesRoutes from "./routes/filesRoutes.js";
 //connect database
 mongoose.connect(dbURL);
 
-//middleware
+// Middleware setup
 app.use(cors());
 app.use(express.json());
 
 //server port number
 const port = process.env.port || 8000;
-
-// Get the directory name of the current module
-// const __filename = fileURLToPath(import.meta.url);
-// global.__dirname = dirname(__filename);
 
 //routes configuration
 app.use("/api/v1/user", userRoutes);
@@ -62,8 +56,6 @@ app.use("/api/v1/category", categoryRoutes);
 app.use("/api/v1/admin/category", categoryRoutes);
 app.use("/api/v1/admin/files", filesRoutes);
 app.use("/api/v1/admin/product", productRoutes);
-
-
 
 app.listen(port, (err, res) => {
   console.log("Server listening at: " + port);

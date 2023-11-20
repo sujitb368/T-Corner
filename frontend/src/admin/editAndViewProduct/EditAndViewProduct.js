@@ -64,7 +64,7 @@ const EditAndViewProduct = () => {
       setQuantity(data?.product[0]?.quantity);
       setShipping(data?.product[0]?.shipping);
       setSize(data?.product[0]?.size);
-      setColors(data?.product[0]?.color);
+      setColors(data?.product[0]?.colors);
       setFileName(data?.product[0]?.image);
     } catch (error) {
       Message({ type: "error", message: error.response.data.message });
@@ -104,6 +104,7 @@ const EditAndViewProduct = () => {
       );
       if (data.success) {
         Message({ type: "success", message: data.message });
+        setEditing(!isEditing);
       }
     } catch (error) {
       Message({

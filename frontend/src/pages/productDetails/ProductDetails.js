@@ -9,8 +9,11 @@ import { useCart } from "../../context/cartContext";
 import Message from "../../components/message/Message.js";
 import { baseUrl } from "../../constant.js";
 
+/**
+ * ProductDetails component for displaying detailed information about a product.
+ */
 function ProductDetails() {
-  // const [ProductDetail, setProductDetail] = useState();
+  // state variables
   const { cartState, cartDispatch } = useCart();
   const [details, setDetails] = useState([]);
   const { productId } = useParams();
@@ -26,6 +29,7 @@ function ProductDetails() {
 
   const navigate = useNavigate();
 
+  // Function to fetch available product quantity
   const getQuantity = async (productId, quantity) => {
     try {
       const { data } = await axios.post(`/product/quantity`, {
@@ -46,6 +50,7 @@ function ProductDetails() {
     cartDispatch({ type: "ADD_TO_CART", payload: item });
   };
 
+  // Function to fetch product details by productId
   const getProduct = async () => {
     try {
       const response = await axios.get(`/product/getProductId/${productId}`);
@@ -56,11 +61,13 @@ function ProductDetails() {
     }
   };
 
+  // Function to handle adding product to the cart
   const handelAddToCart = async (product) => {
     try {
       //get cart from context
       const localCart = cartState.cartItems || [];
 
+      // Check if the item is already in the cart
       const isItemExist = cartState.cartItems.filter(
         (cartItem) => cartItem.productId === product._id
       );
@@ -84,6 +91,7 @@ function ProductDetails() {
       productDetails.quantity = quantity;
       productDetails.productId = _id;
 
+      // Check if the quantity is available
       const isQuantityAvailable = await getQuantity(_id, 1);
 
       if (isQuantityAvailable < 1) {
@@ -98,6 +106,7 @@ function ProductDetails() {
 
       localStorage.setItem("cart", JSON.stringify(localCart));
 
+      // Add item to the cart in the backend
       const response = await axios.post(`/cart/addToCart/${userId}`, {
         userId,
         cartItems: localCart,
@@ -112,10 +121,12 @@ function ProductDetails() {
     }
   };
 
+  // Function to handle the "Buy Now" button
   const buyNow = async (product) => {
     try {
       const localCart = cartState.cartItems || [];
 
+      // Check if the item is already in the cart
       const isItemExist = cartState.cartItems.filter(
         (cartItem) => cartItem.productId === product._id
       );
@@ -160,6 +171,7 @@ function ProductDetails() {
     }
   };
 
+  // Function to check delivery at a specific location
   const locationCheck = async () => {
     if (checkPin.length <= 3) {
       Message({

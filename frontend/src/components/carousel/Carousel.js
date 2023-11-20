@@ -17,7 +17,6 @@ function Carousel(props) {
     chunkedProducts.push(props.carouselItems.slice(i, i + cardsPerSlide));
   }
 
-  console.log("chunk product", chunkedProducts);
   return (
     <>
       <div className="container my-5">

@@ -7,11 +7,17 @@ import axios from "axios";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import Message from "../../components/message/Message";
 
+/**
+ * ReviewOrder component for reviewing shipping and payment details before placing an order.
+ */
 function ReviewOrder() {
   const { cartState, cartDispatch } = useCart();
 
+  // Variable to check if product quantities are available
+
   let isQuantityAvailable = true;
 
+  // Get payment and address details from URL parameters
   //eslint-disable-next-line
   const [searchParams, setSearchParams] = useSearchParams();
   const payment = searchParams.get("payment");
@@ -23,10 +29,12 @@ function ReviewOrder() {
   //get user from context
   const user = cartState.user;
 
-  //navigate
-
+  // Navigation hook
   const navigate = useNavigate();
 
+  /**
+   * Function to check if product quantities are available before placing an order.
+   */
   const checkProductQuantities = async () => {
     try {
       const promisesOfQuantityCount = cartState.cartItems.map(async (item) => {
@@ -37,8 +45,6 @@ function ReviewOrder() {
           });
 
           if (data.quantity < item.quantity) {
-            console.log("quantity: " + item.quantity);
-            console.log("data . quantity: " + data.quantity);
             isQuantityAvailable = false;
             Message({
               type: "error",
@@ -67,7 +73,10 @@ function ReviewOrder() {
     }
   };
 
-  //function to handle placing order
+  /**
+   * Function to place an order, including checking product quantities and updating cart status.
+   * @param {Object} paymentDetails - Details of the payment (if available).
+   */
   const placeOrder = async (paymentDetails) => {
     try {
       //checking quantity exist before placing order
@@ -75,7 +84,6 @@ function ReviewOrder() {
 
       //stop execution if quantity not exist
       if (isQuantityAvailable === false) {
-        console.log("isQuantityAvailable", isQuantityAvailable);
         return;
       }
 
@@ -135,7 +143,10 @@ function ReviewOrder() {
     }
   };
 
-  //function to initialize order when using paypal as payment method
+  /**
+   * Function to initialize the order when using PayPal as the payment method.
+   * @returns {string} - The order ID.
+   */
   const createOrder = async () => {
     try {
       const response = await axios.post(
@@ -170,7 +181,10 @@ function ReviewOrder() {
     }
   };
 
-  //paypal function to capture the order when approve the payment
+  /**
+   * PayPal function to capture the order when the payment is approved.
+   * @param {Object} data - PayPal order data.
+   */
   const onApprove = async (data) => {
     try {
       const response = await axios.post(
@@ -189,11 +203,8 @@ function ReviewOrder() {
       paymentDetails.paymentID = data.paymentID;
       paymentDetails.paymentSource = data.paymentSource;
       paymentDetails.status = response.data.status;
-      // console.log("inside first", paymentDetails);
+
       placeOrder(paymentDetails);
-      // const orderData = await response.json();
-      // const name = orderData.payer.name.given_name;
-      // alert(`Transaction completed by ${name}`);
     } catch (error) {
       console.error(error);
       // Handle the error or throw it further if needed
