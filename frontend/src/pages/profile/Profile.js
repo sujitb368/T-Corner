@@ -1,6 +1,6 @@
 // Profile
 import React, { useEffect, useState } from "react";
-import { Container, Row, Col, Card, Image } from "react-bootstrap";
+import { Row, Col, Card, Image } from "react-bootstrap";
 import { useCart } from "../../context/cartContext";
 import "./Profile.css";
 import { BsCamera, BsPencilSquare, BsXSquareFill } from "react-icons/bs";
