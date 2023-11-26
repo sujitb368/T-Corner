@@ -45,10 +45,10 @@ function App() {
   const { cartState, cartDispatch } = useCart();
 
   //hosted backend
-  // axios.defaults.baseURL = "https://t-corner.onrender.com/api/v1";
+  axios.defaults.baseURL = "https://t-corner.onrender.com/api/v1";
 
   //local backend
-  axios.defaults.baseURL = "http://localhost:8000/api/v1";
+  // axios.defaults.baseURL = "http://localhost:8000/api/v1";
   axios.defaults.headers.common["Authorization"] = cartState.token;
 
   useEffect(() => {
