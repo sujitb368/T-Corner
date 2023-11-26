@@ -101,7 +101,7 @@ const allProducts = async (req, res) => {
       .limit(10);
     //send response to client
 
-    const totalProducts = products.length;
+    const totalProducts = await ProductModel.find({}).count();
 
     return res.status(200).send({
       message: "All products",
@@ -297,8 +297,7 @@ const filterProduct = async (req, res) => {
       .limit(10);
 
     //length of the filtered result
-    const totalProducts = filterProduct.length;
-
+    const totalProducts = await ProductModel.find({}).count();
     return res.status(200).send({
       message: filterResult.length
         ? "Filtered products"
@@ -343,7 +342,7 @@ const searchProduct = async (req, res) => {
       .limit(parseInt(perPage));
 
     //total length searchResults array
-    const totalProducts = searchResults.length;
+    const totalProducts = await ProductModel.find({}).count();
 
     return res.status(200).send({
       message: "searched result",
