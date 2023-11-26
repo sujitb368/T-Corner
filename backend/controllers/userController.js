@@ -149,7 +149,7 @@ const getAllUsersController = async (req, res) => {
       .skip(skip)
       .limit(10);
     //length of the filtered result
-    const totalUsers = users.length;
+    const totalUsers = await UserModel.find({}).count();
 
     return res.status(200).send({
       message: "All users",
