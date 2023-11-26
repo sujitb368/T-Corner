@@ -44,7 +44,11 @@ function Product(props) {
               </h5>
               <h6 className="card-title product-price">₹ {product.price}</h6>
               <p className="card-text">
-                {product.description.split(" ").slice(0, 10).join(" ")}
+                {product.description
+                  .split(" ")
+                  .slice(0, 8)
+                  .join(" ")
+                  .concat("...")}
               </p>
               <Rating totalStar={product.averageRating?.toFixed(1)} />
             </div>
