@@ -37,7 +37,7 @@ function Product(props) {
             )}
             <div
               className="card-body d-flex flex-column"
-              style={{ height: "150px" }}
+              style={{ height: "200px" }}
             >
               <h5 className="card-title product-title">
                 {product.name.split(" ").slice(0, 3).join(" ")}
