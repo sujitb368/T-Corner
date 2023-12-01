@@ -1,10 +1,16 @@
 /* css variables */
 /* root */
 :root{
-  --color1:#011132;
-  --color2:#232f47;
+  /* --color1:#011132; */
+  /* --color2:#232f47;
   --color3:#c2e7ff;
   --color4:#f6f9ff;
+  --color5:#009688; */
+
+  --color1:#003605;
+  --color2:rgba(5, 85, 13, 0.646);
+  --color3:#c9c2ff;
+  --color4:#f6f9ff96;
   --color5:#009688;
 
 }

@@ -9,13 +9,15 @@ import axios from "axios";
  * @param {Function} props.reset - Callback function triggered on filter reset.
  */
 function Filters(props) {
-  // State to hold categories, checked checkboxes, and price range
+  // State to hold categories, checked checkboxes, and price
+  //eslint-disable-next-line
   const [categories, setCategories] = useState([]);
   const [checked, setChecked] = useState([]);
   //eslint-disable-next-line
   const [price, setPrice] = useState([]);
 
   // Array of predefined price ranges
+  //eslint-disable-next-line
   const prices = [
     { price: [0, 500], label: "below 500", _id: "priceRange1" },
     { price: [500, 1000], label: "500 - 1000", _id: "priceRange2" },
@@ -29,6 +31,7 @@ function Filters(props) {
    * @param {boolean} value - Checkbox checked status.
    * @param {string} id - Category ID.
    */
+  //eslint-disable-next-line
   const handelCheck = (value, id) => {
     try {
       //get all checked categories
@@ -49,6 +52,7 @@ function Filters(props) {
    * Handle radio button changes for price range.
    * @param {string} price - Selected price range.
    */
+  //eslint-disable-next-line
   const handelPrice = (price) => {
     try {
       setPrice(price.split(","));
@@ -58,6 +62,7 @@ function Filters(props) {
   };
   //Trigger filter application by invoking the parent component's onClick callback.
   // function to get all categories
+  //eslint-disable-next-line
   const filter = () => {
     if (props?.onClick) {
       props.onClick(checked, price);
@@ -65,6 +70,7 @@ function Filters(props) {
   };
 
   //  Trigger filter reset by invoking the parent component's reset callback.
+  //eslint-disable-next-line
   const reset = () => {
     if (props?.reset) {
       props.reset();
@@ -96,9 +102,9 @@ function Filters(props) {
     <>
       <div className="pt-3">
         <div className="d-flex flex-column">
-          <h6 className="text-center my-1">Filter By Category</h6>
+          <h6 className="text-center my-1">Side Bar</h6>
 
-          <>
+          {/* <>
             {categories.map((cat) => (
               <div className="d-flex align-items-center" key={cat._id}>
                 <input
@@ -110,10 +116,10 @@ function Filters(props) {
                 <span className="ms-1">{cat.category}</span>
               </div>
             ))}
-          </>
+          </> */}
         </div>
 
-        <div className="d-flex flex-column">
+        {/* <div className="d-flex flex-column">
           <h6 className="text-center my-1">Filter By Price</h6>
           <>
             {prices.map((price) => (
@@ -130,16 +136,16 @@ function Filters(props) {
               </div>
             ))}
           </>
-        </div>
+        </div> */}
 
-        <div className="text-center mt-1">
+        {/* <div className="text-center mt-1">
           <button onClick={filter} className="btn bg-3 text-1 me-1 mb-1">
             Filter
           </button>
           <button onClick={(e) => reset()} className="btn bg-3 text-1 mb-1">
             Reset
           </button>
-        </div>
+        </div> */}
       </div>
     </>
   );

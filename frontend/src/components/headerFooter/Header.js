@@ -15,7 +15,7 @@ import { useCart } from "../../context/cartContext";
 import axios from "axios";
 import Message from "../message/Message";
 
-import logo from "../../images/logo1.png";
+import logo from "../../images/logo3.jpeg";
 
 /**
  * Header component for navigation and search functionality.

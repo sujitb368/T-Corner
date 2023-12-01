@@ -20,7 +20,86 @@ function Home() {
   const { cartState, cartDispatch } = useCart();
 
   // State variables
-  const [allproducts, setAllProducts] = useState([]);
+  const [allproducts, setAllProducts] = useState([
+    {
+      id: 1,
+      name: "Potato",
+      description: "Versatile starchy tuber widely used in Indian cuisine.",
+      price: 20,
+      image: "https://source.unsplash.com/800x600/?potato",
+    },
+    {
+      id: 2,
+      name: "Tomato",
+      description:
+        "Juicy and tangy fruit commonly used as a vegetable in Indian cooking.",
+      price: 30,
+      image: "https://source.unsplash.com/800x600/?tomato",
+    },
+    {
+      id: 3,
+      name: "Spinach",
+      description: "Leafy green vegetable rich in iron and vitamins.",
+      price: 25,
+      image: "https://source.unsplash.com/800x600/?spinach",
+    },
+    {
+      id: 4,
+      name: "Cauliflower",
+      description:
+        "Cruciferous vegetable with a mild flavor, often used in curries.",
+      price: 40,
+      image: "https://source.unsplash.com/800x600/?cauliflower",
+    },
+    {
+      id: 5,
+      name: "Okra (Bhindi)",
+      description:
+        "Green, slender vegetable with a unique texture, used in various Indian dishes.",
+      price: 35,
+      image: "https://source.unsplash.com/800x600/?okra",
+    },
+    {
+      id: 6,
+      name: "Eggplant (Brinjal)",
+      description:
+        "Purple or green vegetable with a meaty texture, popular in Indian curries.",
+      price: 45,
+      image: "https://source.unsplash.com/800x600/?eggplant",
+    },
+    {
+      id: 7,
+      name: "Carrot",
+      description:
+        "Sweet and crunchy root vegetable, commonly used in salads and gravies.",
+      price: 28,
+      image: "https://source.unsplash.com/800x600/?carrot",
+    },
+    {
+      id: 8,
+      name: "Cabbage",
+      description:
+        "Leafy green or purple vegetable used in various Indian dishes.",
+      price: 30,
+      image: "https://source.unsplash.com/800x600/?cabbage",
+    },
+    {
+      id: 9,
+      name: "Bell Pepper (Capsicum)",
+      description:
+        "Colorful and sweet vegetable used in salads, stir-fries, and curries.",
+      price: 50,
+      image: "https://source.unsplash.com/800x600/?bell-pepper",
+    },
+    {
+      id: 10,
+      name: "Onion",
+      description:
+        "Pungent bulb vegetable used as a base in many Indian dishes.",
+      price: 15,
+      image: "https://source.unsplash.com/800x600/?onion",
+    },
+  ]);
   const [categoryToFilter, setCategoryToFilter] = useState([]);
   const [priceToFilter, setPriceToFilter] = useState([]);
 
@@ -105,6 +184,9 @@ function Home() {
    * @param {Number} pageNumber - Page number for pagination.
    */
   const getAllProducts = async (pageNumber = 1) => {
+    //only fo ecom-agri  return
+    return;
+    //eslint-disable-next-line
     try {
       const { data } = await axios.get(`/product/allproducts/${pageNumber}`);
 
@@ -125,6 +207,8 @@ function Home() {
    * @param {Number} pageNumber - Page number for pagination.
    */
   const getFilteredProducts = async (pageNumber = 1) => {
+    return;
+    //eslint-disable-next-line
     try {
       const { data } = await axios.post(
         `/product/filter/${pageNumber}`,

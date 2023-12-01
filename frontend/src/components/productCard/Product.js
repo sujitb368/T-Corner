@@ -5,7 +5,7 @@ import { Col } from "react-bootstrap";
 import Rating from "../rating/Rating";
 import { Link } from "react-router-dom";
 
-import { baseUrl } from "../../constant.js";
+// import { baseUrl } from "../../constant.js";
 
 /**
  * Product component for displaying individual product information.
@@ -28,7 +28,7 @@ function Product(props) {
           <div className="card me-3 mt-3 text-center pt-1">
             {product.image ? (
               <img
-                src={`${baseUrl}/files/get-file/${product.image}`}
+                src={product.image}
                 className="d-block card-img-top img-100"
                 alt="product"
               />
@@ -37,7 +37,7 @@ function Product(props) {
             )}
             <div
               className="card-body d-flex flex-column"
-              style={{ height: "150px" }}
+              style={{ height: "200px" }}
             >
               <h5 className="card-title product-title">
                 {product.name.split(" ").slice(0, 3).join(" ")}
