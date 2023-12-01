@@ -39,6 +39,9 @@ function AllProduct() {
 
   // Function to fetch all products
   const getAllProducts = async (page = 1) => {
+    //dont call api for malay da
+    return;
+    //eslint-disable-next-line
     try {
       const response = await axios.get(`/product/allproducts/${page}`);
       if (response?.data?.success) {
@@ -59,6 +62,9 @@ function AllProduct() {
 
   // Function to fetch search products
   const getSearchProducts = async (currentPage = 1) => {
+    //dont call api for malay da
+    return;
+    //eslint-disable-next-line
     try {
       const { data } = await axios.get(
         `/product/search?query=${cartState.searchQuery}&page=${currentPage}&perPage=10`
@@ -114,6 +120,7 @@ function AllProduct() {
 
   //function to delete product
   const deleteProduct = async (productId) => {
+    //dont call api for malay da
     try {
       const { data } = await axios.delete(`/product/delete/${productId}`, {
         headers: {

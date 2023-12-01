@@ -5,7 +5,7 @@ import { Col } from "react-bootstrap";
 import Rating from "../rating/Rating";
 import { Link } from "react-router-dom";
 
-import { baseUrl } from "../../constant.js";
+// import { baseUrl } from "../../constant.js";
 
 /**
  * Product component for displaying individual product information.
