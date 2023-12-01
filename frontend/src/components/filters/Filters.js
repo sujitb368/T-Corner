@@ -96,9 +96,9 @@ function Filters(props) {
     <>
       <div className="pt-3">
         <div className="d-flex flex-column">
-          <h6 className="text-center my-1">Filter By Category</h6>
+          <h6 className="text-center my-1">Side Bar</h6>
 
-          <>
+          {/* <>
             {categories.map((cat) => (
               <div className="d-flex align-items-center" key={cat._id}>
                 <input
@@ -110,10 +110,10 @@ function Filters(props) {
                 <span className="ms-1">{cat.category}</span>
               </div>
             ))}
-          </>
+          </> */}
         </div>
 
-        <div className="d-flex flex-column">
+        {/* <div className="d-flex flex-column">
           <h6 className="text-center my-1">Filter By Price</h6>
           <>
             {prices.map((price) => (
@@ -130,16 +130,16 @@ function Filters(props) {
               </div>
             ))}
           </>
-        </div>
+        </div> */}
 
-        <div className="text-center mt-1">
+        {/* <div className="text-center mt-1">
           <button onClick={filter} className="btn bg-3 text-1 me-1 mb-1">
             Filter
           </button>
           <button onClick={(e) => reset()} className="btn bg-3 text-1 mb-1">
             Reset
           </button>
-        </div>
+        </div> */}
       </div>
     </>
   );

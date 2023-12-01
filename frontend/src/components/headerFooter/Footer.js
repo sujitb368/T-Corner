@@ -10,7 +10,9 @@ const Footer = () => {
       <div className="col-md-3 my-3"></div>
 
       <div className="divider"></div>
-      <p className="text-center py-2">Copyright &copy; T-Corner 2023</p>
+      <p className="text-center py-2">
+        Copyright &copy; Cloud Tech Ka Funda 2023
+      </p>
     </div>
   );
 };
