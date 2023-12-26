@@ -1,8 +1,10 @@
 # T-Corner
+## Visit thinkNote.md file to get the working flow and code explanation
+MERN project - building an ecom web app 
 
-MERN project - building a ecom web app
 
  <!-- work remain  -->
 
-- search and filter
-- admin header
+- Search and filter
+- Admin section
+- User section
